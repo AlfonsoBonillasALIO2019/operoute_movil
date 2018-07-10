@@ -36,7 +36,7 @@ class OperationScreen extends Component {
 
     const { 
       navigate, 
-      state:{ params:{card, Operation} } 
+      state:{ params:{card, Operation, serials} } 
     } = this.props.navigation
     
 
@@ -60,7 +60,7 @@ class OperationScreen extends Component {
     }else if (selected === 'TOOLING') {
       screen = <Tooling toolFixtures={toolFixtures}/>
     } else if (selected === 'OPERATIONS') {
-      screen = <Operations operations={[1,2,2,3,3,3,23,2]}/>
+      screen = <Operations operations={serials}/>
     } 
     return (
       <Container>

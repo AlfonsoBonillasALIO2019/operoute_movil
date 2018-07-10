@@ -32,12 +32,12 @@ class PageScreen extends Component {
     if (order === null) {
       return <Text>Loading...</Text>
     }else {
-      const { Routecards=[] } = order
+      const { Routecards=[], SerialNum=[] } = order
       return (
         <Pages>
           <OrderScreen style={{ flex: 1 }} {...this.props} />
           {Routecards.map((card,index)=>(
-              <SerialNumbers style={{ flex: 1 }} card={card} {...this.props} />
+              <SerialNumbers style={{ flex: 1 }} card={card} serials={SerialNum} {...this.props} />
             )
           )}
         </Pages>

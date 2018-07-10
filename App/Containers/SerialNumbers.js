@@ -55,13 +55,13 @@ class SerialNumbers extends React.PureComponent {
   renderRow = ({item}) => {
     // alert(JSON.stringify(this._onPressButton))
 
-    const { card } = this.props
+    const { card, serials } = this.props
 
     const { Operation={} } = item
     return (
       <TouchableHighlight
           onPress={() =>{
-            this.pressItem({card, Operation})
+            this.pressItem({card, Operation, serials})
           }
           }>
         <View style={styles.row}>

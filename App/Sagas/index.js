@@ -14,7 +14,7 @@ import { WorkOrderTypes } from '../Redux/WorkOrderRedux'
 import { startup } from './StartupSagas'
 import { getUserAvatar } from './GithubSagas'
 import { login } from './LoginSagas'
-import { getWorkOrders, getWorkOrderById } from './WorkOrderSagas'
+import { getWorkOrders, getWorkOrderById, searchWooperationlog } from './WorkOrderSagas'
 
 /* ------------- API ------------- */
 
@@ -34,5 +34,7 @@ export default function * root () {
     takeLatest(LoginTypes.LOGIN_REQUEST, login, api),
     takeLatest(WorkOrderTypes.WORK_ORDER_REQUEST, getWorkOrders, api),
     takeLatest(WorkOrderTypes.WORK_ORDER_BY_ID_REQUEST, getWorkOrderById, api),
+    takeLatest(WorkOrderTypes.SEARCH_WOOPERATIONLOG_REQUEST, searchWooperationlog, api),
+
   ])
 }

@@ -10,9 +10,26 @@ export function * getWorkOrders (api, action) {
 
   if (response.ok) {
     let { data } = response
+    data.reverse()
     yield put(WorkOrderActions.workOrderSuccess(data))
   } else {
     yield put(WorkOrderActions.workOrderFailure())
+  }
+}
+
+
+export function * searchWooperationlog (api, action) {
+  const { WOKey, RCTKey, OperationKey } = action
+  // make the call to the api
+  const response = yield call(api.searchWooperationlog, WOKey, RCTKey, OperationKey)
+  // alert(JSON.stringify({name:'alfredo'}))
+
+  if (response.ok) {
+    let { data } = response
+    data.reverse()
+    yield put(WorkOrderActions.searchWooperationlogSuccess(data))
+  } else {
+    yield put(WorkOrderActions.searchWooperationlogFailure())
   }
 }
 

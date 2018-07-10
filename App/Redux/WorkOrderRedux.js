@@ -10,6 +10,9 @@ const { Types, Creators } = createActions({
   workOrderByIdRequest:['token','workOrderId'],
   workOrderByIdSuccess:['order'],
   workOrderByIdFailure:null,
+  searchWooperationlogRequest:['token','WOKey', 'RCTKey', 'OperationKey'],
+  searchWooperationlogSuccess:['Wooperationlog'],
+  searchWooperationlogFailure:null,
 })
 
 export const WorkOrderTypes = Types
@@ -22,8 +25,11 @@ export const INITIAL_STATE = Immutable({
   selectedOrder:null,
   fetching:false,
   fetchingSelected:false,
+  fetchingWooperationlog:false,
   error:null,
-  errorSelected: null
+  errorSelected: null,
+  errorWooperationlog: null,
+  Wooperationlog:null
 })
 
 /* ------------- Selectors ------------- */
@@ -66,6 +72,24 @@ export const failureSelected = (state) =>
   state.merge({ fetchingSelected: false, errorSelected: true, selectedOrder: null })
 
 
+// request the avatar for a user
+export const requestWooperationlog = (state, action) =>{
+  return state.merge({ fetchingWooperationlog: true, Wooperationlog: null })
+}
+
+// successful avatar lookup
+export const successWooperationlog = (state, action) => {
+  const { Wooperationlog } = action
+  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, Wooperationlog:Wooperationlog })
+}
+
+// failed to get the avatar
+export const failureWooperationlog = (state) =>
+  state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, Wooperationlog: null })
+
+
+
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -74,5 +98,9 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.WORK_ORDER_FAILURE]: failure,
   [Types.WORK_ORDER_BY_ID_REQUEST]: requestSelected,
   [Types.WORK_ORDER_BY_ID_SUCCESS]: successSelected,
-  [Types.WORK_ORDER_BY_ID_FAILURE]: failureSelected
+  [Types.WORK_ORDER_BY_ID_FAILURE]: failureSelected,
+
+  [Types.SEARCH_WOOPERATIONLOG_REQUEST]: requestWooperationlog,
+  [Types.SEARCH_WOOPERATIONLOG_SUCCESS]: successWooperationlog,
+  [Types.SEARCH_WOOPERATIONLOG_FAILURE]: failureWooperationlog,
 })
