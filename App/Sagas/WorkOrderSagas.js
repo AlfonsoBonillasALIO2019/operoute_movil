@@ -2,7 +2,7 @@ import { call, put } from 'redux-saga/effects'
 import { path } from 'ramda'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 
-export function * getWorkOrders (api, action) {
+export function* getWorkOrders(api, action) {
   const { token } = action
   // make the call to the api
   const response = yield call(api.getWorkOrders, token)
@@ -17,8 +17,21 @@ export function * getWorkOrders (api, action) {
   }
 }
 
+export function* getActiveOperators(api, action) {
+  const { token } = action
 
-export function * searchWooperationlog (api, action) {
+  const response = yield call(api.getActiveOperators, token)
+
+  if (response.ok) {
+    let { data } = response
+    yield put(WorkOrderActions.operatorsSuccess(data))
+  } else {
+    yield put(WorkOrderActions.operatorsFailure())
+  }
+}
+
+
+export function* searchWooperationlog(api, action) {
   const { WOKey, RCTKey, OperationKey } = action
   // make the call to the api
   const response = yield call(api.searchWooperationlog, WOKey, RCTKey, OperationKey)
@@ -33,7 +46,7 @@ export function * searchWooperationlog (api, action) {
   }
 }
 
-export function * getWorkOrderById (api, action) {
+export function* getWorkOrderById(api, action) {
   const { token, workOrderId } = action
   // make the call to the api
   const response = yield call(api.getWorkOrderById, token, workOrderId)

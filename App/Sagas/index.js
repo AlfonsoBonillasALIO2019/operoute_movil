@@ -14,7 +14,7 @@ import { WorkOrderTypes } from '../Redux/WorkOrderRedux'
 import { startup } from './StartupSagas'
 import { getUserAvatar } from './GithubSagas'
 import { login } from './LoginSagas'
-import { getWorkOrders, getWorkOrderById, searchWooperationlog } from './WorkOrderSagas'
+import { getWorkOrders, getWorkOrderById, searchWooperationlog, getActiveOperators } from './WorkOrderSagas'
 
 /* ------------- API ------------- */
 
@@ -24,7 +24,7 @@ const api = DebugConfig.useFixtures ? FixtureAPI : API.create()
 
 /* ------------- Connect Types To Sagas ------------- */
 
-export default function * root () {
+export default function* root() {
   yield all([
     // some sagas only receive an action
     takeLatest(StartupTypes.STARTUP, startup),
@@ -32,9 +32,11 @@ export default function * root () {
     // some sagas receive extra parameters in addition to an action
     takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api),
     takeLatest(LoginTypes.LOGIN_REQUEST, login, api),
+
+    takeLatest(WorkOrderTypes.OPERATORS_REQUEST, getActiveOperators, api),
+
     takeLatest(WorkOrderTypes.WORK_ORDER_REQUEST, getWorkOrders, api),
     takeLatest(WorkOrderTypes.WORK_ORDER_BY_ID_REQUEST, getWorkOrderById, api),
     takeLatest(WorkOrderTypes.SEARCH_WOOPERATIONLOG_REQUEST, searchWooperationlog, api),
-
   ])
 }

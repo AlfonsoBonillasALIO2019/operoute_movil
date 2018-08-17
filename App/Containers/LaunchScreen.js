@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { ScrollView, Image, View } from 'react-native'
 import { Images } from '../Themes'
-import { Container, Header, Title, Content, Footer, FooterTab, 
-  Button, Left, Right, Body, Icon, Text, 
+import {
+  Container, Header, Title, Content, Footer, FooterTab,
+  Button, Left, Right, Body, Icon, Text,
   Card, CardItem,
-  Form, Item, Input } from 'native-base';
+  Form, Item, Input
+} from 'native-base';
 
 import { connect } from 'react-redux'
 import LoginActions from '../Redux/LoginRedux'
@@ -12,9 +14,9 @@ import LoginActions from '../Redux/LoginRedux'
 import styles from './Styles/LaunchScreenStyles'
 
 class LaunchScreen extends Component {
-  state={
-    username:'alex@login.com',
-    password:'simona'
+  state = {
+    username: 'alex@login.com',
+    password: 'simona'
   }
 
   handleInputChange(event) {
@@ -37,26 +39,26 @@ class LaunchScreen extends Component {
     const { username, password } = this.state
     return (
       <View style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            <Image source={Images.launch} />
-            <View style={{width: 600}}>
-              <Form>
-                <Item success>
-                  <Input name='username' value={username} onChange={this.handleInputChange} placeholder="Username" />
-                </Item>
-                <Item last>
-                  <Input name='password' value={password} onChange={this.handleInputChange} placeholder="Password" />
-                </Item>
-                <Button rounded block success
-                  onPress={this.handleLogin}>
-                  <Text>Log in</Text>
-                </Button>
-              </Form> 
-            </View>
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <Image source={Images.launch} />
+        <View style={{ width: 600 }}>
+          <Form>
+            <Item success>
+              <Input name='username' value={username} onChange={this.handleInputChange} placeholder="Username" />
+            </Item>
+            <Item last>
+              <Input name='password' value={password} onChange={this.handleInputChange} placeholder="Password" />
+            </Item>
+            <Button rounded success
+              onPress={this.handleLogin}>
+              <Text>Log in</Text>
+            </Button>
+          </Form>
+        </View>
       </View>
     );
   }
@@ -69,8 +71,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    login:(username,password)=>{
-      dispatch(LoginActions.loginRequest(username,password))
+    login: (username, password) => {
+      dispatch(LoginActions.loginRequest(username, password))
     }
   }
 }
