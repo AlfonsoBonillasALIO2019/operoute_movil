@@ -1,8 +1,9 @@
 // a library to wrap and simplify api calls
 import apisauce from 'apisauce'
+import { actionChannel } from '../../node_modules/redux-saga/effects';
 
 // our "constructor"
-const create = (baseURL = 'http://172.20.10.4/') => {
+const create = (baseURL = 'http://172.16.10.224:8000/') => {
   // ------
   // STEP 1
   // ------
@@ -34,25 +35,52 @@ const create = (baseURL = 'http://172.20.10.4/') => {
   // Since we can't hide from that, we embrace it by getting out of the
   // way at this level.
   //
-  const login   = (username, password) => api.post('/signInJson', {
-                          "username": username,
-                          "password": password
-                        }, {headers: {'Content-Type': 'application/json'}})
+  const login = (username, password) => api.post('/signInJson', {
+    "username": username,
+    "password": password
+  }, { headers: { 'Content-Type': 'application/json' } })
+
   const getWorkOrders = token => api.get('/api/workorder', {}, {
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                          }
-                        })
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
   const getWorkOrderById = (token, workOrderId) => api.get(`/api/workorder/${workOrderId}`, {}, {
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                          }
-                        })
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const searchWooperationlog = (token, filter) => api.post('/api/wooperationlog/search', {
+    'sort': `Id desc`,
+    'pageNum': `1`,
+    'pageSize': `100`,
+    'filter': {
+      WOKey: `${filter.WOKey}`,
+      RCTKey: `${filter.RCTKey}`,
+      OperationKey: `${filter.OperationKey}`,
+      Active: true
+    }
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  const getActiveOperators = (token) => api.get(`/api/operators/Active/true`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
   const getRoot = () => api.get('')
   const getRate = () => api.get('rate_limit')
-  const getUser = (username) => api.get('search/users', {q: username})
+  const getUser = (username) => api.get('search/users', { q: username })
 
   // ------
   // STEP 3
@@ -73,7 +101,9 @@ const create = (baseURL = 'http://172.20.10.4/') => {
     getRate,
     getUser,
     getWorkOrders,
-    getWorkOrderById
+    getWorkOrderById,
+    getActiveOperators,
+    searchWooperationlog
   }
 }
 

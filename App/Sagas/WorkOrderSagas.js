@@ -32,10 +32,15 @@ export function* getActiveOperators(api, action) {
 
 
 export function* searchWooperationlog(api, action) {
-  const { WOKey, RCTKey, OperationKey } = action
+  const { WOKey, RCTKey, OperationKey, token } = action
+
   // make the call to the api
-  const response = yield call(api.searchWooperationlog, WOKey, RCTKey, OperationKey)
-  // alert(JSON.stringify({name:'alfredo'}))
+  const response = yield call(api.searchWooperationlog, token,
+    filter = {
+      WOKey,
+      RCTKey,
+      OperationKey,
+    })
 
   if (response.ok) {
     let { data } = response
