@@ -54,6 +54,16 @@ const create = (baseURL = 'http://172.16.10.224:8000/') => {
     }
   })
 
+  const postWooperationlog = (token, data, Id) => api.post('/api/wooperationlog', {
+    'Id': Id,
+    'data': { ...data },
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
   const searchWooperationlog = (token, filter) => api.post('/api/wooperationlog/search', {
     'sort': `Id desc`,
     'pageNum': `1`,
@@ -103,6 +113,7 @@ const create = (baseURL = 'http://172.16.10.224:8000/') => {
     getWorkOrders,
     getWorkOrderById,
     getActiveOperators,
+    postWooperationlog,
     searchWooperationlog
   }
 }
