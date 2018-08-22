@@ -16,6 +16,10 @@ const { Types, Creators } = createActions({
   workOrderByIdSuccess: ['order'],
   workOrderByIdFailure: null,
 
+  postWooperationlogRequest: ['token', 'data', 'Id'],
+  postWooperationlogSuccess: ['WooperationlogPost'],
+  postWooperationlogFailure: null,
+
   searchWooperationlogRequest: ['token', 'WOKey', 'RCTKey', 'OperationKey'],
   searchWooperationlogSuccess: ['Wooperationlog'],
   searchWooperationlogFailure: null,
@@ -29,13 +33,18 @@ export default Creators
 export const INITIAL_STATE = Immutable({
   orders: [],
   selectedOrder: null,
+  Wooperationlog: null,
+  WooperationlogPost: null,
+
   fetching: false,
   fetchingSelected: false,
   fetchingWooperationlog: false,
+  fetchingPostWooperationlog: false,
+
   error: null,
   errorSelected: null,
   errorWooperationlog: null,
-  Wooperationlog: null
+  errorPostWooperationlog: null,
 })
 
 /* ------------- Selectors ------------- */
@@ -78,20 +87,35 @@ export const failureSelected = (state) =>
   state.merge({ fetchingSelected: false, errorSelected: true, selectedOrder: null })
 
 
-// request the avatar for a user
+// request wooperationlog data
 export const requestWooperationlog = (state, action) => {
   return state.merge({ fetchingWooperationlog: true, Wooperationlog: null })
 }
 
-// successful avatar lookup
+// successful wooperationlog data
 export const successWooperationlog = (state, action) => {
   const { Wooperationlog } = action
   return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, Wooperationlog: Wooperationlog })
 }
 
-// failed to get the avatar
+// failed to post the wooperationlog data
 export const failureWooperationlog = (state) =>
   state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, Wooperationlog: null })
+
+// request post wooperationlog
+export const requestPostWooperationlog = (state, action) => {
+  return state.merge({ fetchingPostWooperationlog: true, WooperationlogPost: null })
+}
+
+// successful post wooperationlog
+export const successPostWooperationlog = (state, action) => {
+  const { WooperationlogPost } = action
+  return state.merge({ fetchingPostWooperationlog: false, errorPostWooperationlog: null, WooperationlogPost: WooperationlogPost })
+}
+
+// failed to post the wooperationlog
+export const failurePostWooperationlog = (state) =>
+  state.merge({ fetchingPostWooperationlog: false, errorPostWooperationlog: true, WooperationlogPost: null })
 
 
 // operators request
@@ -125,4 +149,8 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SEARCH_WOOPERATIONLOG_REQUEST]: requestWooperationlog,
   [Types.SEARCH_WOOPERATIONLOG_SUCCESS]: successWooperationlog,
   [Types.SEARCH_WOOPERATIONLOG_FAILURE]: failureWooperationlog,
+
+  [Types.POST_WOOPERATIONLOG_REQUEST]: requestPostWooperationlog,
+  [Types.POST_WOOPERATIONLOG_SUCCESS]: successPostWooperationlog,
+  [Types.POST_WOOPERATIONLOG_FAILURE]: failurePostWooperationlog,
 })
