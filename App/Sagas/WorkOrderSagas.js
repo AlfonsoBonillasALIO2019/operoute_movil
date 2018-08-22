@@ -51,6 +51,23 @@ export function* searchWooperationlog(api, action) {
   }
 }
 
+export function* postWooperationlog(api, action) {
+  const { Id, data, token } = action
+
+  // make the call to the api
+  const response = yield call(api.postWooperationlog, token, data, Id)
+
+  console.log({ response })
+
+  if (response.ok) {
+    let { data: dataResponse } = response
+    dataResponse.reverse()
+    yield put(WorkOrderActions.postWooperationlogSuccess(dataResponse))
+  } else {
+    yield put(WorkOrderActions.postWooperationlogFailure())
+  }
+}
+
 export function* getWorkOrderById(api, action) {
   const { token, workOrderId } = action
   // make the call to the api
