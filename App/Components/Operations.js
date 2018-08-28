@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
+import Prompt from 'react-native-prompt'
 import { Picker, Button, Text, Badge } from 'native-base'
 import { View, FlatList, TouchableHighlight } from 'react-native'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
@@ -10,6 +11,13 @@ class Operations extends Component {
   state = {
     operations: [],
     operationsLog: [],
+
+    promptSerialNum: '',
+
+    promptDurationVisible: false,
+    promptDurationIsSuccessful: false,
+
+    promptPauseCauseVisible: false
   }
 
   componentDidMount = () => {
@@ -108,14 +116,14 @@ class Operations extends Component {
     requestPostWooperationlog(token, data, 0)
   }
 
-  _pause = (serialNum) => {
+  _pause = (serialNum, Pause_ReasonCode) => {
     const { search: { WOKey }, Wooperationlog, token, requestPostWooperationlog } = this.props
     const Pause_Date = moment().format()
     const match = Wooperationlog.filter(log => log.SerialNum === serialNum)[0]
 
     const data = {
-      Pause_ReasonCode: 'Testing text',
       SerialNum: serialNum,
+      Pause_ReasonCode,
       Id: match.Id,
       Paused: true,
       Pause_Date,
@@ -154,28 +162,42 @@ class Operations extends Component {
     requestPostWooperationlog(token, data, Id)
   }
 
-  _terminate = (serialNum, isSuccessful) => {
+  _terminate = (serialNum, isSuccessful, promptedDuration = 0) => {
     const { Wooperationlog, token, requestPostWooperationlog } = this.props
     const match = Wooperationlog.filter(log => log.SerialNum === serialNum)[0]
+    const { StartDate, EndDate: current_EndDate, Id } = match
     const new_EndDate = moment().format()
     const SuccessDate = moment().format()
-    const { StartDate, EndDate: current_EndDate, Id } = match
 
-    const duration = this.getMinutesBetweenDates(new_EndDate, moment(StartDate).add(7, 'hours'))
+    const duration = this.getMinutesBetweenDates(new_EndDate, moment(StartDate).add(7, 'hours')) + promptedDuration
+
+    if (duration < 1) {
+      this.setState({
+        promptDurationIsSuccessful: isSuccessful,
+        promptDurationVisible: true,
+        promptSerialNum: serialNum,
+      })
+
+      return false
+    }
 
     data = {
       OperationSuccess: isSuccessful,
       Id,
     }
 
-    if (!current_EndDate) {
+    if (isSuccessful)
+      data = {
+        ...data,
+        OperationSuccess: isSuccessful,
+      }
+
+    if (!current_EndDate)
       data = {
         ...data,
         EndDate: new_EndDate,
         Duration: duration,
-        SuccessDate,
       }
-    }
 
     requestPostWooperationlog(token, data, Id)
   }
@@ -196,7 +218,7 @@ class Operations extends Component {
         break
       }
       case "Pause": {
-        this._pause(serialNum)
+        this.setState({ promptPauseCauseVisible: true, promptSerialNum: serialNum })
         break
       }
       case "Resume": {
@@ -212,6 +234,65 @@ class Operations extends Component {
         break
       }
     }
+  }
+
+  renderDurationPrompt = () => {
+    const { promptSerialNum: serialNum, promptDurationIsSuccessful } = this.state
+    return (
+      <Prompt
+        title="Favor de introducir duración exacta"
+        placeholder="Duración"
+        defaultValue={0}
+        textInputProps={{
+          multiline: true,
+          numberOfLines: 3,
+        }}
+        visible={this.state.promptDurationVisible}
+        onCancel={() => this.setState({
+          promptDurationIsSuccessful: false,
+          promptDurationVisible: false,
+          promptSerialNum: '',
+        })}
+        onSubmit={(value) => {
+          if (!value || value < 1) {
+            alert("Favor de introducir una duración válida.")
+            return false
+          }
+
+          this._terminate(serialNum, promptDurationIsSuccessful, Number(value)) // Calls API call for Fail status
+
+          this.setState({
+            promptDurationIsSuccessful: false,
+            promptDurationVisible: false,
+            promptSerialNum: '',
+          })
+
+        }} />
+    )
+  }
+
+  renderPauseCausePrompt = () => {
+    const { promptSerialNum: serialNum } = this.state
+    return (
+      <Prompt
+        title="Favor de introducir el motivo de pausa"
+        placeholder="Motivo"
+        defaultValue=""
+        visible={this.state.promptPauseCauseVisible}
+        onCancel={() => this.setState({
+          promptPauseCauseVisible: false,
+          promptSerialNum: '',
+        })}
+        onSubmit={(value) => {
+          if (!value) {
+            alert("Favor de introducir un motivo de pausa válido.")
+            return false
+          }
+
+          this._pause(serialNum, value) // Calls API call for Pause status
+          this.setState({ promptPauseCauseVisible: false, promptSerialNum: '', })
+        }} />
+    )
   }
 
   _renderItem = ({ item }) => {
@@ -236,6 +317,8 @@ class Operations extends Component {
     return (
       <TouchableHighlight>
         <View style={styles.row}>
+          {this.renderDurationPrompt()}
+          {this.renderPauseCausePrompt()}
           <Badge style={{ backgroundColor: status, height: 35, width: 35, borderRadius: 17.5 }} />
           <Text style={styles.serial}>{item.PartPO.PartId}</Text>
           <Text style={styles.operation}>{item.PartPO.SerialNum}</Text>
@@ -276,7 +359,7 @@ class Operations extends Component {
             }
           </Picker>
           <Button success rounded small onPress={() => this.postLog(item.Id, item.PartPO.SerialNum)}>
-            <Text>Guardar</Text>
+            <Text>OK</Text>
           </Button>
         </View>
       </TouchableHighlight>
