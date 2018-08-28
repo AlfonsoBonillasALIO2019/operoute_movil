@@ -15,13 +15,29 @@ import styles from './Styles/LaunchScreenStyles'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 
 class HomeScreen extends Component {
+  state = {
+    searchText: '',
+  }
+
   componentDidMount() {
     const { request, token } = this.props
     request(token)
   }
+
+  filterOrders = (orders) => {
+    const { searchText: text } = this.state
+
+    let result = orders.filter(order => JSON.stringify(order).toLowerCase().indexOf(text.toLowerCase().trim()) !== -1)
+
+    console.log({ result })
+
+    return result
+  }
+
   render() {
     const { navigate } = this.props.navigation
     const { orders, token, user: { FirstName, LastName } = {} } = this.props
+
     return (
       <Container>
         <Header>
@@ -33,16 +49,21 @@ class HomeScreen extends Component {
           </Body>
           <Right />
         </Header>
+        <Header searchBar>
+          <Item>
+            <Icon name="ios-search" />
+            <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Buscar..." />
+          </Item>
+        </Header>
         <Content>
           <H1>Welcome {`${FirstName} ${LastName}`}</H1>
           <FlatList
-            data={orders}
+            data={!this.state.searchText ? orders : this.filterOrders(orders)}
             renderItem={({ item }) => {
               let Description = ''
               try {
                 Description = item.RouteCard[0].PartInfo.Description
               } catch (err) { }
-
               return (
                 <ListItem
                   onPress={() =>
