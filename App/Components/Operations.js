@@ -25,6 +25,7 @@ class Operations extends Component {
 
     requestOperators(token)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+
   }
 
   _keyExtractor = (item, index) => item.id
@@ -43,16 +44,18 @@ class Operations extends Component {
     })
   }
 
-  getLogStatusColor = (log) => {
-    if (log.OperationSuccess) return '#26B99A'
-    if (log.OperationSuccess === false) return '#d9534f'
-    if (log.Paused) return '#f0ad4e'
-    if (log.Started) return '#337ab7'
+  getLogStatusColor = (log, isRework = false) => {
 
-    return 'gray'
+    if (log.Rework) return '#EC4626'
+    if (log.OperationSuccess) return '#26B99A'
+    if (log.OperationSuccess === false) return '#D9534F'
+    if (log.Paused) return '#F0AD4E'
+    if (log.Started) return !isRework ? '#337AB7' : '#EC4626'
+
+    return !isRework ? 'gray' : '#EC4626'
   }
 
-  getStatusOptions = (log) => {
+  getStatusOptions = (log, isRework = false) => {
     // Available options
     // [
     //   { label: "Comenzar", value: 'Start' },
@@ -79,6 +82,8 @@ class Operations extends Component {
       ]
     }
 
+    if (isRework)
+      return [{ label: "Reiniciar", value: 'Restart' }]
 
     return [{ label: "Comenzar", value: 'Start' }]
   }
@@ -300,8 +305,16 @@ class Operations extends Component {
     )
   }
 
+  _requestRework = (match) => {
+    const { requestReworkWooperationlog, token } = this.props
+
+    console.log("HACE ESTO")
+
+    requestReworkWooperationlog(token, match.Id)
+  }
+
   _renderItem = ({ item }) => {
-    const { operators, Wooperationlog } = this.props
+    const { operators, Wooperationlog, ReworkWooperationlog } = this.props
 
     const operation = this.state.operationsLog[item.Id]
 
@@ -312,12 +325,33 @@ class Operations extends Component {
       const match = Wooperationlog.filter(log => log.SerialNum === item.PartPO.SerialNum)
 
       if (match.length > 0) {
-        // Get status color
-        status = this.getLogStatusColor(match[0])
+        let log = match[0]
+
         // Get status dropdown menu options
-        options = this.getStatusOptions(match[0])
+        options = this.getStatusOptions(log)
+        // Get status color
+        status = this.getLogStatusColor(log)
+
+        // If the match has Rework flag to TRUE
+        if (log.Rework) {
+          if (!ReworkWooperationlog)
+            this._requestRework(log)
+          else {
+            log = ReworkWooperationlog[0]
+
+            console.log({ log })
+
+            // Get status dropdown menu options
+            options = this.getStatusOptions(log, true)
+            // Get status color
+            status = this.getLogStatusColor(log, true)
+          }
+        }
       }
     }
+
+    console.log({ status })
+    console.log({ options })
 
     return (
       <TouchableHighlight>
@@ -399,6 +433,7 @@ const mapStateToProps = (state) => {
   return {
     WooperationlogResponse: state.workOrder.WooperationlogResponse,
     Wooperationlog: state.workOrder.Wooperationlog,
+    ReworkWooperationlog: state.workOrder.ReworkWooperationlog,
     operators: state.workOrder.operators,
     token: state.login.token,
     user: state.login.user
@@ -408,6 +443,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     requestWooperationlog: (token, WOKey, RCTKey, OperationKey) => dispatch(WorkOrderActions.searchWooperationlogRequest(token, WOKey, RCTKey, OperationKey)),
+    requestReworkWooperationlog: (token, WOOLogId) => dispatch(WorkOrderActions.searchReworkWooperationlogRequest(token, WOOLogId)),
     requestPutWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.putWooperationlogRequest(token, data, Id)),
     requestPostWooperationlog: (token, data) => dispatch(WorkOrderActions.postWooperationlogRequest(token, data)),
     requestOperators: token => dispatch(WorkOrderActions.operatorsRequest(token)),
