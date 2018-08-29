@@ -25,11 +25,14 @@ class HomeScreen extends Component {
   }
 
   filterOrders = (orders) => {
-    const { searchText: text } = this.state
+    const text = this.state.searchText.toLowerCase().trim()
 
-    let result = orders.filter(order => JSON.stringify(order).toLowerCase().indexOf(text.toLowerCase().trim()) !== -1)
-
-    console.log({ result })
+    let result = orders.filter(order => {
+      for (let prop in order) {
+        if (JSON.stringify(order[prop]).toString().toLowerCase().indexOf(text) > -1)
+          return true
+      }
+    })
 
     return result
   }
@@ -52,7 +55,7 @@ class HomeScreen extends Component {
         <Header searchBar>
           <Item>
             <Icon name="ios-search" />
-            <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Buscar..." />
+            <Input onChange={(e) => this.setState({ searchText: e.target.value })} placeholder="Buscar..." />
           </Item>
         </Header>
         <Content>
