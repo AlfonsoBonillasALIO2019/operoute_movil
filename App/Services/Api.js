@@ -92,6 +92,20 @@ const create = (baseURL = 'http://172.16.10.106:8000/') => {
       }
     })
 
+  const searchReworkWooperationlog = (token, WOOLogId) => api.post('/api/reworkserials/search', {
+    'sort': `Id desc`,
+    'pageNum': `1`,
+    'pageSize': `1`,
+    'filter': {
+      WOOLogId: `${WOOLogId}`,
+    }
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
   const getActiveOperators = (token) => api.get(`/api/operators/Active/true`, {}, {
     headers: {
       'Content-Type': 'application/json',
@@ -126,7 +140,8 @@ const create = (baseURL = 'http://172.16.10.106:8000/') => {
     getActiveOperators,
     putWooperationlog,
     postWooperationlog,
-    searchWooperationlog
+    searchWooperationlog,
+    searchReworkWooperationlog
   }
 }
 

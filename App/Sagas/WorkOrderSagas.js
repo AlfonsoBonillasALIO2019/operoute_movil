@@ -53,6 +53,26 @@ export function* searchWooperationlog(api, action) {
   }
 }
 
+export function* searchReworkWooperationlog(api, action) {
+  const { WOOLogId, token } = action
+
+  // make the call to the api
+  const response = yield call(api.searchReworkWooperationlog, token, WOOLogId)
+
+  console.log({ response })
+
+  if (response.ok) {
+    let { data } = response
+
+    console.log({ data })
+
+    data.reverse()
+    yield put(WorkOrderActions.searchReworkWooperationlogSuccess(data))
+  } else {
+    yield put(WorkOrderActions.searchReworkWooperationlogFailure())
+  }
+}
+
 export function* postWooperationlog(api, action) {
   const { data, token } = action
 

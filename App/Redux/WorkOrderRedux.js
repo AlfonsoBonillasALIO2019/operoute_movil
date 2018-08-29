@@ -27,6 +27,10 @@ const { Types, Creators } = createActions({
   searchWooperationlogRequest: ['token', 'WOKey', 'RCTKey', 'OperationKey'],
   searchWooperationlogSuccess: ['Wooperationlog'],
   searchWooperationlogFailure: null,
+
+  searchReworkWooperationlogRequest: ['token', 'WOOLogId'],
+  searchReworkWooperationlogSuccess: ['ReworkWooperationlog'],
+  searchReworkWooperationlogFailure: null,
 })
 
 export const WorkOrderTypes = Types
@@ -38,16 +42,19 @@ export const INITIAL_STATE = Immutable({
   orders: [],
   selectedOrder: null,
   Wooperationlog: null,
+  ReworkWooperationlog: null,
   WooperationlogResponse: null,
 
   fetching: false,
   fetchingSelected: false,
   fetchingWooperationlog: false,
+  fetchingReworkWooperationlog: false,
   fetchingRequestWooperationlog: false,
 
   error: null,
   errorSelected: null,
   errorWooperationlog: null,
+  errorReworkWooperationlog: null,
   errorResponseWooperationlog: null,
 })
 
@@ -105,6 +112,21 @@ export const successWooperationlog = (state, action) => {
 // failed to post the wooperationlog data
 export const failureWooperationlog = (state) =>
   state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, Wooperationlog: null })
+
+// request rework wooperationlog data
+export const requestReworkWooperationlog = (state, action) => {
+  return state.merge({ fetchingReworkWooperationlog: true, ReworkWooperationlog: null })
+}
+
+// successful rework wooperationlog data
+export const successReworkWooperationlog = (state, action) => {
+  const { ReworkWooperationlog } = action
+  return state.merge({ fetchingReworkWooperationlog: false, errorReworkWooperationlog: null, ReworkWooperationlog: ReworkWooperationlog })
+}
+
+// failed to post the rework wooperationlog data
+export const failureReworkWooperationlog = (state) =>
+  state.merge({ fetchingReworkWooperationlog: false, errorReworkWooperationlog: true, ReworkWooperationlog: null })
 
 // request post wooperationlog
 export const requestPostWooperationlog = (state, action) => {
@@ -168,6 +190,10 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SEARCH_WOOPERATIONLOG_REQUEST]: requestWooperationlog,
   [Types.SEARCH_WOOPERATIONLOG_SUCCESS]: successWooperationlog,
   [Types.SEARCH_WOOPERATIONLOG_FAILURE]: failureWooperationlog,
+
+  [Types.SEARCH_REWORK_WOOPERATIONLOG_REQUEST]: requestReworkWooperationlog,
+  [Types.SEARCH_REWORK_WOOPERATIONLOG_SUCCESS]: successReworkWooperationlog,
+  [Types.SEARCH_REWORK_WOOPERATIONLOG_FAILURE]: failureReworkWooperationlog,
 
   [Types.POST_WOOPERATIONLOG_REQUEST]: requestPostWooperationlog,
   [Types.POST_WOOPERATIONLOG_SUCCESS]: successPostWooperationlog,
