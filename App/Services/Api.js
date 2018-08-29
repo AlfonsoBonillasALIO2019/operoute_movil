@@ -3,7 +3,7 @@ import apisauce from 'apisauce'
 import { actionChannel } from '../../node_modules/redux-saga/effects';
 
 // our "constructor"
-const create = (baseURL = 'http://172.16.10.224:8000/') => {
+const create = (baseURL = 'http://172.16.10.106:8000/') => {
   // ------
   // STEP 1
   // ------
@@ -54,7 +54,7 @@ const create = (baseURL = 'http://172.16.10.224:8000/') => {
     }
   })
 
-  const postWooperationlog = (token, data, Id) => api.post('/api/wooperationlog', {
+  const putWooperationlog = (token, data, Id) => api.put('/api/wooperationlog', {
     'Id': Id,
     'data': { ...data },
   }, {
@@ -63,6 +63,17 @@ const create = (baseURL = 'http://172.16.10.224:8000/') => {
         'Authorization': `Bearer ${token}`
       }
     })
+
+  const postWooperationlog = (token, data) => api.post('/api/wooperationlog', {
+    'data': { ...data },
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  // '/api/rework'
 
   const searchWooperationlog = (token, filter) => api.post('/api/wooperationlog/search', {
     'sort': `Id desc`,
@@ -113,6 +124,7 @@ const create = (baseURL = 'http://172.16.10.224:8000/') => {
     getWorkOrders,
     getWorkOrderById,
     getActiveOperators,
+    putWooperationlog,
     postWooperationlog,
     searchWooperationlog
   }

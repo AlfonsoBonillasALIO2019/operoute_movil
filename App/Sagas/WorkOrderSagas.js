@@ -30,7 +30,6 @@ export function* getActiveOperators(api, action) {
   }
 }
 
-
 export function* searchWooperationlog(api, action) {
   const { WOKey, RCTKey, OperationKey, token } = action
 
@@ -44,6 +43,9 @@ export function* searchWooperationlog(api, action) {
 
   if (response.ok) {
     let { data } = response
+
+    console.log({ data })
+
     data.reverse()
     yield put(WorkOrderActions.searchWooperationlogSuccess(data))
   } else {
@@ -52,19 +54,34 @@ export function* searchWooperationlog(api, action) {
 }
 
 export function* postWooperationlog(api, action) {
-  const { Id, data, token } = action
+  const { data, token } = action
 
   // make the call to the api
-  const response = yield call(api.postWooperationlog, token, data, Id)
+  const response = yield call(api.postWooperationlog, token, data)
 
   console.log({ response })
 
   if (response.ok) {
     let { data: dataResponse } = response
-    dataResponse.reverse()
     yield put(WorkOrderActions.postWooperationlogSuccess(dataResponse))
   } else {
     yield put(WorkOrderActions.postWooperationlogFailure())
+  }
+}
+
+export function* putWooperationlog(api, action) {
+  const { Id, data, token } = action
+
+  // make the call to the api
+  const response = yield call(api.putWooperationlog, token, data, Id)
+
+  console.log({ response })
+
+  if (response.ok) {
+    let { data: dataResponse } = response
+    yield put(WorkOrderActions.putWooperationlogSuccess(dataResponse))
+  } else {
+    yield put(WorkOrderActions.putWooperationlogFailure())
   }
 }
 

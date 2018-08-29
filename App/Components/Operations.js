@@ -113,11 +113,11 @@ class Operations extends Component {
       StartDate,
     }
 
-    requestPostWooperationlog(token, data, 0)
+    requestPostWooperationlog(token, data)
   }
 
   _pause = (serialNum, Pause_ReasonCode) => {
-    const { search: { WOKey }, Wooperationlog, token, requestPostWooperationlog } = this.props
+    const { search: { WOKey }, Wooperationlog, token, requestPutWooperationlog } = this.props
     const Pause_Date = moment().format()
     const match = Wooperationlog.filter(log => log.SerialNum === serialNum)[0]
 
@@ -130,11 +130,11 @@ class Operations extends Component {
       WOKey
     }
 
-    requestPostWooperationlog(token, data, match.Id)
+    requestPutWooperationlog(token, data, match.Id)
   }
 
   _resume = (serialNum) => {
-    const { Wooperationlog, token, requestPostWooperationlog } = this.props
+    const { Wooperationlog, token, requestPutWooperationlog } = this.props
     const match = Wooperationlog.filter(log => log.SerialNum === serialNum)[0]
     const resume_date = moment().format()
     const { Pause_Date, StartDate, EndDate, Id } = match
@@ -159,11 +159,11 @@ class Operations extends Component {
       Id
     }
 
-    requestPostWooperationlog(token, data, Id)
+    requestPutWooperationlog(token, data, Id)
   }
 
   _terminate = (serialNum, isSuccessful, promptedDuration = 0) => {
-    const { Wooperationlog, token, requestPostWooperationlog } = this.props
+    const { Wooperationlog, token, requestPutWooperationlog } = this.props
     const match = Wooperationlog.filter(log => log.SerialNum === serialNum)[0]
     const { StartDate, EndDate: current_EndDate, Id } = match
     const new_EndDate = moment().format()
@@ -199,12 +199,13 @@ class Operations extends Component {
         Duration: duration,
       }
 
-    requestPostWooperationlog(token, data, Id)
+    requestPutWooperationlog(token, data, Id)
   }
 
   getMinutesBetweenDates = (startDate, endDate) => (Math.abs(new Date(startDate) - new Date(endDate))) / 60000
 
   postLog = (id, serialNum) => {
+    const { token, requestWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const operationLog = this.state.operationsLog[id]
 
     if (!operationLog || !operationLog.OperatorKey) {
@@ -234,6 +235,8 @@ class Operations extends Component {
         break
       }
     }
+
+    requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
   renderDurationPrompt = () => {
@@ -273,6 +276,7 @@ class Operations extends Component {
 
   renderPauseCausePrompt = () => {
     const { promptSerialNum: serialNum } = this.state
+    const { token, requestWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     return (
       <Prompt
         title="Favor de introducir el motivo de pausa"
@@ -291,6 +295,7 @@ class Operations extends Component {
 
           this._pause(serialNum, value) // Calls API call for Pause status
           this.setState({ promptPauseCauseVisible: false, promptSerialNum: '', })
+          requestWooperationlog(token, WOKey, RCTKey, OperationKey)
         }} />
     )
   }
@@ -333,9 +338,9 @@ class Operations extends Component {
           >
             {operators &&
               [
-                <Picker.Item label={"- Operador -"} value={''} key={'operador_dropdown'} />,
+                <Picker.Item label={"- Operador -"} value={''} key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
                 operators.map((operator, index) => (
-                  <Picker.Item label={operator.Name} value={operator.Id} key={operator.Id} />
+                  <Picker.Item label={operator.Name} value={operator.Id} key={`${item.PartPO.SerialNum}_${operator.Id}`} />
                 ))
               ]
             }
@@ -351,9 +356,9 @@ class Operations extends Component {
           >
             {
               [
-                <Picker.Item label={"- Estado -"} value={''} key='status_dropdown' />,
+                <Picker.Item label={"- Estado -"} value={''} key={`${item.PartPO.SerialNum}_status_dropdown`} />,
                 options.map((option, index) => (
-                  <Picker.Item label={option.label} value={option.value} />
+                  <Picker.Item label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
                 ))
               ]
             }
@@ -392,7 +397,7 @@ class Operations extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    WooperationlogPost: state.workOrder.WooperationlogPost,
+    WooperationlogResponse: state.workOrder.WooperationlogResponse,
     Wooperationlog: state.workOrder.Wooperationlog,
     operators: state.workOrder.operators,
     token: state.login.token,
@@ -402,9 +407,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    requestOperators: token => dispatch(WorkOrderActions.operatorsRequest(token)),
     requestWooperationlog: (token, WOKey, RCTKey, OperationKey) => dispatch(WorkOrderActions.searchWooperationlogRequest(token, WOKey, RCTKey, OperationKey)),
-    requestPostWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.postWooperationlogRequest(token, data, Id)),
+    requestPutWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.putWooperationlogRequest(token, data, Id)),
+    requestPostWooperationlog: (token, data) => dispatch(WorkOrderActions.postWooperationlogRequest(token, data)),
+    requestOperators: token => dispatch(WorkOrderActions.operatorsRequest(token)),
   }
 }
 
