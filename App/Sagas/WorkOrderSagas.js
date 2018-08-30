@@ -44,8 +44,6 @@ export function* searchWooperationlog(api, action) {
   if (response.ok) {
     let { data } = response
 
-    console.log({ data })
-
     data.reverse()
     yield put(WorkOrderActions.searchWooperationlogSuccess(data))
   } else {
@@ -59,13 +57,8 @@ export function* searchReworkWooperationlog(api, action) {
   // make the call to the api
   const response = yield call(api.searchReworkWooperationlog, token, WOOLogId)
 
-  console.log({ response })
-
   if (response.ok) {
     let { data } = response
-
-    console.log({ data })
-
     data.reverse()
     yield put(WorkOrderActions.searchReworkWooperationlogSuccess(data))
   } else {
@@ -78,8 +71,6 @@ export function* postWooperationlog(api, action) {
 
   // make the call to the api
   const response = yield call(api.postWooperationlog, token, data)
-
-  console.log({ response })
 
   if (response.ok) {
     let { data: dataResponse } = response
@@ -95,13 +86,27 @@ export function* putWooperationlog(api, action) {
   // make the call to the api
   const response = yield call(api.putWooperationlog, token, data, Id)
 
-  console.log({ response })
-
   if (response.ok) {
     let { data: dataResponse } = response
     yield put(WorkOrderActions.putWooperationlogSuccess(dataResponse))
   } else {
     yield put(WorkOrderActions.putWooperationlogFailure())
+  }
+}
+
+export function* putReworkWooperationlog(api, action) {
+  const { Id, data, token } = action
+
+  // make the call to the api
+  const response = yield call(api.putReworkWooperationlog, token, data, Id)
+
+  console.log({ response })
+
+  if (response.ok) {
+    let { data: dataResponse } = response
+    yield put(WorkOrderActions.putReworkWooperationlogSuccess(dataResponse))
+  } else {
+    yield put(WorkOrderActions.putReworkWooperationlogFailure())
   }
 }
 

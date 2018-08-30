@@ -73,7 +73,15 @@ const create = (baseURL = 'http://172.16.10.106:8000/') => {
       }
     })
 
-  // '/api/rework'
+  const putReworkWooperationlog = (token, data, Id) => api.put('/api/reworkserials', {
+    'Id': Id,
+    'data': { ...data },
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
 
   const searchWooperationlog = (token, filter) => api.post('/api/wooperationlog/search', {
     'sort': `Id desc`,
@@ -132,16 +140,20 @@ const create = (baseURL = 'http://172.16.10.106:8000/') => {
   return {
     // a list of the API functions from step 2
     login,
+
     getRoot,
     getRate,
     getUser,
     getWorkOrders,
     getWorkOrderById,
     getActiveOperators,
+
     putWooperationlog,
     postWooperationlog,
     searchWooperationlog,
-    searchReworkWooperationlog
+
+    putReworkWooperationlog,
+    searchReworkWooperationlog,
   }
 }
 

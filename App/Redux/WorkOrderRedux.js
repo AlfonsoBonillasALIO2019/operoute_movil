@@ -24,6 +24,10 @@ const { Types, Creators } = createActions({
   putWooperationlogSuccess: ['WooperationlogResponse'],
   putWooperationlogFailure: null,
 
+  putReworkWooperationlogRequest: ['token', 'data', 'Id'],
+  putReworkWooperationlogSuccess: ['ReworkWooperationlogResponse'],
+  putReworkWooperationlogFailure: null,
+
   searchWooperationlogRequest: ['token', 'WOKey', 'RCTKey', 'OperationKey'],
   searchWooperationlogSuccess: ['Wooperationlog'],
   searchWooperationlogFailure: null,
@@ -44,18 +48,21 @@ export const INITIAL_STATE = Immutable({
   Wooperationlog: null,
   ReworkWooperationlog: null,
   WooperationlogResponse: null,
+  ReworkWooperationlogResponse: null,
 
   fetching: false,
   fetchingSelected: false,
   fetchingWooperationlog: false,
   fetchingReworkWooperationlog: false,
   fetchingRequestWooperationlog: false,
+  fetchingReworkRequestWooperationlog: false,
 
   error: null,
   errorSelected: null,
   errorWooperationlog: null,
   errorReworkWooperationlog: null,
   errorResponseWooperationlog: null,
+  errorReworkResponseWooperationlog: null,
 })
 
 /* ------------- Selectors ------------- */
@@ -158,6 +165,20 @@ export const successPutWooperationlog = (state, action) => {
 export const failurePutWooperationlog = (state) =>
   state.merge({ fetchingRequestWooperationlog: false, errorResponseWooperationlog: true, WooperationlogResponse: null })
 
+// request post wooperationlog
+export const requestPutReworkWooperationlog = (state, action) => {
+  return state.merge({ fetchingReworkRequestWooperationlog: true, ReworkWooperationlogResponse: null })
+}
+
+// successful post wooperationlog
+export const successPutReworkWooperationlog = (state, action) => {
+  const { ReworkWooperationlogResponse } = action
+  return state.merge({ fetchingReworkRequestWooperationlog: false, errorReworkResponseWooperationlog: null, ReworkWooperationlogResponse: ReworkWooperationlogResponse })
+}
+
+// failed to post the wooperationlog
+export const failurePutReworkWooperationlog = (state) =>
+  state.merge({ fetchingReworkRequestWooperationlog: false, errorReworkResponseWooperationlog: true, ReworkWooperationlogResponse: null })
 
 // operators request
 export const requestOperators = (state, action) => {
@@ -191,10 +212,6 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SEARCH_WOOPERATIONLOG_SUCCESS]: successWooperationlog,
   [Types.SEARCH_WOOPERATIONLOG_FAILURE]: failureWooperationlog,
 
-  [Types.SEARCH_REWORK_WOOPERATIONLOG_REQUEST]: requestReworkWooperationlog,
-  [Types.SEARCH_REWORK_WOOPERATIONLOG_SUCCESS]: successReworkWooperationlog,
-  [Types.SEARCH_REWORK_WOOPERATIONLOG_FAILURE]: failureReworkWooperationlog,
-
   [Types.POST_WOOPERATIONLOG_REQUEST]: requestPostWooperationlog,
   [Types.POST_WOOPERATIONLOG_SUCCESS]: successPostWooperationlog,
   [Types.POST_WOOPERATIONLOG_FAILURE]: failurePostWooperationlog,
@@ -202,4 +219,12 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.PUT_WOOPERATIONLOG_REQUEST]: requestPutWooperationlog,
   [Types.PUT_WOOPERATIONLOG_SUCCESS]: successPutWooperationlog,
   [Types.PUT_WOOPERATIONLOG_FAILURE]: failurePutWooperationlog,
+
+  [Types.SEARCH_REWORK_WOOPERATIONLOG_REQUEST]: requestReworkWooperationlog,
+  [Types.SEARCH_REWORK_WOOPERATIONLOG_SUCCESS]: successReworkWooperationlog,
+  [Types.SEARCH_REWORK_WOOPERATIONLOG_FAILURE]: failureReworkWooperationlog,
+
+  [Types.PUT_REWORK_WOOPERATIONLOG_REQUEST]: requestPutReworkWooperationlog,
+  [Types.PUT_REWORK_WOOPERATIONLOG_SUCCESS]: successPutReworkWooperationlog,
+  [Types.PUT_REWORK_WOOPERATIONLOG_FAILURE]: failurePutReworkWooperationlog,
 })
