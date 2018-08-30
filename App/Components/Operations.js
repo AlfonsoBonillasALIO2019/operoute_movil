@@ -17,7 +17,19 @@ class Operations extends Component {
     promptDurationVisible: false,
     promptDurationIsSuccessful: false,
 
-    promptPauseCauseVisible: false
+    promptPauseCauseVisible: false,
+    promptReworkId: 0,
+    promptMatch: null,
+
+
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.operations === state.operations && props.ReworkWooperationlog === state.ReworkWooperationlog) {
+      return state
+    } else {
+      return { ...state, ...{ operations: props.operations, ReworkWooperationlog: props.ReworkWooperationlog } }
+    }
   }
 
   componentDidMount = () => {
@@ -121,10 +133,9 @@ class Operations extends Component {
     requestPostWooperationlog(token, data)
   }
 
-  _pause = (serialNum, Pause_ReasonCode) => {
-    const { search: { WOKey }, Wooperationlog, token, requestPutWooperationlog } = this.props
+  _pause = (serialNum, Pause_ReasonCode, isRework, match) => {
+    const { search: { WOKey }, token, requestPutWooperationlog, requestPutReworkWooperationlog } = this.props
     const Pause_Date = moment().format()
-    const match = Wooperationlog.filter(log => log.SerialNum === serialNum)[0]
 
     const data = {
       SerialNum: serialNum,
@@ -135,12 +146,12 @@ class Operations extends Component {
       WOKey
     }
 
-    requestPutWooperationlog(token, data, match.Id)
+    isRework ? requestPutReworkWooperationlog(token, data, match.Id) : requestPutWooperationlog(token, data, match.Id)
   }
 
-  _resume = (serialNum) => {
-    const { Wooperationlog, token, requestPutWooperationlog } = this.props
-    const match = Wooperationlog.filter(log => log.SerialNum === serialNum)[0]
+  _resume = (match, isRework) => {
+    const { token, requestPutWooperationlog, requestPutReworkWooperationlog } = this.props
+
     const resume_date = moment().format()
     const { Pause_Date, StartDate, EndDate, Id } = match
     let { Acum_Duration } = match
@@ -164,12 +175,11 @@ class Operations extends Component {
       Id
     }
 
-    requestPutWooperationlog(token, data, Id)
+    isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
   }
 
-  _terminate = (serialNum, isSuccessful, promptedDuration = 0) => {
-    const { Wooperationlog, token, requestPutWooperationlog } = this.props
-    const match = Wooperationlog.filter(log => log.SerialNum === serialNum)[0]
+  _terminate = (isSuccessful, isRework, match, promptedDuration = 0) => {
+    const { token, requestPutWooperationlog, requestPutReworkWooperationlog } = this.props
     const { StartDate, EndDate: current_EndDate, Id } = match
     const new_EndDate = moment().format()
     const SuccessDate = moment().format()
@@ -180,7 +190,8 @@ class Operations extends Component {
       this.setState({
         promptDurationIsSuccessful: isSuccessful,
         promptDurationVisible: true,
-        promptSerialNum: serialNum,
+        promptIsRework: isRework,
+        promptMatch: match
       })
 
       return false
@@ -204,13 +215,13 @@ class Operations extends Component {
         Duration: duration,
       }
 
-    requestPutWooperationlog(token, data, Id)
+    isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
   }
 
   getMinutesBetweenDates = (startDate, endDate) => (Math.abs(new Date(startDate) - new Date(endDate))) / 60000
 
-  postLog = (id, serialNum) => {
-    const { token, requestWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+  postLog = (id, serialNum, isRework, match = null) => {
+    const { token, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const operationLog = this.state.operationsLog[id]
 
     if (!operationLog || !operationLog.OperatorKey) {
@@ -224,42 +235,43 @@ class Operations extends Component {
         break
       }
       case "Pause": {
-        this.setState({ promptPauseCauseVisible: true, promptSerialNum: serialNum })
+        this.setState({ promptPauseCauseVisible: true, promptSerialNum: serialNum, promptMatch: match, promptIsRework: isRework })
         break
       }
       case "Resume": {
-        this._resume(serialNum)
+        this._resume(match, isRework)
         break
       }
       case "Pass": {
-        this._terminate(serialNum, true)
+        this._terminate(true, isRework, match)
         break
       }
       case "Fail": {
-        this._terminate(serialNum, false)
+        this._terminate(false, isRework, match)
         break
       }
     }
 
-    requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+    isRework ? requestReworkWooperationlog(token, match.Id) : requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
   renderDurationPrompt = () => {
-    const { promptSerialNum: serialNum, promptDurationIsSuccessful } = this.state
+    const { promptDurationIsSuccessful, promptIsRework: isRework, promptMatch: match } = this.state
     return (
       <Prompt
         title="Favor de introducir duración exacta"
         placeholder="Duración"
-        defaultValue={0}
+        defaultValue='0'
         textInputProps={{
-          multiline: true,
-          numberOfLines: 3,
+          multiline: false,
+          numberOfLines: 1,
         }}
         visible={this.state.promptDurationVisible}
         onCancel={() => this.setState({
           promptDurationIsSuccessful: false,
           promptDurationVisible: false,
-          promptSerialNum: '',
+          promptIsRework: false,
+          promptMatch: null,
         })}
         onSubmit={(value) => {
           if (!value || value < 1) {
@@ -267,12 +279,13 @@ class Operations extends Component {
             return false
           }
 
-          this._terminate(serialNum, promptDurationIsSuccessful, Number(value)) // Calls API call for Fail status
+          this._terminate(promptDurationIsSuccessful, isRework, match, Number(value)) // Calls API call for Fail status
 
           this.setState({
             promptDurationIsSuccessful: false,
             promptDurationVisible: false,
-            promptSerialNum: '',
+            promptIsRework: false,
+            promptMatch: null,
           })
 
         }} />
@@ -280,11 +293,11 @@ class Operations extends Component {
   }
 
   renderPauseCausePrompt = () => {
-    const { promptSerialNum: serialNum } = this.state
-    const { token, requestWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+    const { promptSerialNum: serialNum, promptReworkId: reworkId, promptMatch: match, promptIsRework: isRework } = this.state
+    const { token, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     return (
       <Prompt
-        title="Favor de introducir el motivo de pausa"
+        title="Favor de introducir el motivo de pausa."
         placeholder="Motivo"
         defaultValue=""
         visible={this.state.promptPauseCauseVisible}
@@ -298,58 +311,53 @@ class Operations extends Component {
             return false
           }
 
-          this._pause(serialNum, value) // Calls API call for Pause status
-          this.setState({ promptPauseCauseVisible: false, promptSerialNum: '', })
-          requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+          this._pause(serialNum, value, isRework, match) // Calls API call for Pause status
+          isRework ? requestReworkWooperationlog(token, match.Id) : requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+
+          this.setState({ promptPauseCauseVisible: false, promptSerialNum: '', promptReworkId: 0, promptMatch: null, promptIsRework: false })
         }} />
     )
   }
 
-  _requestRework = (match) => {
-    const { requestReworkWooperationlog, token } = this.props
-
-    console.log("HACE ESTO")
-
-    requestReworkWooperationlog(token, match.Id)
-  }
-
   _renderItem = ({ item }) => {
-    const { operators, Wooperationlog, ReworkWooperationlog } = this.props
+    const { operators, Wooperationlog, ReworkWooperationlog, requestReworkWooperationlog, token } = this.props
 
     const operation = this.state.operationsLog[item.Id]
 
     let status = "gray"
     let options = [{ label: "Comenzar", value: 'Start' }]
+    let isRework = false
+    let match = null
 
     if (Wooperationlog) {
-      const match = Wooperationlog.filter(log => log.SerialNum === item.PartPO.SerialNum)
+      match = Wooperationlog.filter(log => log.SerialNum === item.PartPO.SerialNum)[0]
 
-      if (match.length > 0) {
-        let log = match[0]
+      // Get status dropdown menu options
+      options = this.getStatusOptions(match)
+      // Get status color
+      status = this.getLogStatusColor(match)
 
-        // Get status dropdown menu options
-        options = this.getStatusOptions(log)
-        // Get status color
-        status = this.getLogStatusColor(log)
-
+      if (match) {
         // If the match has Rework flag to TRUE
-        if (log.Rework) {
-          if (!ReworkWooperationlog)
-            this._requestRework(log)
+        if (match.Rework) {
+          if (!ReworkWooperationlog) {
+            requestReworkWooperationlog(token, match.Id)
+          }
           else {
-            log = ReworkWooperationlog[0]
-
-            console.log({ log })
-
+            match = ReworkWooperationlog[0]
             // Get status dropdown menu options
-            options = this.getStatusOptions(log, true)
+            options = this.getStatusOptions(match, true)
             // Get status color
-            status = this.getLogStatusColor(log, true)
+            status = this.getLogStatusColor(match, true)
+
+            // Assign this id for API usage
+            isRework = true
           }
         }
       }
     }
 
+    // console.log({ match })
     console.log({ status })
     console.log({ options })
 
@@ -397,20 +405,12 @@ class Operations extends Component {
               ]
             }
           </Picker>
-          <Button success rounded small onPress={() => this.postLog(item.Id, item.PartPO.SerialNum)}>
+          <Button success rounded small onPress={() => this.postLog(item.Id, item.PartPO.SerialNum, isRework, match)}>
             <Text>OK</Text>
           </Button>
         </View>
       </TouchableHighlight>
     )
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    if (props.operations === state.operations) {
-      return state
-    } else {
-      return { ...state, ...{ operations: props.operations } }
-    }
   }
 
   render() {
@@ -429,11 +429,19 @@ class Operations extends Component {
   }
 }
 
+Operations.defaultProps = {
+  ReworkWooperationlog: [],
+  Wooperationlog: [],
+}
+
 const mapStateToProps = (state) => {
   return {
     WooperationlogResponse: state.workOrder.WooperationlogResponse,
     Wooperationlog: state.workOrder.Wooperationlog,
+
+    ReworkWooperationlogResponse: state.workOrder.ReworkWooperationlogResponse,
     ReworkWooperationlog: state.workOrder.ReworkWooperationlog,
+
     operators: state.workOrder.operators,
     token: state.login.token,
     user: state.login.user
@@ -445,6 +453,7 @@ const mapDispatchToProps = (dispatch) => {
     requestWooperationlog: (token, WOKey, RCTKey, OperationKey) => dispatch(WorkOrderActions.searchWooperationlogRequest(token, WOKey, RCTKey, OperationKey)),
     requestReworkWooperationlog: (token, WOOLogId) => dispatch(WorkOrderActions.searchReworkWooperationlogRequest(token, WOOLogId)),
     requestPutWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.putWooperationlogRequest(token, data, Id)),
+    requestPutReworkWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.putReworkWooperationlogRequest(token, data, Id)),
     requestPostWooperationlog: (token, data) => dispatch(WorkOrderActions.postWooperationlogRequest(token, data)),
     requestOperators: token => dispatch(WorkOrderActions.operatorsRequest(token)),
   }
