@@ -72,7 +72,7 @@ class Operations extends Component {
 
     statusObj = {
       color: "gray",
-      label: 'Para Comenzar',
+      label: 'Comenzar',
       options: [{ label: "Comenzar", value: 'Start' }]
     }
 
@@ -117,13 +117,13 @@ class Operations extends Component {
   _getLogStatusValues = (log, isRework = false) => {
     const options = this._getLogStatusOptions(log, isRework)
 
-    if (log.Rework) return { label: 'Para Retrabajo', color: '#EC4626', options }
+    if (log.Rework) return { label: 'Retrabajar', color: '#EC4626', options }
     if (log.OperationSuccess) return { label: 'Aprovado', color: '#26B99A', options }
     if (log.OperationSuccess === false) return { label: 'NCR', color: '#D9534F', options }
     if (log.Paused) return { label: 'Pausado', color: '#F0AD4E', options }
     if (log.Started) return !isRework ? { label: 'Iniciado', color: '#337AB7', options } : { label: 'Retrabajando', color: '#EC4626', options }
 
-    return !isRework ? { label: 'Para Comenzar', color: 'gray', options } : { label: 'Para Retrabajo', color: '#EC4626', options }
+    return !isRework ? { label: 'Comenzar', color: 'gray', options } : { label: 'Retrabajar', color: '#EC4626', options }
   }
 
   // Gets the available status options array for the current item log status
@@ -398,25 +398,19 @@ class Operations extends Component {
       mode: "dropdown",
       placeholderStyle: { color: "#bfc6ea" },
       placeholderIconColor: "#007aff",
-      style: { height: 35 },
+      style: { height: 35, color: '#36454f' },
     }
 
-    const badgeStyle = {
-      backgroundColor: !fetchingWooperationlog ? statusObj.color : 'gray',
-      paddingBottom: 2,
-      borderRadius: 15,
-      paddingTop: 2,
-      height: 30,
-      width: 125
-    }
+    const itemStatusColor = !fetchingWooperationlog ? statusObj.color : 'gray'
+    const itemStatusLabel = !fetchingWooperationlog ? statusObj.label : 'Cargando'
 
     return (
       <TouchableHighlight>
         <View style={styles.row}>
           {this.renderDurationPrompt()}
           {this.renderPauseCausePrompt()}
-          <Badge style={badgeStyle}>
-            <Text>{!fetchingWooperationlog ? statusObj.label : 'Cargando'}</Text>
+          <Badge style={[styles.badge, { backgroundColor: itemStatusColor }]}>
+            <Text style={styles.text16}>{itemStatusLabel}</Text>
           </Badge>
           <Text style={styles.serial}>{item.PartPO.PartId}</Text>
           <Text style={styles.operation}>{item.PartPO.SerialNum}</Text>
