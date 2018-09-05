@@ -65,28 +65,70 @@ class Operations extends Component {
     })
   }
 
-  _getLogStatusColor = (log, isRework = false) => {
+  // Gets the current item log status values (label, color, options, rework and matched log)
+  _getLogStatusObject = (item) => {
+    const { Wooperationlog, requestReworkWooperationlog, token } = this.props
+    const { ReworkWooperationlog } = this.state
 
-    if (log.Rework) return { label: 'Para Retrabajo', color: '#EC4626' }
-    if (log.OperationSuccess) return { label: 'Exitoso', color: '#26B99A' }
-    if (log.OperationSuccess === false) return { label: 'NCR', color: '#D9534F' }
-    if (log.Paused) return { label: 'Pausado', color: '#F0AD4E' }
-    if (log.Started) return !isRework ? { label: 'Comenzado', color: '#337AB7' } : { label: 'Reiniciado', color: '#EC4626' }
+    statusObj = {
+      color: "gray",
+      label: 'Para Comenzar',
+      options: [{ label: "Comenzar", value: 'Start' }]
+    }
 
-    return !isRework ? { label: 'Para Comenzar', color: 'gray' } : { label: 'Para retrabajo', color: '#EC4626' }
+    match = null
+    isRework = false
+
+    if (Wooperationlog) {
+      // Look for match
+      match = Wooperationlog.filter(log => log.SerialNum === item.PartPO.SerialNum)[0]
+
+      // Get match status Color, Label and Options
+      statusObj = this._getLogStatusValues(match)
+
+      if (match) {
+        // If the match has Rework flag to TRUE
+        if (match.Rework) {
+          if (!ReworkWooperationlog || ReworkWooperationlog.filter(log => log.WOOLogId === match.Id).length === 0) {
+            // Request for Rework matches
+            requestReworkWooperationlog(token, match.Id)
+          } else if (ReworkWooperationlog) {
+            // Look for match
+            match = ReworkWooperationlog.filter(log => log.WOOLogId === match.Id)[0]
+
+            if (match) {
+              // Assign this id for API usage
+              isRework = true
+              // Get match status Color, Label and Options
+              statusObj = this._getLogStatusValues(match, isRework)
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      statusObj,
+      match,
+      isRework
+    }
   }
 
-  _getLogStatusOptions = (log, isRework = false) => {
-    // Available options
-    // [
-    //   { label: "Comenzar", value: 'Start' },
-    //   { label: "Pausar", value: 'Pause' },
-    //   { label: "Resumir", value: 'Resume' },
-    //   { label: "Aprovar", value: 'Pass' },
-    //   { label: "Fallo", value: 'Fail' },
-    //   { label: "Reiniciar", value: 'Restart' }
-    // ]
+  // Gets the Label and Hex Color (strings) for the current item log status
+  _getLogStatusValues = (log, isRework = false) => {
+    const options = this._getLogStatusOptions(log, isRework)
 
+    if (log.Rework) return { label: 'Para Retrabajo', color: '#EC4626', options }
+    if (log.OperationSuccess) return { label: 'Aprovado', color: '#26B99A', options }
+    if (log.OperationSuccess === false) return { label: 'NCR', color: '#D9534F', options }
+    if (log.Paused) return { label: 'Pausado', color: '#F0AD4E', options }
+    if (log.Started) return !isRework ? { label: 'Iniciado', color: '#337AB7', options } : { label: 'Retrabajando', color: '#EC4626', options }
+
+    return !isRework ? { label: 'Para Comenzar', color: 'gray', options } : { label: 'Para Retrabajo', color: '#EC4626', options }
+  }
+
+  // Gets the available status options array for the current item log status
+  _getLogStatusOptions = (log, isRework) => {
     if (log.OperationSuccess)
       return [{ label: "Fallo", value: 'Fail' }]
 
@@ -105,7 +147,7 @@ class Operations extends Component {
     }
 
     if (isRework)
-      return [{ label: "Reiniciar", value: 'Restart' }]
+      return [{ label: "Reiniciar", value: 'Start' }]
 
     return [{ label: "Comenzar", value: 'Start' }]
   }
@@ -125,22 +167,36 @@ class Operations extends Component {
     })
   }
 
-  _start = (id, serialNum) => {
-    const { search: { WOKey, RCTKey, OperationKey }, token, requestPostWooperationlog } = this.props
+  _start = (id, serialNum, isRework = false, match = null) => {
+    const { search: { WOKey, RCTKey, OperationKey }, token, requestPostWooperationlog, requestPutReworkWooperationlog } = this.props
     const operationLog = this.state.operationsLog[id]
     const StartDate = moment().format()
 
-    const data = {
-      WOKey,
-      RCTKey,
-      SerialNum: serialNum,
+    let data = {
       OperatorKey: operationLog.OperatorKey,
-      OperationKey,
       Started: true,
       StartDate,
     }
 
-    requestPostWooperationlog(token, data)
+    if (!isRework) {
+      data = {
+        ...data,
+        WOKey,
+        RCTKey,
+        SerialNum: serialNum,
+        OperationKey,
+      }
+
+      requestPostWooperationlog(token, data)
+    }
+    else {
+      data = {
+        ...data,
+        Id: match.Id,
+      }
+
+      requestPutReworkWooperationlog(token, data, match.Id)
+    }
   }
 
   _pause = (serialNum, Pause_ReasonCode, isRework, match) => {
@@ -158,7 +214,7 @@ class Operations extends Component {
 
     isRework ? requestPutReworkWooperationlog(token, data, match.Id) : requestPutWooperationlog(token, data, match.Id)
 
-    this.setState({ ReworkWooperationlog: [] })
+    this.setState({ ReworkWooperationlog: [], promptPauseCauseVisible: false, promptSerialNum: '', promptMatch: null, promptIsRework: false })
     requestReworkWooperationlog(token, match.Id)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
@@ -252,7 +308,7 @@ class Operations extends Component {
 
     switch (operationLog.Status) {
       case "Start": {
-        this._start(id, serialNum)
+        this._start(id, serialNum, isRework, match)
         break
       }
       case "Pause": {
@@ -327,64 +383,14 @@ class Operations extends Component {
           }
 
           this._pause(serialNum, value, isRework, match) // Calls API call for Pause status
-          this.setState({ promptPauseCauseVisible: false, promptSerialNum: '', promptMatch: null, promptIsRework: false })
         }} />
     )
   }
 
   _renderItem = ({ item }) => {
-    const { operators, Wooperationlog, requestReworkWooperationlog, token } = this.props
-    const { ReworkWooperationlog } = this.state
-
+    const { operators } = this.props
     const operation = this.state.operationsLog[item.Id]
-
-    let statusObj = {
-      color: "gray",
-      label: 'Para Comenzar'
-    }
-
-    let options = [{ label: "Comenzar", value: 'Start' }]
-    let isRework = false
-    let match = null
-
-    if (Wooperationlog) {
-      match = Wooperationlog.filter(log => log.SerialNum === item.PartPO.SerialNum)[0]
-
-      // Generate log dropdown menu options
-      options = this._getLogStatusOptions(match)
-      // Generate log status color and label
-      let statusValues = this._getLogStatusColor(match)
-      statusObj = {
-        color: statusValues.color,
-        label: statusValues.label
-      }
-
-      if (match) {
-        // If the match has Rework flag to TRUE
-        if (match.Rework) {
-          console.log({ ReworkWooperationlog })
-          if (!ReworkWooperationlog || ReworkWooperationlog.filter(log => log.WOOLogId === match.Id).length === 0) {
-            requestReworkWooperationlog(token, match.Id)
-          } else if (ReworkWooperationlog) {
-            const { Id } = match
-            match = ReworkWooperationlog.filter(log => log.WOOLogId === Id)[0]
-
-            if (match) {
-              // Assign this id for API usage
-              isRework = true
-              // Generate log dropdown menu options
-              options = this._getLogStatusOptions(match, isRework)
-              // Generate log status color and label
-              statusValues = this._getLogStatusColor(match, isRework)
-              statusObj = {
-                color: statusValues.color,
-                label: statusValues.label
-              }
-            }
-          }
-        }
-      }
-    }
+    const { statusObj, match, isRework } = this._getLogStatusObject(item)
 
     const pickerProps = {
       mode: "dropdown",
@@ -393,12 +399,21 @@ class Operations extends Component {
       style: { height: 35 },
     }
 
+    const badgeStyle = {
+      backgroundColor: statusObj.color,
+      paddingBottom: 2,
+      borderRadius: 15,
+      paddingTop: 2,
+      height: 30,
+      width: 125
+    }
+
     return (
       <TouchableHighlight>
         <View style={styles.row}>
           {this.renderDurationPrompt()}
           {this.renderPauseCausePrompt()}
-          <Badge style={{ backgroundColor: statusObj.color, height: 30, borderRadius: 15, paddingTop: 2, paddingBottom: 2, width: 125 }}>
+          <Badge style={badgeStyle}>
             <Text>{statusObj.label}</Text>
           </Badge>
           <Text style={styles.serial}>{item.PartPO.PartId}</Text>
@@ -427,7 +442,7 @@ class Operations extends Component {
             {
               [
                 <Picker.Item label={"- Estado -"} value='0' key={`${item.PartPO.SerialNum}_status_dropdown`} />,
-                options.map((option, index) => (
+                statusObj.options.map((option, index) => (
                   <Picker.Item label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
                 ))
               ]
