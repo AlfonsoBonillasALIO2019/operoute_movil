@@ -21,23 +21,32 @@ class Operations extends Component {
     promptReworkId: 0,
     promptMatch: null,
 
-
+    ReworkWooperationlog: [],
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.operations === state.operations && props.ReworkWooperationlog === state.ReworkWooperationlog) {
+    const { ReworkWooperationlog } = state
+
+    if (props.operations === state.operations && props.ReworkWooperationlog && ReworkWooperationlog.indexOf(props.ReworkWooperationlog[0]) > -1) {
       return state
     } else {
-      return { ...state, ...{ operations: props.operations, ReworkWooperationlog: props.ReworkWooperationlog } }
+      if (props.ReworkWooperationlog && props.ReworkWooperationlog.length > 0) {
+        ReworkWooperationlog.push(props.ReworkWooperationlog[0])
+      }
+
+      return { ...state, ...{ operations: props.operations, ReworkWooperationlog } }
     }
   }
 
   componentDidMount = () => {
-    const { requestOperators, token, requestWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+    const { requestOperators, token, requestWooperationlog, Wooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
 
     requestOperators(token)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+  }
 
+  componentWillUnmount = () => {
+    this.setState({ ReworkWooperationlog: [] })
   }
 
   _keyExtractor = (item, index) => item.id
@@ -56,25 +65,26 @@ class Operations extends Component {
     })
   }
 
-  getLogStatusColor = (log, isRework = false) => {
+  _getLogStatusColor = (log, isRework = false) => {
 
-    if (log.Rework) return '#EC4626'
-    if (log.OperationSuccess) return '#26B99A'
-    if (log.OperationSuccess === false) return '#D9534F'
-    if (log.Paused) return '#F0AD4E'
-    if (log.Started) return !isRework ? '#337AB7' : '#EC4626'
+    if (log.Rework) return { label: 'Para Retrabajo', color: '#EC4626' }
+    if (log.OperationSuccess) return { label: 'Exitoso', color: '#26B99A' }
+    if (log.OperationSuccess === false) return { label: 'NCR', color: '#D9534F' }
+    if (log.Paused) return { label: 'Pausado', color: '#F0AD4E' }
+    if (log.Started) return !isRework ? { label: 'Comenzado', color: '#337AB7' } : { label: 'Reiniciado', color: '#EC4626' }
 
-    return !isRework ? 'gray' : '#EC4626'
+    return !isRework ? { label: 'Para Comenzar', color: 'gray' } : { label: 'Para retrabajo', color: '#EC4626' }
   }
 
-  getStatusOptions = (log, isRework = false) => {
+  _getLogStatusOptions = (log, isRework = false) => {
     // Available options
     // [
     //   { label: "Comenzar", value: 'Start' },
     //   { label: "Pausar", value: 'Pause' },
     //   { label: "Resumir", value: 'Resume' },
     //   { label: "Aprovar", value: 'Pass' },
-    //   { label: "Fallo", value: 'Fail' }
+    //   { label: "Fallo", value: 'Fail' },
+    //   { label: "Reiniciar", value: 'Restart' }
     // ]
 
     if (log.OperationSuccess)
@@ -224,7 +234,7 @@ class Operations extends Component {
     const { token, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const operationLog = this.state.operationsLog[id]
 
-    if (!operationLog || !operationLog.OperatorKey) {
+    if (!operationLog || !operationLog.OperatorKey || !operationLog.OperatorKey === 0 || operationLog.Status === 0) {
       alert("Favor de seleccionar Operador y Estado")
       return false
     }
@@ -252,7 +262,10 @@ class Operations extends Component {
       }
     }
 
-    isRework ? requestReworkWooperationlog(token, match.Id) : requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+    this.setState({ ReworkWooperationlog: [] })
+
+    requestReworkWooperationlog(token, match.Id)
+    requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
   renderDurationPrompt = () => {
@@ -293,7 +306,7 @@ class Operations extends Component {
   }
 
   renderPauseCausePrompt = () => {
-    const { promptSerialNum: serialNum, promptReworkId: reworkId, promptMatch: match, promptIsRework: isRework } = this.state
+    const { promptSerialNum: serialNum, promptMatch: match, promptIsRework: isRework } = this.state
     const { token, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     return (
       <Prompt
@@ -314,17 +327,22 @@ class Operations extends Component {
           this._pause(serialNum, value, isRework, match) // Calls API call for Pause status
           isRework ? requestReworkWooperationlog(token, match.Id) : requestWooperationlog(token, WOKey, RCTKey, OperationKey)
 
-          this.setState({ promptPauseCauseVisible: false, promptSerialNum: '', promptReworkId: 0, promptMatch: null, promptIsRework: false })
+          this.setState({ promptPauseCauseVisible: false, promptSerialNum: '', promptMatch: null, promptIsRework: false })
         }} />
     )
   }
 
   _renderItem = ({ item }) => {
-    const { operators, Wooperationlog, ReworkWooperationlog, requestReworkWooperationlog, token } = this.props
+    const { operators, Wooperationlog, requestReworkWooperationlog, token } = this.props
+    const { ReworkWooperationlog } = this.state
 
     const operation = this.state.operationsLog[item.Id]
 
-    let status = "gray"
+    let statusObj = {
+      color: "gray",
+      label: 'Para Comenzar'
+    }
+
     let options = [{ label: "Comenzar", value: 'Start' }]
     let isRework = false
     let match = null
@@ -332,55 +350,68 @@ class Operations extends Component {
     if (Wooperationlog) {
       match = Wooperationlog.filter(log => log.SerialNum === item.PartPO.SerialNum)[0]
 
-      // Get status dropdown menu options
-      options = this.getStatusOptions(match)
-      // Get status color
-      status = this.getLogStatusColor(match)
+      // Generate log dropdown menu options
+      options = this._getLogStatusOptions(match)
+      // Generate log status color and label
+      let statusValues = this._getLogStatusColor(match)
+      statusObj = {
+        color: statusValues.color,
+        label: statusValues.label
+      }
 
       if (match) {
         // If the match has Rework flag to TRUE
         if (match.Rework) {
-          if (!ReworkWooperationlog) {
+          console.log({ ReworkWooperationlog })
+          if (!ReworkWooperationlog || ReworkWooperationlog.filter(log => log.WOOLogId === match.Id).length === 0) {
             requestReworkWooperationlog(token, match.Id)
-          }
-          else {
-            match = ReworkWooperationlog[0]
-            // Get status dropdown menu options
-            options = this.getStatusOptions(match, true)
-            // Get status color
-            status = this.getLogStatusColor(match, true)
+          } else if (ReworkWooperationlog) {
+            const { Id } = match
+            match = ReworkWooperationlog.filter(log => log.WOOLogId === Id)[0]
 
-            // Assign this id for API usage
-            isRework = true
+            if (match) {
+              // Assign this id for API usage
+              isRework = true
+              // Generate log dropdown menu options
+              options = this._getLogStatusOptions(match, isRework)
+              // Generate log status color and label
+              statusValues = this._getLogStatusColor(match, isRework)
+              statusObj = {
+                color: statusValues.color,
+                label: statusValues.label
+              }
+            }
           }
         }
       }
     }
 
-    // console.log({ match })
-    console.log({ status })
-    console.log({ options })
+    const pickerProps = {
+      mode: "dropdown",
+      placeholderStyle: { color: "#bfc6ea" },
+      placeholderIconColor: "#007aff",
+      style: { height: 35 },
+    }
 
     return (
       <TouchableHighlight>
         <View style={styles.row}>
           {this.renderDurationPrompt()}
           {this.renderPauseCausePrompt()}
-          <Badge style={{ backgroundColor: status, height: 35, width: 35, borderRadius: 17.5 }} />
+          <Badge style={{ backgroundColor: statusObj.color, height: 30, borderRadius: 15, paddingTop: 2, paddingBottom: 2, width: 125 }}>
+            <Text>{statusObj.label}</Text>
+          </Badge>
           <Text style={styles.serial}>{item.PartPO.PartId}</Text>
           <Text style={styles.operation}>{item.PartPO.SerialNum}</Text>
           <Picker
-            mode="dropdown"
-            selectedValue={operation ? operation.OperatorKey : ''}
+            {...pickerProps}
             placeholder="Operador"
-            placeholderStyle={{ color: "#bfc6ea" }}
-            placeholderIconColor="#007aff"
-            style={{ height: 35 }}
+            selectedValue={operation ? operation.OperatorKey : ''}
             onValueChange={(e) => this._pickerOnChange(e, item.Id, 'OperatorKey')}
           >
             {operators &&
               [
-                <Picker.Item label={"- Operador -"} value={''} key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
+                <Picker.Item label={"- Operador -"} value='0' key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
                 operators.map((operator, index) => (
                   <Picker.Item label={operator.Name} value={operator.Id} key={`${item.PartPO.SerialNum}_${operator.Id}`} />
                 ))
@@ -388,17 +419,14 @@ class Operations extends Component {
             }
           </Picker>
           <Picker
-            mode="dropdown"
-            selectedValue={operation ? operation.Status : ''}
+            {...pickerProps}
             placeholder="Estado"
-            placeholderStyle={{ color: "#bfc6ea" }}
-            placeholderIconColor="#007aff"
-            style={{ height: 35 }}
+            selectedValue={operation ? operation.Status : ''}
             onValueChange={(e) => this._pickerOnChange(e, item.Id, 'Status')}
           >
             {
               [
-                <Picker.Item label={"- Estado -"} value={''} key={`${item.PartPO.SerialNum}_status_dropdown`} />,
+                <Picker.Item label={"- Estado -"} value='0' key={`${item.PartPO.SerialNum}_status_dropdown`} />,
                 options.map((option, index) => (
                   <Picker.Item label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
                 ))
@@ -427,11 +455,6 @@ class Operations extends Component {
       </View>
     )
   }
-}
-
-Operations.defaultProps = {
-  ReworkWooperationlog: [],
-  Wooperationlog: [],
 }
 
 const mapStateToProps = (state) => {
