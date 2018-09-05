@@ -83,10 +83,9 @@ class Operations extends Component {
       // Look for match
       match = Wooperationlog.filter(log => log.SerialNum === item.PartPO.SerialNum)[0]
 
-      // Get match status Color, Label and Options
-      statusObj = this._getLogStatusValues(match)
-
       if (match) {
+        // Get match status Color, Label and Options
+        statusObj = this._getLogStatusValues(match)
         // If the match has Rework flag to TRUE
         if (match.Rework) {
           if (!ReworkWooperationlog || ReworkWooperationlog.filter(log => log.WOOLogId === match.Id).length === 0) {
@@ -215,7 +214,7 @@ class Operations extends Component {
     isRework ? requestPutReworkWooperationlog(token, data, match.Id) : requestPutWooperationlog(token, data, match.Id)
 
     this.setState({ ReworkWooperationlog: [], promptPauseCauseVisible: false, promptSerialNum: '', promptMatch: null, promptIsRework: false })
-    requestReworkWooperationlog(token, match.Id)
+    match && requestReworkWooperationlog(token, match.Id)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
@@ -331,7 +330,8 @@ class Operations extends Component {
 
     this.setState({ ReworkWooperationlog: [] })
 
-    requestReworkWooperationlog(token, match.Id)
+    match && requestReworkWooperationlog(token, match.Id)
+
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
@@ -374,7 +374,9 @@ class Operations extends Component {
         visible={this.state.promptPauseCauseVisible}
         onCancel={() => this.setState({
           promptPauseCauseVisible: false,
+          promptIsRework: false,
           promptSerialNum: '',
+          promptMatch: null,
         })}
         onSubmit={(value) => {
           if (!value) {
