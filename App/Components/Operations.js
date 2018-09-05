@@ -144,7 +144,7 @@ class Operations extends Component {
   }
 
   _pause = (serialNum, Pause_ReasonCode, isRework, match) => {
-    const { search: { WOKey }, token, requestPutWooperationlog, requestPutReworkWooperationlog } = this.props
+    const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const Pause_Date = moment().format()
 
     const data = {
@@ -157,6 +157,10 @@ class Operations extends Component {
     }
 
     isRework ? requestPutReworkWooperationlog(token, data, match.Id) : requestPutWooperationlog(token, data, match.Id)
+
+    this.setState({ ReworkWooperationlog: [] })
+    requestReworkWooperationlog(token, match.Id)
+    requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
   _resume = (match, isRework) => {
@@ -226,6 +230,13 @@ class Operations extends Component {
       }
 
     isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
+
+    this.setState({
+      promptDurationIsSuccessful: false,
+      promptDurationVisible: false,
+      promptIsRework: false,
+      promptMatch: null,
+    })
   }
 
   getMinutesBetweenDates = (startDate, endDate) => (Math.abs(new Date(startDate) - new Date(endDate))) / 60000
@@ -293,21 +304,12 @@ class Operations extends Component {
           }
 
           this._terminate(promptDurationIsSuccessful, isRework, match, Number(value)) // Calls API call for Fail status
-
-          this.setState({
-            promptDurationIsSuccessful: false,
-            promptDurationVisible: false,
-            promptIsRework: false,
-            promptMatch: null,
-          })
-
         }} />
     )
   }
 
   renderPauseCausePrompt = () => {
     const { promptSerialNum: serialNum, promptMatch: match, promptIsRework: isRework } = this.state
-    const { token, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     return (
       <Prompt
         title="Favor de introducir el motivo de pausa."
@@ -325,8 +327,6 @@ class Operations extends Component {
           }
 
           this._pause(serialNum, value, isRework, match) // Calls API call for Pause status
-          isRework ? requestReworkWooperationlog(token, match.Id) : requestWooperationlog(token, WOKey, RCTKey, OperationKey)
-
           this.setState({ promptPauseCauseVisible: false, promptSerialNum: '', promptMatch: null, promptIsRework: false })
         }} />
     )
