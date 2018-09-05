@@ -248,7 +248,7 @@ class Operations extends Component {
   }
 
   _terminate = (isSuccessful, isRework, match, promptedDuration = 0) => {
-    const { token, requestPutWooperationlog, requestPutReworkWooperationlog } = this.props
+    const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const { StartDate, EndDate: current_EndDate, Id } = match
     const new_EndDate = moment().format()
     const SuccessDate = moment().format()
@@ -289,9 +289,13 @@ class Operations extends Component {
     this.setState({
       promptDurationIsSuccessful: false,
       promptDurationVisible: false,
+      ReworkWooperationlog: [],
       promptIsRework: false,
       promptMatch: null,
     })
+
+    match && requestReworkWooperationlog(token, match.Id)
+    requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
   getMinutesBetweenDates = (startDate, endDate) => (Math.abs(new Date(startDate) - new Date(endDate))) / 60000
@@ -300,7 +304,7 @@ class Operations extends Component {
     const { token, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const operationLog = this.state.operationsLog[id]
 
-    if (!operationLog || !operationLog.OperatorKey || !operationLog.OperatorKey === 0 || operationLog.Status === 0) {
+    if (!operationLog || !operationLog.OperatorKey || !operationLog.OperatorKey === "0" || operationLog.Status === "0") {
       alert("Favor de seleccionar Operador y Estado")
       return false
     }
@@ -406,7 +410,7 @@ class Operations extends Component {
 
     return (
       <TouchableHighlight>
-        <View style={styles.row}>
+        <View style={[styles.row, { marginLeft: 0, marginRight: 0, marginTop: 0 }]}>
           {this.renderDurationPrompt()}
           {this.renderPauseCausePrompt()}
           <Badge style={[styles.badge, { backgroundColor: itemStatusColor }]}>
