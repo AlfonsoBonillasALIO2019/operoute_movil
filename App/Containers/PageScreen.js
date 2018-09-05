@@ -18,27 +18,27 @@ class PageScreen extends Component {
   //   super(props)
   //   this.state = {}
   // }
-  componentDidMount () {
+  componentDidMount() {
     const { requestSelected, token } = this.props
-    const { 
-      navigate, 
-      state:{ params:{ workOrderId } } 
+    const {
+      navigate,
+      state: { params: { workOrderId } }
     } = this.props.navigation
     requestSelected(token, workOrderId)
   }
 
-  render () {
+  render() {
     const { order } = this.props
     if (order === null) {
       return <Text>Loading...</Text>
-    }else {
-      const { Routecards=[], SerialNum=[] } = order
+    } else {
+      const { Routecards = [], SerialNum = [] } = order
       return (
         <Pages>
           <OrderScreen style={{ flex: 1 }} {...this.props} />
-          {Routecards.map((card,index)=>(
-              <SerialNumbers style={{ flex: 1 }} card={card} serials={SerialNum} {...this.props} />
-            )
+          {Routecards.map((card, index) => (
+            <SerialNumbers key={`serial_number_${index}`} style={{ flex: 1 }} card={card} serials={SerialNum} {...this.props} />
+          )
           )}
         </Pages>
       )
@@ -48,14 +48,14 @@ class PageScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    order:state.workOrder.selectedOrder,
-    token:state.login.token
+    order: state.workOrder.selectedOrder,
+    token: state.login.token
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    requestSelected:(token, workOrderId)=>dispatch(WorkOrderActions.workOrderByIdRequest(token, workOrderId))
+    requestSelected: (token, workOrderId) => dispatch(WorkOrderActions.workOrderByIdRequest(token, workOrderId))
   }
 }
 
