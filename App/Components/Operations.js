@@ -388,7 +388,7 @@ class Operations extends Component {
   }
 
   _renderItem = ({ item }) => {
-    const { operators } = this.props
+    const { operators, fetchingWooperationlog } = this.props
     const operation = this.state.operationsLog[item.Id]
     const { statusObj, match, isRework } = this._getLogStatusObject(item)
 
@@ -400,7 +400,7 @@ class Operations extends Component {
     }
 
     const badgeStyle = {
-      backgroundColor: statusObj.color,
+      backgroundColor: !fetchingWooperationlog ? statusObj.color : 'gray',
       paddingBottom: 2,
       borderRadius: 15,
       paddingTop: 2,
@@ -414,7 +414,7 @@ class Operations extends Component {
           {this.renderDurationPrompt()}
           {this.renderPauseCausePrompt()}
           <Badge style={badgeStyle}>
-            <Text>{statusObj.label}</Text>
+            <Text>{!fetchingWooperationlog ? statusObj.label : 'Cargando'}</Text>
           </Badge>
           <Text style={styles.serial}>{item.PartPO.PartId}</Text>
           <Text style={styles.operation}>{item.PartPO.SerialNum}</Text>
@@ -479,6 +479,8 @@ const mapStateToProps = (state) => {
 
     ReworkWooperationlogResponse: state.workOrder.ReworkWooperationlogResponse,
     ReworkWooperationlog: state.workOrder.ReworkWooperationlog,
+
+    fetchingWooperationlog: state.workOrder.fetchingWooperationlog,
 
     operators: state.workOrder.operators,
     token: state.login.token,
