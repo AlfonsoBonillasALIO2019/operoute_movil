@@ -102,6 +102,20 @@ export function* searchFirstPOWooperationlog(api, action) {
   }
 }
 
+export function* postFirstPO(api, action) {
+  const { data, token } = action
+
+  // make the call to the api
+  const response = yield call(api.postFirstPO, token, data)
+
+  if (response.ok) {
+    let { data: dataResponse } = response
+    yield put(WorkOrderActions.postFirstPOSuccess(dataResponse))
+  } else {
+    yield put(WorkOrderActions.postFirstPOFailure())
+  }
+}
+
 export function* postWooperationlog(api, action) {
   const { data, token } = action
 

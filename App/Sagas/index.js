@@ -21,6 +21,7 @@ import {
   getWorkOrderById,
   getActiveOperators,
 
+  postFirstPO,
   postWooperationlog,
 
   putWooperationlog,
@@ -61,6 +62,7 @@ export default function* root() {
     takeLatest(WorkOrderTypes.PUT_REWORK_WOOPERATIONLOG_REQUEST, putReworkWooperationlog, api),
     takeLatest(WorkOrderTypes.SEARCH_REWORK_WOOPERATIONLOG_REQUEST, searchReworkWooperationlog, api),
 
+    takeLatest(WorkOrderTypes.POST_FIRST_P_O_REQUEST, postFirstPO, api),
     takeLatest(WorkOrderTypes.SEARCH_FIRST_P_O_WOOPERATIONLOG_REQUEST, searchFirstPOWooperationlog, api),
   ])
 }

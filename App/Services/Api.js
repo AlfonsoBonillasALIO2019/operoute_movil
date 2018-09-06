@@ -73,6 +73,15 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
       }
     })
 
+  const postFirstPO = (token, data) => api.post('/api/firstpassoff', {
+    'data': { ...data },
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
   const putReworkWooperationlog = (token, data, Id) => api.put('/api/reworkserials', {
     'Id': Id,
     'data': { ...data },
@@ -183,6 +192,7 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
     putReworkWooperationlog,
     searchReworkWooperationlog,
 
+    postFirstPO,
     searchFirstPOWooperationlog
   }
 }

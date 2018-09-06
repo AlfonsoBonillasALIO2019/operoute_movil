@@ -20,6 +20,10 @@ const { Types, Creators } = createActions({
   workOrderByIdSuccess: ['order'],
   workOrderByIdFailure: null,
 
+  postFirstPORequest: ['token', 'data'],
+  postFirstPOSuccess: ['FirstPOResponse'],
+  postFirstPOFailure: null,
+
   postWooperationlogRequest: ['token', 'data'],
   postWooperationlogSuccess: ['WooperationlogResponse'],
   postWooperationlogFailure: null,
@@ -66,11 +70,9 @@ export const INITIAL_STATE = Immutable({
 
   fetching: false,
   fetchingSelected: false,
-  fetchingWooperationlog: false,
 
   error: null,
   errorSelected: null,
-  errorWooperationlog: null,
 })
 
 /* ------------- Selectors ------------- */
@@ -112,96 +114,110 @@ export const successSelected = (state, action) => {
 export const failureSelected = (state) =>
   state.merge({ fetchingSelected: false, errorSelected: true, selectedOrder: null })
 
-
 // request wooperationlog data
 export const requestWooperationlog = (state, action) => {
-  return state.merge({ fetchingWooperationlog: true, Wooperationlog: null })
+  return state.merge({ fetching: true, Wooperationlog: null })
 }
 
 // successful wooperationlog data
 export const successWooperationlog = (state, action) => {
   const { Wooperationlog } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, Wooperationlog })
+  return state.merge({ fetching: false, error: null, Wooperationlog })
 }
 
 // failed to post the wooperationlog data
 export const failureWooperationlog = (state) =>
-  state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, Wooperationlog: null })
+  state.merge({ fetching: false, error: true, Wooperationlog: null })
 
 // request rework wooperationlog data
 export const requestReworkWooperationlog = (state, action) => {
-  return state.merge({ fetchingWooperationlog: true, ReworkWooperationlog: null })
+  return state.merge({ fetching: true, ReworkWooperationlog: null })
 }
 
 // successful rework wooperationlog data
 export const successReworkWooperationlog = (state, action) => {
   const { ReworkWooperationlog } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, ReworkWooperationlog })
+  return state.merge({ fetching: false, error: null, ReworkWooperationlog })
 }
 
 // failed to post the rework wooperationlog data
 export const failureReworkWooperationlog = (state) =>
-  state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, ReworkWooperationlog: null })
+  state.merge({ fetching: false, error: true, ReworkWooperationlog: null })
 
 // request first pass off wooperationlog data
 export const requestFirstPOWooperationlog = (state, action) => {
-  return state.merge({ fetchingWooperationlog: true, FirstPOWooperationlog: null })
+  return state.merge({ fetching: true, FirstPOWooperationlog: null })
 }
 
 // successful first pass off wooperationlog data
 export const successFirstPOWooperationlog = (state, action) => {
   const { FirstPOWooperationlog } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, FirstPOWooperationlog })
+  return state.merge({ fetching: false, error: null, FirstPOWooperationlog })
 }
 
 // failed to post the first pass off wooperationlog data
 export const failureFirstPOWooperationlog = (state) =>
-  state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, FirstPOWooperationlog: null })
+  state.merge({ fetching: false, error: true, FirstPOWooperationlog: null })
+
+// request post first pass off
+export const requestPostFirstPO = (state, action) => {
+  return state.merge({ fetching: true, FirstPOResponse: null })
+}
+
+// successful post first pass off
+export const successPostFirstPO = (state, action) => {
+  const { FirstPOResponse } = action
+  return state.merge({ fetching: false, error: null, FirstPOResponse })
+}
+
+// failed to post the first pass off
+export const failurePostFirstPO = (state) =>
+  state.merge({ fetching: false, error: true, FirstPOResponse: null })
 
 // request post wooperationlog
 export const requestPostWooperationlog = (state, action) => {
-  return state.merge({ fetchingWooperationlog: true, WooperationlogResponse: null })
+  return state.merge({ fetching: true, WooperationlogResponse: null })
 }
 
 // successful post wooperationlog
 export const successPostWooperationlog = (state, action) => {
   const { WooperationlogResponse } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, WooperationlogResponse })
+  return state.merge({ fetching: false, error: null, WooperationlogResponse })
 }
 
 // failed to post the wooperationlog
 export const failurePostWooperationlog = (state) =>
-  state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, WooperationlogResponse: null })
+  state.merge({ fetching: false, error: true, WooperationlogResponse: null })
 
 // request post wooperationlog
 export const requestPutWooperationlog = (state, action) => {
-  return state.merge({ fetchingWooperationlog: true, WooperationlogResponse: null })
+  return state.merge({ fetching: true, WooperationlogResponse: null })
 }
 
 // successful post wooperationlog
 export const successPutWooperationlog = (state, action) => {
   const { WooperationlogResponse } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, WooperationlogResponse })
+  return state.merge({ fetching: false, error: null, WooperationlogResponse })
 }
 
 // failed to post the wooperationlog
 export const failurePutWooperationlog = (state) =>
-  state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, WooperationlogResponse: null })
+  state.merge({ fetching: false, error: true, WooperationlogResponse: null })
 
 // request post wooperationlog
 export const requestPutReworkWooperationlog = (state, action) => {
-  return state.merge({ fetchingWooperationlog: true, ReworkWooperationlogResponse: null })
+  return state.merge({ fetching: true, ReworkWooperationlogResponse: null })
 }
 
 // successful post wooperationlog
 export const successPutReworkWooperationlog = (state, action) => {
   const { ReworkWooperationlogResponse } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, ReworkWooperationlogResponse })
+  return state.merge({ fetching: false, error: null, ReworkWooperationlogResponse })
 }
 
 // failed to post the wooperationlog
 export const failurePutReworkWooperationlog = (state) =>
-  state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, ReworkWooperationlogResponse: null })
+  state.merge({ fetching: false, error: true, ReworkWooperationlogResponse: null })
 
 // operators request
 export const requestOperators = (state, action) => {
@@ -249,6 +265,10 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.WORK_ORDER_BY_ID_REQUEST]: requestSelected,
   [Types.WORK_ORDER_BY_ID_SUCCESS]: successSelected,
   [Types.WORK_ORDER_BY_ID_FAILURE]: failureSelected,
+
+  [Types.POST_FIRST_P_O_REQUEST]: requestPostFirstPO,
+  [Types.POST_FIRST_P_O_SUCCESS]: successPostFirstPO,
+  [Types.POST_FIRST_P_O_FAILURE]: failurePostFirstPO,
 
   [Types.SEARCH_WOOPERATIONLOG_REQUEST]: requestWooperationlog,
   [Types.SEARCH_WOOPERATIONLOG_SUCCESS]: successWooperationlog,

@@ -48,8 +48,6 @@ class Operations extends Component {
   componentDidMount = () => {
     const { requestUsersQA, requestOperators, token, requestWooperationlog, requestFirstPOWooperationlog, search: { WOKey, RCTKey, OperationKey }, passOffReqd } = this.props
 
-    console.log({ passOffReqd })
-
     requestUsersQA(token)
     requestOperators(token)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
@@ -279,14 +277,16 @@ class Operations extends Component {
     }
 
     console.log({ passOffReqd })
+    console.log("FPO", this.state.FirstPOWooperationlog)
 
-    if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && this.state.promptFirstPOQA === "0") {
+    if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && this.state.promptFirstPOQA === "0" && isSuccessful) {
       this.setState({
         promptIsSuccessful: isSuccessful,
         promptFirstPOVisible: true,
         promptIsRework: isRework,
         promptMatch: match,
         promptedDuration
+
       })
 
       return false
@@ -392,6 +392,8 @@ class Operations extends Component {
             return false
           }
 
+          this.setState({ promptDurationVisible: false })
+
           this._terminate(promptIsSuccessful, isRework, match, Number(value)) // Calls API call for Fail status
         }} />
     )
@@ -434,7 +436,21 @@ class Operations extends Component {
             return false
           }
 
+          this.setState({ promptFirstPOVisible: false }) // Hide the dialog
+
           this._terminate(promptIsSuccessful, isRework, match, promptedDuration) // Calls API call for Fail status
+
+          const { requestPostFirstPO, token, search: { WOKey, RCTKey, OperationKey } } = this.props
+          const data = {
+            WOKey,
+            RCTKey,
+            OperationKey,
+            UserKey: promptFirstPOQA,
+            SerialNum: match.SerialNum,
+          }
+
+          // Post the First Pass Off object
+          requestPostFirstPO(token, data)
         }} />
       </Dialog.Container>
     )
@@ -547,6 +563,8 @@ class Operations extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    FirstPOResponse: state.workOrder.FirstPOResponse,
+
     WooperationlogResponse: state.workOrder.WooperationlogResponse,
     Wooperationlog: state.workOrder.Wooperationlog,
 
@@ -573,6 +591,7 @@ const mapDispatchToProps = (dispatch) => {
     requestPutWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.putWooperationlogRequest(token, data, Id)),
     requestPutReworkWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.putReworkWooperationlogRequest(token, data, Id)),
     requestPostWooperationlog: (token, data) => dispatch(WorkOrderActions.postWooperationlogRequest(token, data)),
+    requestPostFirstPO: (token, data) => dispatch(WorkOrderActions.postFirstPORequest(token, data)),
     requestOperators: token => dispatch(WorkOrderActions.operatorsRequest(token)),
     requestUsersQA: token => dispatch(WorkOrderActions.usersQARequest(token)),
   }
