@@ -39,10 +39,11 @@ class Operations extends Component {
   }
 
   componentDidMount = () => {
-    const { requestOperators, token, requestWooperationlog, Wooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+    const { requestOperators, token, requestWooperationlog, requestFirstPOWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
 
     requestOperators(token)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+    requestFirstPOWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
   componentWillUnmount = () => {
@@ -458,6 +459,9 @@ class Operations extends Component {
 
   render() {
     const { operations = [] } = this.state
+    const { FirstPOWooperationlog } = this.props
+
+    console.log({ FirstPOWooperationlog })
 
     return (
       <View style={styles.container}>
@@ -480,6 +484,8 @@ const mapStateToProps = (state) => {
     ReworkWooperationlogResponse: state.workOrder.ReworkWooperationlogResponse,
     ReworkWooperationlog: state.workOrder.ReworkWooperationlog,
 
+    FirstPOWooperationlog: state.workOrder.FirstPOWooperationlog,
+
     fetchingWooperationlog: state.workOrder.fetchingWooperationlog,
 
     operators: state.workOrder.operators,
@@ -490,6 +496,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    requestFirstPOWooperationlog: (token, WOKey, RCTKey, OperationKey) => dispatch(WorkOrderActions.searchFirstPOWooperationlogRequest(token, WOKey, RCTKey, OperationKey)),
     requestWooperationlog: (token, WOKey, RCTKey, OperationKey) => dispatch(WorkOrderActions.searchWooperationlogRequest(token, WOKey, RCTKey, OperationKey)),
     requestReworkWooperationlog: (token, WOOLogId) => dispatch(WorkOrderActions.searchReworkWooperationlogRequest(token, WOOLogId)),
     requestPutWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.putWooperationlogRequest(token, data, Id)),
