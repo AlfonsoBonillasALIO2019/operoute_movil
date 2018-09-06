@@ -35,6 +35,10 @@ const { Types, Creators } = createActions({
   searchReworkWooperationlogRequest: ['token', 'WOOLogId'],
   searchReworkWooperationlogSuccess: ['ReworkWooperationlog'],
   searchReworkWooperationlogFailure: null,
+
+  searchFirstPOWooperationlogRequest: ['token', 'WOKey', 'RCTKey', 'OperationKey'],
+  searchFirstPOWooperationlogSuccess: ['FirstPOWooperationlog'],
+  searchFirstPOWooperationlogFailure: null,
 })
 
 export const WorkOrderTypes = Types
@@ -45,8 +49,11 @@ export default Creators
 export const INITIAL_STATE = Immutable({
   orders: [],
   selectedOrder: null,
+
   Wooperationlog: null,
   ReworkWooperationlog: null,
+  FirstPOWooperationlog: null,
+
   WooperationlogResponse: null,
   ReworkWooperationlogResponse: null,
 
@@ -128,6 +135,21 @@ export const successReworkWooperationlog = (state, action) => {
 // failed to post the rework wooperationlog data
 export const failureReworkWooperationlog = (state) =>
   state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, ReworkWooperationlog: null })
+
+// request first pass off wooperationlog data
+export const requestFirstPOWooperationlog = (state, action) => {
+  return state.merge({ fetchingWooperationlog: true, FirstPOWooperationlog: null })
+}
+
+// successful first pass off wooperationlog data
+export const successFirstPOWooperationlog = (state, action) => {
+  const { FirstPOWooperationlog } = action
+  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, FirstPOWooperationlog: FirstPOWooperationlog })
+}
+
+// failed to post the first pass off wooperationlog data
+export const failureFirstPOWooperationlog = (state) =>
+  state.merge({ fetchingWooperationlog: false, errorWooperationlog: true, FirstPOWooperationlog: null })
 
 // request post wooperationlog
 export const requestPostWooperationlog = (state, action) => {
@@ -221,4 +243,8 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.PUT_REWORK_WOOPERATIONLOG_REQUEST]: requestPutReworkWooperationlog,
   [Types.PUT_REWORK_WOOPERATIONLOG_SUCCESS]: successPutReworkWooperationlog,
   [Types.PUT_REWORK_WOOPERATIONLOG_FAILURE]: failurePutReworkWooperationlog,
+
+  [Types.SEARCH_FIRST_P_O_WOOPERATIONLOG_REQUEST]: requestFirstPOWooperationlog,
+  [Types.SEARCH_FIRST_P_O_WOOPERATIONLOG_SUCCESS]: successFirstPOWooperationlog,
+  [Types.SEARCH_FIRST_P_O_WOOPERATIONLOG_FAILURE]: failureFirstPOWooperationlog,
 })

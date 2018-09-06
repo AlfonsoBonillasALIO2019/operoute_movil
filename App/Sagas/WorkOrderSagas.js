@@ -66,6 +66,29 @@ export function* searchReworkWooperationlog(api, action) {
   }
 }
 
+export function* searchFirstPOWooperationlog(api, action) {
+  const { WOKey, RCTKey, OperationKey, token } = action
+
+  // make the call to the api
+  const response = yield call(api.searchFirstPOWooperationlog, token,
+    filter = {
+      WOKey,
+      RCTKey,
+      OperationKey,
+    })
+
+  console.log({ response })
+
+  if (response.ok) {
+    let { data } = response
+
+    data.reverse()
+    yield put(WorkOrderActions.searchFirstPOWooperationlogSuccess(data))
+  } else {
+    yield put(WorkOrderActions.searchFirstPOWooperationlogFailure())
+  }
+}
+
 export function* postWooperationlog(api, action) {
   const { data, token } = action
 

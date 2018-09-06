@@ -3,7 +3,7 @@ import apisauce from 'apisauce'
 import { actionChannel } from '../../node_modules/redux-saga/effects';
 
 // our "constructor"
-const create = (baseURL = 'http://172.16.10.106:8000/') => {
+const create = (baseURL = 'http://172.16.10.112:8000/') => {
   // ------
   // STEP 1
   // ------
@@ -100,6 +100,22 @@ const create = (baseURL = 'http://172.16.10.106:8000/') => {
       }
     })
 
+  const searchFirstPOWooperationlog = (token, filter) => api.post('/api/firstpassoff/search', {
+    'sort': `Id desc`,
+    'pageNum': `1`,
+    'pageSize': `10`,
+    'filter': {
+      WOKey: `${filter.WOKey}`,
+      RCTKey: `${filter.RCTKey}`,
+      OperationKey: `${filter.OperationKey}`,
+    }
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
   const searchReworkWooperationlog = (token, WOOLogId) => api.post('/api/reworkserials/search', {
     'sort': `Id desc`,
     'pageNum': `1`,
@@ -154,6 +170,8 @@ const create = (baseURL = 'http://172.16.10.106:8000/') => {
 
     putReworkWooperationlog,
     searchReworkWooperationlog,
+
+    searchFirstPOWooperationlog
   }
 }
 
