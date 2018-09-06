@@ -30,6 +30,21 @@ export function* getActiveOperators(api, action) {
   }
 }
 
+export function* getQAUsers(api, action) {
+  const { token } = action
+
+  const response = yield call(api.getQAUsers, token)
+
+  console.log({ response })
+
+  if (response.ok) {
+    let { data } = response
+    yield put(WorkOrderActions.usersQASuccess(data))
+  } else {
+    yield put(WorkOrderActions.usersQAFailure())
+  }
+}
+
 export function* searchWooperationlog(api, action) {
   const { WOKey, RCTKey, OperationKey, token } = action
 
@@ -77,8 +92,6 @@ export function* searchFirstPOWooperationlog(api, action) {
       OperationKey,
     })
 
-  console.log({ response })
-
   if (response.ok) {
     let { data } = response
 
@@ -122,8 +135,6 @@ export function* putReworkWooperationlog(api, action) {
 
   // make the call to the api
   const response = yield call(api.putReworkWooperationlog, token, data, Id)
-
-  console.log({ response })
 
   if (response.ok) {
     let { data: dataResponse } = response

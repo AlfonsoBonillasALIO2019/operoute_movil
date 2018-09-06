@@ -8,6 +8,10 @@ const { Types, Creators } = createActions({
   operatorsSuccess: ['operators'],
   operatorsFailure: null,
 
+  usersQARequest: ['token'],
+  usersQASuccess: ['usersQA'],
+  usersQAFailure: null,
+
   workOrderRequest: ['token'],
   workOrderSuccess: ['orders'],
   workOrderFailure: null,
@@ -48,6 +52,9 @@ export default Creators
 
 export const INITIAL_STATE = Immutable({
   orders: [],
+  usersQA: [],
+  operators: [],
+
   selectedOrder: null,
 
   Wooperationlog: null,
@@ -114,7 +121,7 @@ export const requestWooperationlog = (state, action) => {
 // successful wooperationlog data
 export const successWooperationlog = (state, action) => {
   const { Wooperationlog } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, Wooperationlog: Wooperationlog })
+  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, Wooperationlog })
 }
 
 // failed to post the wooperationlog data
@@ -129,7 +136,7 @@ export const requestReworkWooperationlog = (state, action) => {
 // successful rework wooperationlog data
 export const successReworkWooperationlog = (state, action) => {
   const { ReworkWooperationlog } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, ReworkWooperationlog: ReworkWooperationlog })
+  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, ReworkWooperationlog })
 }
 
 // failed to post the rework wooperationlog data
@@ -144,7 +151,7 @@ export const requestFirstPOWooperationlog = (state, action) => {
 // successful first pass off wooperationlog data
 export const successFirstPOWooperationlog = (state, action) => {
   const { FirstPOWooperationlog } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, FirstPOWooperationlog: FirstPOWooperationlog })
+  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, FirstPOWooperationlog })
 }
 
 // failed to post the first pass off wooperationlog data
@@ -159,7 +166,7 @@ export const requestPostWooperationlog = (state, action) => {
 // successful post wooperationlog
 export const successPostWooperationlog = (state, action) => {
   const { WooperationlogResponse } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, WooperationlogResponse: WooperationlogResponse })
+  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, WooperationlogResponse })
 }
 
 // failed to post the wooperationlog
@@ -174,7 +181,7 @@ export const requestPutWooperationlog = (state, action) => {
 // successful post wooperationlog
 export const successPutWooperationlog = (state, action) => {
   const { WooperationlogResponse } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, WooperationlogResponse: WooperationlogResponse })
+  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, WooperationlogResponse })
 }
 
 // failed to post the wooperationlog
@@ -189,7 +196,7 @@ export const requestPutReworkWooperationlog = (state, action) => {
 // successful post wooperationlog
 export const successPutReworkWooperationlog = (state, action) => {
   const { ReworkWooperationlogResponse } = action
-  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, ReworkWooperationlogResponse: ReworkWooperationlogResponse })
+  return state.merge({ fetchingWooperationlog: false, errorWooperationlog: null, ReworkWooperationlogResponse })
 }
 
 // failed to post the wooperationlog
@@ -209,12 +216,31 @@ export const successOperators = (state, action) => {
 export const failureOperators = (state) =>
   state.merge({ fetching: false, error: true, operators: [] })
 
+// QA users request
+export const requestUsersQA = (state, action) => {
+  return state.merge({ fetching: true })
+}
+
+// QA users successful response
+export const successUsersQA = (state, action) => {
+  const { usersQA } = action
+  return state.merge({ fetching: false, usersQA })
+}
+
+// QA users request failed
+export const failureUsersQA = (state) =>
+  state.merge({ fetching: false, error: true, usersQA: [] })
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.OPERATORS_REQUEST]: requestOperators,
   [Types.OPERATORS_SUCCESS]: successOperators,
   [Types.OPERATORS_FAILURE]: failureOperators,
+
+  [Types.USERS_Q_A_REQUEST]: requestUsersQA,
+  [Types.USERS_Q_A_SUCCESS]: successUsersQA,
+  [Types.USERS_Q_A_FAILURE]: failureUsersQA,
 
   [Types.WORK_ORDER_REQUEST]: request,
   [Types.WORK_ORDER_SUCCESS]: success,

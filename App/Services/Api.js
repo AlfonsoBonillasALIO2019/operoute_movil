@@ -88,10 +88,8 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
     'pageNum': `1`,
     'pageSize': `100`,
     'filter': {
-      WOKey: `${filter.WOKey}`,
-      RCTKey: `${filter.RCTKey}`,
-      OperationKey: `${filter.OperationKey}`,
-      Active: true
+      ...filter,
+      'Active': true
     }
   }, {
       headers: {
@@ -105,9 +103,7 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
     'pageNum': `1`,
     'pageSize': `10`,
     'filter': {
-      WOKey: `${filter.WOKey}`,
-      RCTKey: `${filter.RCTKey}`,
-      OperationKey: `${filter.OperationKey}`,
+      ...filter,
     }
   }, {
       headers: {
@@ -121,7 +117,7 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
     'pageNum': `1`,
     'pageSize': `1`,
     'filter': {
-      WOOLogId: `${WOOLogId}`,
+      'WOOLogId': `${WOOLogId}`,
     }
   }, {
       headers: {
@@ -136,6 +132,21 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
       'Authorization': `Bearer ${token}`
     }
   })
+
+  const getQAUsers = (token) => api.post(`/api/user/search`, {
+    'sort': `Id desc`,
+    'pageNum': 1,
+    'pageSize': 100,
+    'filter': {
+      'RoleId': 5,
+      'Active': true,
+    }
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
 
   const getRoot = () => api.get('')
   const getRate = () => api.get('rate_limit')
@@ -160,6 +171,7 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
     getRoot,
     getRate,
     getUser,
+    getQAUsers,
     getWorkOrders,
     getWorkOrderById,
     getActiveOperators,

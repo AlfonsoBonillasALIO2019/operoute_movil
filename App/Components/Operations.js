@@ -46,10 +46,11 @@ class Operations extends Component {
   }
 
   componentDidMount = () => {
-    const { requestOperators, token, requestWooperationlog, requestFirstPOWooperationlog, search: { WOKey, RCTKey, OperationKey }, passOffReqd } = this.props
+    const { requestUsersQA, requestOperators, token, requestWooperationlog, requestFirstPOWooperationlog, search: { WOKey, RCTKey, OperationKey }, passOffReqd } = this.props
 
     console.log({ passOffReqd })
 
+    requestUsersQA(token)
     requestOperators(token)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
     requestFirstPOWooperationlog(token, WOKey, RCTKey, OperationKey)
@@ -515,7 +516,9 @@ class Operations extends Component {
   }
 
   render() {
-    const { operations = [], FirstPOWooperationlog, promptFirstPOQA } = this.state
+    const { operations = [] } = this.state
+
+    console.log("QA USERS", this.props.usersQA)
 
     return (
       <View style={styles.container}>
@@ -546,6 +549,8 @@ const mapStateToProps = (state) => {
     fetchingWooperationlog: state.workOrder.fetchingWooperationlog,
 
     operators: state.workOrder.operators,
+    usersQA: state.workOrder.usersQA,
+
     token: state.login.token,
     user: state.login.user
   }
@@ -560,6 +565,7 @@ const mapDispatchToProps = (dispatch) => {
     requestPutReworkWooperationlog: (token, data, Id) => dispatch(WorkOrderActions.putReworkWooperationlogRequest(token, data, Id)),
     requestPostWooperationlog: (token, data) => dispatch(WorkOrderActions.postWooperationlogRequest(token, data)),
     requestOperators: token => dispatch(WorkOrderActions.operatorsRequest(token)),
+    requestUsersQA: token => dispatch(WorkOrderActions.usersQARequest(token)),
   }
 }
 
