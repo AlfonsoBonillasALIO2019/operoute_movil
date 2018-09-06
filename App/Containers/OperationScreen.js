@@ -63,7 +63,7 @@ class OperationScreen extends Component {
     } else if (selected === 'TOOLING') {
       screen = <Tooling toolFixtures={toolFixtures} />
     } else if (selected === 'OPERATIONS') {
-      screen = <Operations operations={serials} search={{ WOKey: card.WOKey, RCTKey: card.Operations[0].RCTKey, OperationKey: Operation.Id }} />
+      screen = <Operations operations={serials} passOffReqd={Operation.PassOffReqd} search={{ WOKey: card.WOKey, RCTKey: card.Operations[0].RCTKey, OperationKey: Operation.Id }} />
     }
     return (
       <Container>

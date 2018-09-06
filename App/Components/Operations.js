@@ -15,31 +15,39 @@ class Operations extends Component {
     promptSerialNum: '',
 
     promptDurationVisible: false,
-    promptDurationIsSuccessful: false,
+    promptedDuration: 0,
+
+    promptIsSuccessful: false,
 
     promptPauseCauseVisible: false,
     promptReworkId: 0,
     promptMatch: null,
 
     ReworkWooperationlog: [],
+
+    promptFirstPOVisible: false,
+    promptFirstPOPassed: false,
+    FirstPOWooperationlog: [],
   }
 
   static getDerivedStateFromProps(props, state) {
     const { ReworkWooperationlog } = state
 
-    if (props.operations === state.operations && props.ReworkWooperationlog && ReworkWooperationlog.indexOf(props.ReworkWooperationlog[0]) > -1) {
+    if (props.operations === state.operations && props.FirstPOWooperationlog === state.FirstPOWooperationlog && (props.ReworkWooperationlog && ReworkWooperationlog.indexOf(props.ReworkWooperationlog[0]) > -1)) {
       return state
     } else {
       if (props.ReworkWooperationlog && props.ReworkWooperationlog.length > 0) {
         ReworkWooperationlog.push(props.ReworkWooperationlog[0])
       }
 
-      return { ...state, ...{ operations: props.operations, ReworkWooperationlog } }
+      return { ...state, ...{ operations: props.operations, ReworkWooperationlog, FirstPOWooperationlog: props.FirstPOWooperationlog } }
     }
   }
 
   componentDidMount = () => {
-    const { requestOperators, token, requestWooperationlog, requestFirstPOWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+    const { requestOperators, token, requestWooperationlog, requestFirstPOWooperationlog, search: { WOKey, RCTKey, OperationKey }, passOffReqd } = this.props
+
+    console.log({ passOffReqd })
 
     requestOperators(token)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
@@ -47,7 +55,7 @@ class Operations extends Component {
   }
 
   componentWillUnmount = () => {
-    this.setState({ ReworkWooperationlog: [] })
+    this.setState({ ReworkWooperationlog: [], FirstPOWooperationlog: [] })
   }
 
   _keyExtractor = (item, index) => item.id
@@ -249,7 +257,7 @@ class Operations extends Component {
   }
 
   _terminate = (isSuccessful, isRework, match, promptedDuration = 0) => {
-    const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+    const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey }, passOffReqd } = this.props
     const { StartDate, EndDate: current_EndDate, Id } = match
     const new_EndDate = moment().format()
     const SuccessDate = moment().format()
@@ -258,10 +266,21 @@ class Operations extends Component {
 
     if (duration < 1) {
       this.setState({
-        promptDurationIsSuccessful: isSuccessful,
+        promptIsSuccessful: isSuccessful,
         promptDurationVisible: true,
         promptIsRework: isRework,
         promptMatch: match
+      })
+
+      return false
+    }
+
+    console.log({ passOffReqd })
+
+    if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && !this.state.promptFirstPOPassed) {
+      this.setState({
+        promptFirstPOVisible: true,
+        promptedDuration,
       })
 
       return false
@@ -288,7 +307,7 @@ class Operations extends Component {
     isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
 
     this.setState({
-      promptDurationIsSuccessful: false,
+      promptIsSuccessful: false,
       promptDurationVisible: false,
       ReworkWooperationlog: [],
       promptIsRework: false,
@@ -341,7 +360,7 @@ class Operations extends Component {
   }
 
   renderDurationPrompt = () => {
-    const { promptDurationIsSuccessful, promptIsRework: isRework, promptMatch: match } = this.state
+    const { promptIsSuccessful, promptIsRework: isRework, promptMatch: match } = this.state
     return (
       <Prompt
         title="Favor de introducir duración exacta"
@@ -353,7 +372,7 @@ class Operations extends Component {
         }}
         visible={this.state.promptDurationVisible}
         onCancel={() => this.setState({
-          promptDurationIsSuccessful: false,
+          promptIsSuccessful: false,
           promptDurationVisible: false,
           promptIsRework: false,
           promptMatch: null,
@@ -364,7 +383,7 @@ class Operations extends Component {
             return false
           }
 
-          this._terminate(promptDurationIsSuccessful, isRework, match, Number(value)) // Calls API call for Fail status
+          this._terminate(promptIsSuccessful, isRework, match, Number(value)) // Calls API call for Fail status
         }} />
     )
   }
@@ -394,6 +413,18 @@ class Operations extends Component {
     )
   }
 
+  renderFirstPOPrompt = () => {
+    const { promptIsSuccessful, promptedDuration, promptIsRework: isRework, promptMatch: match, promptFirstPOVisible } = this.state
+    // onCancel={() => this.setState({
+    //   promptIsSuccessful: false,
+    //   promptFirstPOVisible: false,
+    //   promptIsRework: false,
+    //   promptMatch: null,
+    //   promptedDuration: 0,
+    // })}
+    return promptFirstPOVisible === true && alert("Requiere revision")
+  }
+
   _renderItem = ({ item }) => {
     const { operators, fetchingWooperationlog } = this.props
     const operation = this.state.operationsLog[item.Id]
@@ -414,6 +445,7 @@ class Operations extends Component {
         <View style={[styles.row, { marginLeft: 0, marginRight: 0, marginTop: 0 }]}>
           {this.renderDurationPrompt()}
           {this.renderPauseCausePrompt()}
+          {this.renderFirstPOPrompt()}
           <Badge style={[styles.badge, { backgroundColor: itemStatusColor }]}>
             <Text style={styles.text16}>{itemStatusLabel}</Text>
           </Badge>
@@ -458,8 +490,7 @@ class Operations extends Component {
   }
 
   render() {
-    const { operations = [] } = this.state
-    const { FirstPOWooperationlog } = this.props
+    const { operations = [], FirstPOWooperationlog } = this.state
 
     console.log({ FirstPOWooperationlog })
 
