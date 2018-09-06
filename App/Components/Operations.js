@@ -282,7 +282,10 @@ class Operations extends Component {
 
     if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && this.state.promptFirstPOQA === "0") {
       this.setState({
+        promptIsSuccessful: isSuccessful,
         promptFirstPOVisible: true,
+        promptIsRework: isRework,
+        promptMatch: match,
         promptedDuration
       })
 
@@ -310,12 +313,14 @@ class Operations extends Component {
     isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
 
     this.setState({
-      promptIsSuccessful: false,
       promptDurationVisible: false,
+      promptFirstPOVisible: false,
+      promptIsSuccessful: false,
       ReworkWooperationlog: [],
       promptIsRework: false,
+      promptFirstPOQA: "0",
+      promptedDuration: 0,
       promptMatch: null,
-      promptFirstPOQA: "0"
     })
 
     match && requestReworkWooperationlog(token, match.Id)
@@ -394,6 +399,7 @@ class Operations extends Component {
 
   renderFirstPOPrompt = () => {
     const { promptIsSuccessful, promptedDuration, promptIsRework: isRework, promptMatch: match, promptFirstPOVisible, promptFirstPOQA } = this.state
+    const { usersQA } = this.props
 
     return (
       <Dialog.Container visible={promptFirstPOVisible}>
@@ -405,17 +411,22 @@ class Operations extends Component {
           selectedValue={promptFirstPOQA}
           style={{ maxHeight: 50 }}
           onValueChange={(e) => { this.setState({ promptFirstPOQA: e }) }}>
-          <Picker.Item label="- Ingeniero de Calidad -" value="0" />
-          <Picker.Item label="Java" value="java" />
-          <Picker.Item label="JavaScript" value="js" />
+          {usersQA &&
+            [
+              <Picker.Item label={"- Ingeniero de Calidad -"} value='0' key={'qa_user_picker_default'} />,
+              usersQA.map((user, index) => (
+                <Picker.Item label={`${user.FirstName} ${user.LastName}`} value={user.Id} key={user.Email} />
+              ))
+            ]
+          }
         </Picker>
         <Dialog.Button label="Cancelar" onPress={() =>
           this.setState({
             promptIsSuccessful: false,
             promptFirstPOVisible: false,
             promptIsRework: false,
-            promptMatch: null,
             promptedDuration: 0,
+            promptMatch: null,
           })} />
         <Dialog.Button label="Confirmar" onPress={() => {
           if (promptFirstPOQA === '0' || !promptFirstPOQA) {
@@ -517,8 +528,6 @@ class Operations extends Component {
 
   render() {
     const { operations = [] } = this.state
-
-    console.log("QA USERS", this.props.usersQA)
 
     return (
       <View style={styles.container}>
