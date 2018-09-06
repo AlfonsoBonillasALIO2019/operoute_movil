@@ -21,6 +21,7 @@ class Operations extends Component {
     promptIsSuccessful: false,
 
     promptPauseCauseVisible: false,
+    promptPauseReason: '',
     promptReworkId: 0,
     promptMatch: null,
 
@@ -207,22 +208,21 @@ class Operations extends Component {
     }
   }
 
-  _pause = (serialNum, Pause_ReasonCode, isRework, match) => {
+  _pause = () => {
     const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+    const { promptSerialNum: SerialNum, promptMatch: match, promptIsRework: isRework, promptPauseReason: Pause_ReasonCode } = this.state
     const Pause_Date = moment().format()
 
     const data = {
-      SerialNum: serialNum,
       Pause_ReasonCode,
       Id: match.Id,
       Paused: true,
       Pause_Date,
+      SerialNum,
       WOKey
     }
 
     isRework ? requestPutReworkWooperationlog(token, data, match.Id) : requestPutWooperationlog(token, data, match.Id)
-
-    this.setState({ ReworkWooperationlog: [], promptPauseCauseVisible: false, promptSerialNum: '', promptMatch: null, promptIsRework: false })
     match && requestReworkWooperationlog(token, match.Id)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
@@ -457,27 +457,32 @@ class Operations extends Component {
   }
 
   renderPauseCausePrompt = () => {
-    const { promptSerialNum: serialNum, promptMatch: match, promptIsRework: isRework } = this.state
+    const { promptPauseCauseVisible, promptPauseReason } = this.state
     return (
-      <Prompt
-        title="Favor de introducir el motivo de pausa."
-        placeholder="Motivo"
-        defaultValue=""
-        visible={this.state.promptPauseCauseVisible}
-        onCancel={() => this.setState({
-          promptPauseCauseVisible: false,
-          promptIsRework: false,
-          promptSerialNum: '',
-          promptMatch: null,
-        })}
-        onSubmit={(value) => {
-          if (!value) {
+      <Dialog.Container visible={promptPauseCauseVisible}>
+        <Dialog.Title>Motivo</Dialog.Title>
+        <Dialog.Description>
+          Favor de introducir el motivo de pausa.
+        </Dialog.Description>
+        <Dialog.Input onChangeText={(e) => this.setState({ promptPauseReason: e })} />
+        <Dialog.Button label="Cancelar" onPress={() =>
+          this.setState({
+            promptPauseCauseVisible: false,
+            promptIsRework: false,
+            promptSerialNum: '',
+            promptMatch: null,
+          })} />
+        <Dialog.Button label="Confirmar" onPress={() => {
+          if (!promptPauseReason || promptPauseReason === '') {
             alert("Favor de introducir un motivo de pausa válido.")
             return false
           }
 
-          this._pause(serialNum, value, isRework, match) // Calls API call for Pause status
+          this._pause() // Calls API call for Pause status
+
+          this.setState({ ReworkWooperationlog: [], promptPauseCauseVisible: false, promptSerialNum: '', promptMatch: null, promptIsRework: false, promptPauseReason: '' })
         }} />
+      </Dialog.Container>
     )
   }
 
