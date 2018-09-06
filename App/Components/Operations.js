@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
-import Prompt from 'react-native-prompt'
 import { Picker, Button, Text, Badge } from 'native-base'
 import { View, FlatList, TouchableHighlight } from 'react-native'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
@@ -256,9 +255,10 @@ class Operations extends Component {
     isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
   }
 
-  _terminate = (isSuccessful, isRework, match, promptedDuration = 0) => {
+  _terminate = (isSuccessful, isRework, match) => {
     const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey }, passOffReqd } = this.props
     const { StartDate, EndDate: current_EndDate, Id } = match
+    const { promptedDuration } = this.state
     const new_EndDate = moment().format()
     const SuccessDate = moment().format()
 
@@ -276,9 +276,6 @@ class Operations extends Component {
       return false
     }
 
-    console.log({ passOffReqd })
-    console.log("FPO", this.state.FirstPOWooperationlog)
-
     if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && this.state.promptFirstPOQA === "0" && isSuccessful) {
       this.setState({
         promptIsSuccessful: isSuccessful,
@@ -286,7 +283,6 @@ class Operations extends Component {
         promptIsRework: isRework,
         promptMatch: match,
         promptedDuration
-
       })
 
       return false
@@ -369,33 +365,31 @@ class Operations extends Component {
   }
 
   renderDurationPrompt = () => {
-    const { promptIsSuccessful, promptIsRework: isRework, promptMatch: match } = this.state
+    const { promptDurationVisible, promptIsSuccessful, promptIsRework: isRework, promptMatch: match, promptedDuration } = this.state
     return (
-      <Prompt
-        title="Favor de introducir duración exacta"
-        placeholder="Duración"
-        defaultValue='0'
-        textInputProps={{
-          multiline: false,
-          numberOfLines: 1,
-        }}
-        visible={this.state.promptDurationVisible}
-        onCancel={() => this.setState({
-          promptIsSuccessful: false,
-          promptDurationVisible: false,
-          promptIsRework: false,
-          promptMatch: null,
-        })}
-        onSubmit={(value) => {
-          if (!value || value < 1) {
+      <Dialog.Container visible={promptDurationVisible}>
+        <Dialog.Title>Duración</Dialog.Title>
+        <Dialog.Description>
+          Favor de introducir duración exacta
+        </Dialog.Description>
+        <Dialog.Input onChangeText={(e) => this.setState({ promptedDuration: Number(e) })} />
+        <Dialog.Button label="Cancelar" onPress={() =>
+          this.setState({
+            promptIsSuccessful: false,
+            promptDurationVisible: false,
+            promptIsRework: false,
+            promptMatch: null,
+          })} />
+        <Dialog.Button label="Confirmar" onPress={() => {
+          if (!promptedDuration || promptedDuration < 1) {
             alert("Favor de introducir una duración válida.")
             return false
           }
 
           this.setState({ promptDurationVisible: false })
-
-          this._terminate(promptIsSuccessful, isRework, match, Number(value)) // Calls API call for Fail status
+          this._terminate(promptIsSuccessful, isRework, match) // Calls API call for Fail status
         }} />
+      </Dialog.Container>
     )
   }
 
