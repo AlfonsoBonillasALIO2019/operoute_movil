@@ -5,6 +5,7 @@ import Prompt from 'react-native-prompt'
 import { Picker, Button, Text, Badge } from 'native-base'
 import { View, FlatList, TouchableHighlight } from 'react-native'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
+import Dialog from "react-native-dialog"
 import styles from './Styles/OperationsStyle'
 
 class Operations extends Component {
@@ -26,8 +27,8 @@ class Operations extends Component {
     ReworkWooperationlog: [],
 
     promptFirstPOVisible: false,
-    promptFirstPOPassed: false,
     FirstPOWooperationlog: [],
+    promptFirstPOQA: '0',
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -269,7 +270,8 @@ class Operations extends Component {
         promptIsSuccessful: isSuccessful,
         promptDurationVisible: true,
         promptIsRework: isRework,
-        promptMatch: match
+        promptedDuration: 0,
+        promptMatch: match,
       })
 
       return false
@@ -277,10 +279,10 @@ class Operations extends Component {
 
     console.log({ passOffReqd })
 
-    if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && !this.state.promptFirstPOPassed) {
+    if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && this.state.promptFirstPOQA === "0") {
       this.setState({
         promptFirstPOVisible: true,
-        promptedDuration,
+        promptedDuration
       })
 
       return false
@@ -312,6 +314,7 @@ class Operations extends Component {
       ReworkWooperationlog: [],
       promptIsRework: false,
       promptMatch: null,
+      promptFirstPOQA: "0"
     })
 
     match && requestReworkWooperationlog(token, match.Id)
@@ -388,6 +391,43 @@ class Operations extends Component {
     )
   }
 
+  renderFirstPOPrompt = () => {
+    const { promptIsSuccessful, promptedDuration, promptIsRework: isRework, promptMatch: match, promptFirstPOVisible, promptFirstPOQA } = this.state
+
+    return (
+      <Dialog.Container visible={promptFirstPOVisible}>
+        <Dialog.Title>First Pass Off</Dialog.Title>
+        <Dialog.Description>
+          Favor de asignar un ingeniero de calidad para la inspección de esta parte.
+        </Dialog.Description>
+        <Picker
+          selectedValue={promptFirstPOQA}
+          style={{ maxHeight: 50 }}
+          onValueChange={(e) => { this.setState({ promptFirstPOQA: e }) }}>
+          <Picker.Item label="- Ingeniero de Calidad -" value="0" />
+          <Picker.Item label="Java" value="java" />
+          <Picker.Item label="JavaScript" value="js" />
+        </Picker>
+        <Dialog.Button label="Cancelar" onPress={() =>
+          this.setState({
+            promptIsSuccessful: false,
+            promptFirstPOVisible: false,
+            promptIsRework: false,
+            promptMatch: null,
+            promptedDuration: 0,
+          })} />
+        <Dialog.Button label="Confirmar" onPress={() => {
+          if (promptFirstPOQA === '0' || !promptFirstPOQA) {
+            alert("Favor de seleccionar un ingeniero de calidad.")
+            return false
+          }
+
+          this._terminate(promptIsSuccessful, isRework, match, promptedDuration) // Calls API call for Fail status
+        }} />
+      </Dialog.Container>
+    )
+  }
+
   renderPauseCausePrompt = () => {
     const { promptSerialNum: serialNum, promptMatch: match, promptIsRework: isRework } = this.state
     return (
@@ -413,18 +453,6 @@ class Operations extends Component {
     )
   }
 
-  renderFirstPOPrompt = () => {
-    const { promptIsSuccessful, promptedDuration, promptIsRework: isRework, promptMatch: match, promptFirstPOVisible } = this.state
-    // onCancel={() => this.setState({
-    //   promptIsSuccessful: false,
-    //   promptFirstPOVisible: false,
-    //   promptIsRework: false,
-    //   promptMatch: null,
-    //   promptedDuration: 0,
-    // })}
-    return promptFirstPOVisible === true && alert("Requiere revision")
-  }
-
   _renderItem = ({ item }) => {
     const { operators, fetchingWooperationlog } = this.props
     const operation = this.state.operationsLog[item.Id]
@@ -443,9 +471,6 @@ class Operations extends Component {
     return (
       <TouchableHighlight>
         <View style={[styles.row, { marginLeft: 0, marginRight: 0, marginTop: 0 }]}>
-          {this.renderDurationPrompt()}
-          {this.renderPauseCausePrompt()}
-          {this.renderFirstPOPrompt()}
           <Badge style={[styles.badge, { backgroundColor: itemStatusColor }]}>
             <Text style={styles.text16}>{itemStatusLabel}</Text>
           </Badge>
@@ -490,12 +515,13 @@ class Operations extends Component {
   }
 
   render() {
-    const { operations = [], FirstPOWooperationlog } = this.state
-
-    console.log({ FirstPOWooperationlog })
+    const { operations = [], FirstPOWooperationlog, promptFirstPOQA } = this.state
 
     return (
       <View style={styles.container}>
+        {this.renderDurationPrompt()}
+        {this.renderPauseCausePrompt()}
+        {this.renderFirstPOPrompt()}
         <FlatList
           data={operations}
           extraData={this.state}
