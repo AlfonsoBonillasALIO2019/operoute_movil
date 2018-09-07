@@ -70,6 +70,7 @@ export const INITIAL_STATE = Immutable({
 
   fetching: false,
   fetchingSelected: false,
+  fetchingLogs: false,
 
   error: null,
   errorSelected: null,
@@ -116,33 +117,33 @@ export const failureSelected = (state) =>
 
 // request wooperationlog data
 export const requestWooperationlog = (state, action) => {
-  return state.merge({ fetching: true, Wooperationlog: null })
+  return state.merge({ fetchingLogs: true, Wooperationlog: null })
 }
 
 // successful wooperationlog data
 export const successWooperationlog = (state, action) => {
   const { Wooperationlog } = action
-  return state.merge({ fetching: false, error: null, Wooperationlog })
+  return state.merge({ fetchingLogs: false, error: null, Wooperationlog })
 }
 
 // failed to post the wooperationlog data
 export const failureWooperationlog = (state) =>
-  state.merge({ fetching: false, error: true, Wooperationlog: null })
+  state.merge({ fetchingLogs: false, error: true, Wooperationlog: null })
 
 // request rework wooperationlog data
 export const requestReworkWooperationlog = (state, action) => {
-  return state.merge({ fetching: true, ReworkWooperationlog: null })
+  return state.merge({ fetchingLogs: true, ReworkWooperationlog: null })
 }
 
 // successful rework wooperationlog data
 export const successReworkWooperationlog = (state, action) => {
   const { ReworkWooperationlog } = action
-  return state.merge({ fetching: false, error: null, ReworkWooperationlog })
+  return state.merge({ fetchingLogs: false, error: null, ReworkWooperationlog })
 }
 
 // failed to post the rework wooperationlog data
 export const failureReworkWooperationlog = (state) =>
-  state.merge({ fetching: false, error: true, ReworkWooperationlog: null })
+  state.merge({ fetchingLogs: false, error: true, ReworkWooperationlog: null })
 
 // request first pass off wooperationlog data
 export const requestFirstPOWooperationlog = (state, action) => {

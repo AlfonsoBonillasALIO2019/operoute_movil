@@ -56,8 +56,6 @@ class Operations extends Component {
   }
 
   _cleanState = () => {
-    console.log("CLEAN")
-
     this.setState({
       prompt: {
         SerialNum: '',
@@ -506,7 +504,7 @@ class Operations extends Component {
   }
 
   _renderItem = ({ item }) => {
-    const { operators, fetchingWooperationlog } = this.props
+    const { operators, fetchingLogs } = this.props
     const operation = this.state.operationsLog[item.Id]
     const { statusObj, match, isRework } = this._getLogStatusObject(item)
 
@@ -517,12 +515,12 @@ class Operations extends Component {
       style: { height: 35, color: '#36454f' },
     }
 
-    const itemStatusColor = !fetchingWooperationlog ? statusObj.color : 'gray'
-    const itemStatusLabel = !fetchingWooperationlog ? statusObj.label : 'Cargando'
+    const itemStatusColor = !fetchingLogs ? statusObj.color : 'gray'
+    const itemStatusLabel = !fetchingLogs ? statusObj.label : 'Cargando'
 
     return (
       <TouchableHighlight>
-        <View style={[styles.row, { marginLeft: 0, marginRight: 0, marginTop: 0 }]}>
+        <View style={styles.row}>
           <Badge style={[styles.badge, { backgroundColor: itemStatusColor }]}>
             <Text style={styles.text16}>{itemStatusLabel}</Text>
           </Badge>
@@ -597,7 +595,7 @@ const mapStateToProps = (state) => {
 
     FirstPOWooperationlog: state.workOrder.FirstPOWooperationlog,
 
-    fetchingWooperationlog: state.workOrder.fetchingWooperationlog,
+    fetchingLogs: state.workOrder.fetchingLogs,
 
     operators: state.workOrder.operators,
     usersQA: state.workOrder.usersQA,

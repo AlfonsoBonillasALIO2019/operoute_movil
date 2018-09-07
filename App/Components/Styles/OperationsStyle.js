@@ -7,14 +7,18 @@ export default StyleSheet.create({
     flex: 1
   },
   row: {
-    flex: 1,
-    padding: 15,
     marginVertical: Metrics.smallMargin,
-    justifyContent: 'flex-start',
-    flexDirection: 'row',
     borderBottomColor: Colors.steel,
+    justifyContent: 'flex-start',
+    alignContent: 'center',
     borderBottomWidth: 1,
-    marginHorizontal: 20
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    marginRight: 0,
+    marginLeft: 0,
+    marginTop: 0,
+    padding: 15,
+    flex: 1
   },
   boldLabel: {
     flex: 1,
