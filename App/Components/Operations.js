@@ -371,9 +371,7 @@ class Operations extends Component {
     }
 
     this.setState({ ReworkWooperationlog: [], FirstPOWooperationlog: [] })
-
     match && requestReworkWooperationlog(token, match.Id)
-
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
   }
 
@@ -469,9 +467,7 @@ class Operations extends Component {
 
           this.setState({ prompt }) // Hide the dialog
           this._terminate(IsSuccessful, isRework, match) // Calls API call for Fail status
-
-          // Post the First Pass Off object
-          requestPostFirstPO(token, data)
+          requestPostFirstPO(token, data) // Post the First Pass Off object
         }} />
       </Dialog.Container>
     )

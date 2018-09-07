@@ -55,7 +55,7 @@ class HomeScreen extends Component {
         <Header searchBar>
           <Item>
             <Icon name="ios-search" />
-            <Input onChange={(e) => this.setState({ searchText: e.target.value })} placeholder="Buscar..." />
+            <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Buscar..." />
           </Item>
         </Header>
         <Content>
