@@ -12,23 +12,20 @@ class Operations extends Component {
     operations: [],
     operationsLog: [],
 
-    promptSerialNum: '',
-
-    promptDurationVisible: false,
-    promptedDuration: 0,
-
-    promptIsSuccessful: false,
-
-    promptPauseCauseVisible: false,
-    promptPauseReason: '',
-    promptReworkId: 0,
-    promptMatch: null,
+    prompt: {
+      SerialNum: '',
+      Visible: '',
+      Duration: 0,
+      IsSuccessful: false,
+      Pause_ReasonCode: '',
+      isRework: false,
+      ReworkId: 0,
+      match: null,
+      UserKey: '0',
+    },
 
     ReworkWooperationlog: [],
-
-    promptFirstPOVisible: false,
     FirstPOWooperationlog: [],
-    promptFirstPOQA: '0',
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -55,7 +52,28 @@ class Operations extends Component {
   }
 
   componentWillUnmount = () => {
-    this.setState({ ReworkWooperationlog: [], FirstPOWooperationlog: [] })
+    this._cleanState() // Clean state cause we need to render new info
+  }
+
+  _cleanState = () => {
+    console.log("CLEAN")
+
+    this.setState({
+      prompt: {
+        SerialNum: '',
+        Visible: '',
+        Duration: 0,
+        IsSuccessful: false,
+        Pause_ReasonCode: '',
+        isRework: false,
+        ReworkId: 0,
+        match: null,
+        UserKey: '0',
+      },
+
+      ReworkWooperationlog: [],
+      FirstPOWooperationlog: [],
+    })
   }
 
   _keyExtractor = (item, index) => item.id
@@ -209,7 +227,7 @@ class Operations extends Component {
 
   _pause = () => {
     const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
-    const { promptSerialNum: SerialNum, promptMatch: match, promptIsRework: isRework, promptPauseReason: Pause_ReasonCode } = this.state
+    const { prompt: { SerialNum, match, isRework, Pause_ReasonCode } } = this.state
     const Pause_Date = moment().format()
 
     const data = {
@@ -255,48 +273,54 @@ class Operations extends Component {
     isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
   }
 
-  _terminate = (isSuccessful, isRework, match) => {
+  _terminate = (IsSuccessful, isRework, match) => {
     const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey }, passOffReqd } = this.props
     const { StartDate, EndDate: current_EndDate, Id } = match
-    const { promptedDuration } = this.state
+    const { prompt: { Duration, UserKey } } = this.state
     const new_EndDate = moment().format()
     const SuccessDate = moment().format()
 
-    const duration = this.getMinutesBetweenDates(new_EndDate, moment(StartDate).add(7, 'hours')) + promptedDuration
+    const duration = this.getMinutesBetweenDates(new_EndDate, moment(StartDate).add(7, 'hours')) + Duration
 
     if (duration < 1) {
       this.setState({
-        promptIsSuccessful: isSuccessful,
-        promptDurationVisible: true,
-        promptIsRework: isRework,
-        promptedDuration: 0,
-        promptMatch: match,
+        prompt: {
+          Visible: 'duration',
+          IsSuccessful,
+          Duration: 0,
+          isRework,
+          UserKey,
+          match,
+        },
       })
 
       return false
     }
 
-    if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && this.state.promptFirstPOQA === "0" && isSuccessful) {
+    if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && UserKey === "0" && IsSuccessful) {
       this.setState({
-        promptIsSuccessful: isSuccessful,
-        promptFirstPOVisible: true,
-        promptIsRework: isRework,
-        promptMatch: match,
-        promptedDuration
+        prompt: {
+          Visible: 'firstPO',
+          IsSuccessful,
+          Duration,
+          isRework,
+          UserKey,
+          match,
+        },
       })
 
       return false
     }
 
     data = {
-      OperationSuccess: isSuccessful,
+      OperationSuccess: IsSuccessful,
       Id,
     }
 
-    if (isSuccessful)
+    if (IsSuccessful)
       data = {
         ...data,
-        OperationSuccess: isSuccessful,
+        OperationSuccess: IsSuccessful,
       }
 
     if (!current_EndDate)
@@ -308,16 +332,7 @@ class Operations extends Component {
 
     isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
 
-    this.setState({
-      promptDurationVisible: false,
-      promptFirstPOVisible: false,
-      promptIsSuccessful: false,
-      ReworkWooperationlog: [],
-      promptIsRework: false,
-      promptFirstPOQA: "0",
-      promptedDuration: 0,
-      promptMatch: null,
-    })
+    this._cleanState() // Clean state cause we need to render new info
 
     match && requestReworkWooperationlog(token, match.Id)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
@@ -325,7 +340,7 @@ class Operations extends Component {
 
   getMinutesBetweenDates = (startDate, endDate) => (Math.abs(new Date(startDate) - new Date(endDate))) / 60000
 
-  postLog = (id, serialNum, isRework, match = null) => {
+  postLog = (id, SerialNum, isRework, match = null) => {
     const { token, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const operationLog = this.state.operationsLog[id]
 
@@ -336,11 +351,11 @@ class Operations extends Component {
 
     switch (operationLog.Status) {
       case "Start": {
-        this._start(id, serialNum, isRework, match)
+        this._start(id, SerialNum, isRework, match)
         break
       }
       case "Pause": {
-        this.setState({ promptPauseCauseVisible: true, promptSerialNum: serialNum, promptMatch: match, promptIsRework: isRework })
+        this.setState({ prompt: { Visible: 'pause', SerialNum, match, isRework } })
         break
       }
       case "Resume": {
@@ -357,7 +372,7 @@ class Operations extends Component {
       }
     }
 
-    this.setState({ ReworkWooperationlog: [] })
+    this.setState({ ReworkWooperationlog: [], FirstPOWooperationlog: [] })
 
     match && requestReworkWooperationlog(token, match.Id)
 
@@ -365,48 +380,72 @@ class Operations extends Component {
   }
 
   renderDurationPrompt = () => {
-    const { promptDurationVisible, promptIsSuccessful, promptIsRework: isRework, promptMatch: match, promptedDuration } = this.state
+    const {
+      prompt,
+      prompt: {
+        Visible,
+        IsSuccessful,
+        Duration,
+        isRework,
+        match,
+      },
+    } = this.state
+
     return (
-      <Dialog.Container visible={promptDurationVisible}>
+      <Dialog.Container visible={Visible === 'duration'}>
         <Dialog.Title>Duración</Dialog.Title>
         <Dialog.Description>
           Favor de introducir duración exacta
         </Dialog.Description>
-        <Dialog.Input onChangeText={(e) => this.setState({ promptedDuration: Number(e) })} />
-        <Dialog.Button label="Cancelar" onPress={() =>
-          this.setState({
-            promptIsSuccessful: false,
-            promptDurationVisible: false,
-            promptIsRework: false,
-            promptMatch: null,
-          })} />
+        <Dialog.Input value={Duration} onChangeText={(text) => {
+          prompt.Duration = Number(text)
+          this.setState({ prompt })
+        }} />
+        <Dialog.Button label="Cancelar" onPress={() => this._cleanState()} />
         <Dialog.Button label="Confirmar" onPress={() => {
-          if (!promptedDuration || promptedDuration < 1) {
+          if (!Duration || Duration < 1) {
             alert("Favor de introducir una duración válida.")
             return false
           }
 
-          this.setState({ promptDurationVisible: false })
-          this._terminate(promptIsSuccessful, isRework, match) // Calls API call for Fail status
+          prompt.Visible = ''
+          prompt.ReworkWooperationlog = []
+          prompt.FirstPOWooperationlog = []
+
+          this.setState({ prompt })
+          this._terminate(IsSuccessful, isRework, match) // Calls API call for Fail status
         }} />
       </Dialog.Container>
     )
   }
 
   renderFirstPOPrompt = () => {
-    const { promptIsSuccessful, promptedDuration, promptIsRework: isRework, promptMatch: match, promptFirstPOVisible, promptFirstPOQA } = this.state
+    let {
+      prompt,
+      prompt: {
+        IsSuccessful,
+        isRework,
+        Visible,
+        match,
+        UserKey,
+      },
+    } = this.state
+
     const { usersQA } = this.props
 
     return (
-      <Dialog.Container visible={promptFirstPOVisible}>
+      <Dialog.Container visible={Visible === 'firstPO'}>
         <Dialog.Title>First Pass Off</Dialog.Title>
         <Dialog.Description>
           Favor de asignar un ingeniero de calidad para la inspección de esta parte.
         </Dialog.Description>
         <Picker
-          selectedValue={promptFirstPOQA}
+          selectedValue={UserKey}
           style={{ maxHeight: 50 }}
-          onValueChange={(e) => { this.setState({ promptFirstPOQA: e }) }}>
+          onValueChange={(e) => {
+            prompt.UserKey = e
+            this.setState({ prompt })
+          }}>
           {usersQA &&
             [
               <Picker.Item label={"- Ingeniero de Calidad -"} value='0' key={'qa_user_picker_default'} />,
@@ -416,32 +455,22 @@ class Operations extends Component {
             ]
           }
         </Picker>
-        <Dialog.Button label="Cancelar" onPress={() =>
-          this.setState({
-            promptIsSuccessful: false,
-            promptFirstPOVisible: false,
-            promptIsRework: false,
-            promptedDuration: 0,
-            promptMatch: null,
-          })} />
+        <Dialog.Button label="Cancelar" onPress={() => this._cleanState()} />
         <Dialog.Button label="Confirmar" onPress={() => {
-          if (promptFirstPOQA === '0' || !promptFirstPOQA) {
+          if (UserKey === '0' || !UserKey) {
             alert("Favor de seleccionar un ingeniero de calidad.")
             return false
           }
 
-          this.setState({ promptFirstPOVisible: false }) // Hide the dialog
-
-          this._terminate(promptIsSuccessful, isRework, match, promptedDuration) // Calls API call for Fail status
-
           const { requestPostFirstPO, token, search: { WOKey, RCTKey, OperationKey } } = this.props
-          const data = {
-            WOKey,
-            RCTKey,
-            OperationKey,
-            UserKey: promptFirstPOQA,
-            SerialNum: match.SerialNum,
-          }
+          const data = { WOKey, RCTKey, UserKey, OperationKey, SerialNum: match.SerialNum }
+
+          prompt.Visible = ''
+          prompt.ReworkWooperationlog = []
+          prompt.FirstPOWooperationlog = []
+
+          this.setState({ prompt }) // Hide the dialog
+          this._terminate(IsSuccessful, isRework, match) // Calls API call for Fail status
 
           // Post the First Pass Off object
           requestPostFirstPO(token, data)
@@ -451,30 +480,26 @@ class Operations extends Component {
   }
 
   renderPauseCausePrompt = () => {
-    const { promptPauseCauseVisible, promptPauseReason } = this.state
+    let { prompt, prompt: { Pause_ReasonCode, Visible } } = this.state
     return (
-      <Dialog.Container visible={promptPauseCauseVisible}>
+      <Dialog.Container visible={Visible === 'pause'}>
         <Dialog.Title>Motivo</Dialog.Title>
         <Dialog.Description>
           Favor de introducir el motivo de pausa.
         </Dialog.Description>
-        <Dialog.Input onChangeText={(e) => this.setState({ promptPauseReason: e })} />
-        <Dialog.Button label="Cancelar" onPress={() =>
-          this.setState({
-            promptPauseCauseVisible: false,
-            promptIsRework: false,
-            promptSerialNum: '',
-            promptMatch: null,
-          })} />
+        <Dialog.Input value={Pause_ReasonCode} onChangeText={(e) => {
+          prompt.Pause_ReasonCode = e
+          this.setState({ prompt })
+        }} />
+        <Dialog.Button label="Cancelar" onPress={() => this._cleanState()} />
         <Dialog.Button label="Confirmar" onPress={() => {
-          if (!promptPauseReason || promptPauseReason === '') {
+          if (!Pause_ReasonCode || Pause_ReasonCode === '') {
             alert("Favor de introducir un motivo de pausa válido.")
             return false
           }
 
           this._pause() // Calls API call for Pause status
-
-          this.setState({ ReworkWooperationlog: [], promptPauseCauseVisible: false, promptSerialNum: '', promptMatch: null, promptIsRework: false, promptPauseReason: '' })
+          this._cleanState() // Clean state cause we need to render new info
         }} />
       </Dialog.Container>
     )
