@@ -35,8 +35,6 @@ export function* getQAUsers(api, action) {
 
   const response = yield call(api.getQAUsers, token)
 
-  console.log({ response })
-
   if (response.ok) {
     let { data } = response
     yield put(WorkOrderActions.usersQASuccess(data))

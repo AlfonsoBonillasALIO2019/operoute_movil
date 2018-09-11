@@ -26,6 +26,11 @@ export default class OrderScreen extends Component {
     try {
       Description = order.Routecards[0].RouteCard[0].PartInfo.Description
     } catch (err) { }
+
+    let thumb = Images.noPart
+    if (order.Routecards[0].RouteCard && order.Routecards[0].RouteCard[0] && order.Routecards[0].RouteCard[0].Id >= 2 && order.Routecards[0].RouteCard[0].Id <= 10)
+      thumb = Images.part[order.Routecards[0].RouteCard[0].Id]
+
     return (
       <Container style={{ margin: 50 }}>
         <Header>
@@ -36,7 +41,7 @@ export default class OrderScreen extends Component {
           <Right />
         </Header>
         <Content>
-          <Image resizeMode="contain" source={Images.launch} style={{ height: 300, width: null, flex: 1 }} />
+          <Image resizeMode="contain" source={thumb} style={{ height: 300, width: null, flex: 1 }} />
           <List>
             <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', }}>
               <H3 style={{ width: 150, color: '#333' }}>Work Order</H3>

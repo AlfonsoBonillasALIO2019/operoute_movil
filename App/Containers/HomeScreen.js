@@ -59,7 +59,6 @@ class HomeScreen extends Component {
           </Item>
         </Header>
         <Content>
-          <H1>Welcome {`${FirstName} ${LastName}`}</H1>
           <FlatList
             data={!this.state.searchText ? orders : this.filterOrders(orders)}
             renderItem={({ item }) => {
@@ -67,13 +66,18 @@ class HomeScreen extends Component {
               try {
                 Description = item.RouteCard[0].PartInfo.Description
               } catch (err) { }
+
+              let thumb = Images.noPart
+              if (item.RouteCard && item.RouteCard[0] && item.RouteCard[0].Id >= 2 && item.RouteCard[0].Id <= 10)
+                thumb = Images.part[item.RouteCard[0].Id]
+
               return (
                 <ListItem
                   onPress={() =>
                     navigate('Modal', { workOrderId: item.Id })
                   }>
                   <Left>
-                    <Thumbnail square size={80} source={Images.clearLogo} />
+                    <Thumbnail square large source={thumb} />
                     <Body>
                       <Text>{item.WONum}</Text>
                       <Text note>{Description}</Text>
