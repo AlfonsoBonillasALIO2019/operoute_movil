@@ -69,7 +69,7 @@ class OperationScreen extends Component {
       <Container>
         <Header>
           <Left>
-            <Thumbnail square size={50} source={Images.launch} />
+            <Thumbnail square size={50} source={Images.logo_topBar} />
           </Left>
           <Body>
             <Title>{Operation.Name}</Title>
