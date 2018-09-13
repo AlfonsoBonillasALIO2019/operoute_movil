@@ -43,7 +43,7 @@ class HomeScreen extends Component {
 
     return (
       <Container>
-        <Header>
+        <Header style={{ backgroundColor: '#012a5a' }}>
           <Left>
             <Thumbnail square size={50} source={Images.logo_topBar} />
           </Left>
@@ -52,7 +52,7 @@ class HomeScreen extends Component {
           </Body>
           <Right />
         </Header>
-        <Header searchBar>
+        <Header style={{ backgroundColor: '#012a5a' }} searchBar>
           <Item>
             <Icon name="ios-search" />
             <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Buscar..." />
