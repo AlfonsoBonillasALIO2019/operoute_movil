@@ -10,7 +10,7 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#012a5a'
+    backgroundColor: '#4f6987'
   },
   logo: {
     height: 120
@@ -36,7 +36,7 @@ export default StyleSheet.create({
     width: 200,
     height: 50,
     elevation: 0,
-    backgroundColor: '#00b193',
+    backgroundColor: '#66afa3',
   },
   buttonText: {
     color: '#f6f6f6'

@@ -1,22 +1,26 @@
 import React, { Component } from 'react'
-import { ScrollView, Image, View, FlatList } from 'react-native'
-import { Images } from '../Themes'
-import {
-  Container, Header, Title, Content, Footer, FooterTab,
-  Button, Left, Right, Body, Icon, Text,
-  Card, CardItem,
-  Form, Item, Input,
-  List, ListItem, Thumbnail, H1
-} from 'native-base';
-import { connect } from 'react-redux'
 import moment from 'moment'
-// Styles
-import styles from './Styles/LaunchScreenStyles'
+import { connect } from 'react-redux'
+import { FlatList } from 'react-native'
+import { View, Container, Header, Title, Content, Left, Right, Body, Icon, Text, Item, Input, ListItem, Thumbnail, H3 } from 'native-base'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
+import styles from './Styles/HomeScreenStyles'
+import { Images } from '../Themes'
 
 class HomeScreen extends Component {
   state = {
     searchText: '',
+    mockData: [
+      { name: 'Loading' },
+      { name: 'Loading' },
+      { name: 'Loading' },
+      { name: 'Loading' },
+      { name: 'Loading' },
+      { name: 'Loading' },
+      { name: 'Loading' },
+      { name: 'Loading' },
+      { name: 'Loading' }
+    ]
   }
 
   componentDidMount() {
@@ -37,61 +41,110 @@ class HomeScreen extends Component {
     return result
   }
 
-  render() {
+  _renderMockFlatList = () => {
+    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewIcon } = styles
+    return (
+      <FlatList
+        data={this.state.mockData}
+        renderItem={({ item }) => {
+          return (
+            <ListItem onPress={() => { }} style={[listItem, { borderColor: '#dadada' }]}>
+              <Left style={listItemLeft}>
+                <Thumbnail square large source={Images.noPart} />
+                <Body>
+                  <Text style={listItemLeftTextMain}>Loading</Text>
+                  <Text style={listItemLeftTextSecondary}>Just a sec...</Text>
+                </Body>
+              </Left>
+              <Right>
+                <View style={listItemRightView}>
+                  <Icon style={listItemRightViewIcon} name="ios-arrow-forward" />
+                </View>
+              </Right>
+            </ListItem>
+          )
+        }}
+      />
+    )
+  }
+
+  _renderFlatList = () => {
+    const { orders } = this.props
+    return (
+      <FlatList
+        data={!this.state.searchText ? orders : this.filterOrders(orders)}
+        renderItem={this._renderWorkOrder}
+      />)
+  }
+
+  _renderWorkOrder = ({ item }) => {
     const { navigate } = this.props.navigation
-    const { orders, token, user: { FirstName, LastName } = {} } = this.props
+    let Description = ''
+    let thumb = Images.noPart
+    let borderColor = "#dadada"
+
+    try {
+      Description = item.RouteCard[0].PartInfo.Description
+    } catch (err) { }
+
+    if (item.RouteCard && item.RouteCard[0] && item.RouteCard[0].Id >= 2 && item.RouteCard[0].Id <= 10) {
+      const { Id } = item.RouteCard[0]
+      thumb = Images.part[Id]
+
+      if (Id >= 0 && Id <= 4)
+        borderColor = '#eb5da4'
+
+      if (Id >= 5 && Id <= 7)
+        borderColor = '#6061aa'
+
+      if (Id >= 8 && Id <= 10)
+        borderColor = '#fe9200'
+    }
+
+    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewLabel, listItemRightViewDate, listItemRightViewIcon } = styles
+
+    return (
+      <ListItem onPress={() => navigate('Modal', { workOrderId: item.Id })}
+        style={[listItem, { borderColor }]}>
+        <Left style={listItemLeft}>
+          <Thumbnail square large source={thumb} />
+          <Body>
+            <Text style={listItemLeftTextMain}>{item.WONum.toUpperCase()}</Text>
+            <Text style={listItemLeftTextSecondary}>{Description}</Text>
+          </Body>
+        </Left>
+        <Right>
+          <View style={listItemRightView}>
+            <Text style={listItemRightViewLabel}>Req. Date: </Text>
+            <Text style={listItemRightViewDate}>{moment(item.ModifiedDate).format("ll")}</Text>
+            <Icon style={listItemRightViewIcon} name="ios-arrow-forward" />
+          </View>
+        </Right>
+      </ListItem>
+    )
+  }
+
+  render() {
+    const { orders, user: { FirstName } = {} } = this.props
+    const { header, mainBackgroundColor, headerTitle, container } = styles
 
     return (
       <Container>
-        <Header style={{ backgroundColor: '#012a5a' }}>
-          <Left>
-            <Thumbnail square size={50} source={Images.logo_topBar} />
-          </Left>
-          <Body>
-            <Title>Work Orders</Title>
-          </Body>
-          <Right />
+        <Header style={[header, mainBackgroundColor]}>
+          <Thumbnail square size={35} source={Images.logo_topBar} />
+          <Title style={headerTitle}>Work Orders</Title>
         </Header>
-        <Header style={{ backgroundColor: '#012a5a' }} searchBar>
-          <Item>
+        <Header style={mainBackgroundColor} searchBar>
+          <Item style={{ borderRadius: 5 }}>
             <Icon name="ios-search" />
             <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Buscar..." />
           </Item>
         </Header>
-        <Content>
-          <FlatList
-            data={!this.state.searchText ? orders : this.filterOrders(orders)}
-            renderItem={({ item }) => {
-              let Description = ''
-              try {
-                Description = item.RouteCard[0].PartInfo.Description
-              } catch (err) { }
-
-              let thumb = Images.noPart
-              if (item.RouteCard && item.RouteCard[0] && item.RouteCard[0].Id >= 2 && item.RouteCard[0].Id <= 10)
-                thumb = Images.part[item.RouteCard[0].Id]
-
-              return (
-                <ListItem
-                  onPress={() =>
-                    navigate('Modal', { workOrderId: item.Id })
-                  }>
-                  <Left>
-                    <Thumbnail square large source={thumb} />
-                    <Body>
-                      <Text>{item.WONum}</Text>
-                      <Text note>{Description}</Text>
-                    </Body>
-                  </Left>
-                  <Right>
-                    <Text>{moment(item.ModifiedDate).format("ll")}</Text>
-                    <Icon name="arrow-forward" />
-                  </Right>
-                </ListItem>
-              )
-            }
-            }
-          />
+        <Content style={container}>
+          {/* <H3 style={{ color: '#4f6987', marginLeft: 10, marginTop: 30, marginBottom: 25, fontWeight: "400" }}>
+            Welcome {FirstName}
+          </H3> */}
+          {orders.length === 0 ? this._renderMockFlatList() : this._renderFlatList()}
         </Content>
       </Container>
     );
