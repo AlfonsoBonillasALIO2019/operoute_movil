@@ -4,10 +4,12 @@ import { connect } from 'react-redux'
 
 // More info here: https://facebook.github.io/react-native/docs/flatlist.html
 
-import { Container, Header, Title, Content, Footer, FooterTab, 
-  Button, Left, Right, Body, Icon, Text, 
+import {
+  Container, Header, Title, Content, Footer, FooterTab,
+  Button, Left, Right, Body, Icon, Text,
   Card, CardItem,
-  Form, Item, Input, List, ListItem, H3 } from 'native-base';
+  Form, Item, Input, List, ListItem, H3
+} from 'native-base';
 
 // Styles
 import styles from './Styles/SerialNumbersStyle'
@@ -20,28 +22,28 @@ class SerialNumbers extends React.PureComponent {
   *************************************************************/
   state = {
     dataObjects: [
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
-      {serial: '112201', operation: 'First Description', status:'Pending'},
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
+      { serial: '112201', operation: 'First Description', status: 'Pending' },
     ]
   }
 
   pressItem = item => {
     const { navigate } = this.props.navigation
-    navigate('Operation',item)
+    navigate('Operation', item)
   }
 
   /* ***********************************************************
@@ -52,25 +54,21 @@ class SerialNumbers extends React.PureComponent {
   * e.g.
     return <MyCustomCell title={item.title} description={item.description} />
   *************************************************************/
-  renderRow = ({item}) => {
+  renderRow = ({ item }) => {
     // alert(JSON.stringify(this._onPressButton))
 
     const { card, serials } = this.props
 
-    const { Operation={} } = item
+    const { Operation = {} } = item
     return (
       <TouchableHighlight
-          onPress={() =>{
-            this.pressItem({card, Operation, serials})
-          }
-          }>
+        onPress={() => {
+          this.pressItem({ card, Operation, serials })
+        }
+        }>
         <View style={styles.row}>
           <Text style={styles.serial}>{Operation.OperationNum}</Text>
           <Text style={styles.operation}>{Operation.Name}</Text>
-          <View style={styles.status}>
-            <View style={styles.circle} />
-            <Text style={styles.status_text}>{item.status}</Text>
-          </View>
         </View>
       </TouchableHighlight>
     )
@@ -82,16 +80,13 @@ class SerialNumbers extends React.PureComponent {
   * to your liking!  Each with some friendly advice.
   *************************************************************/
   // Render a header?
-  renderHeader = () =>(
+  renderHeader = () => (
     <View style={styles.row}>
-      <Text style={[styles.serial,styles.title]}>SERIAL</Text>
-      <Text style={[styles.operation,styles.title]}>OPERATION</Text>
-      <View style={styles.status}>
-        <Text style={[styles.status_text,styles.title]}>STATUS</Text>
-      </View>
+      <Text style={[styles.serial, styles.title]}>SERIAL</Text>
+      <Text style={[styles.operation, styles.title]}>OPERATION</Text>
     </View>
   )
-    
+
 
   // Render a footer?
   renderFooter = () =>
@@ -125,17 +120,17 @@ class SerialNumbers extends React.PureComponent {
   //   {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
   // )}
 
-  render () {
-    const { card:{Operations, RouteCard} } = this.props
+  render() {
+    const { card: { Operations, RouteCard } } = this.props
 
     let Description = ''
     try {
       Description = RouteCard[0].PartInfo.Description
-    }catch(err){}
+    } catch (err) { }
     return (
-      <Container style={{margin:50}}>
+      <Container style={{ margin: 50 }}>
         <Header>
-          <Left/>
+          <Left />
           <Body>
             <Title>{Description}</Title>
           </Body>

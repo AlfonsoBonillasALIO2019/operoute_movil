@@ -10,17 +10,7 @@ import { Images } from '../Themes'
 class HomeScreen extends Component {
   state = {
     searchText: '',
-    mockData: [
-      { name: 'Loading' },
-      { name: 'Loading' },
-      { name: 'Loading' },
-      { name: 'Loading' },
-      { name: 'Loading' },
-      { name: 'Loading' },
-      { name: 'Loading' },
-      { name: 'Loading' },
-      { name: 'Loading' }
-    ]
+    mockData: [1, 2, 3, 4, 5, 6, 7, 8, 9]
   }
 
   componentDidMount() {
@@ -45,6 +35,7 @@ class HomeScreen extends Component {
     const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewIcon } = styles
     return (
       <FlatList
+        style={{ opacity: 0.6 }}
         data={this.state.mockData}
         renderItem={({ item }) => {
           return (
@@ -52,8 +43,9 @@ class HomeScreen extends Component {
               <Left style={listItemLeft}>
                 <Thumbnail square large source={Images.noPart} />
                 <Body>
-                  <Text style={listItemLeftTextMain}>Loading</Text>
-                  <Text style={listItemLeftTextSecondary}>Just a sec...</Text>
+                  <Text style={{ height: 10, width: 100, backgroundColor: '#dadada', marginBottom: 5 }} />
+                  <Text style={{ height: 10, width: 200, backgroundColor: '#dadada', marginBottom: 5 }} />
+                  <Text style={{ height: 10, width: 70, backgroundColor: '#dadada' }} />
                 </Body>
               </Left>
               <Right>
