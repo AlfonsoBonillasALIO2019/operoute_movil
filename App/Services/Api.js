@@ -3,7 +3,7 @@ import apisauce from 'apisauce'
 import { actionChannel } from '../../node_modules/redux-saga/effects';
 
 // our "constructor"
-const create = (baseURL = 'http://172.16.10.112:8000/') => {
+const create = (baseURL = 'http://10.9.9.139:8000/') => {
   // ------
   // STEP 1
   // ------
@@ -48,6 +48,13 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
   })
 
   const getWorkOrderById = (token, workOrderId) => api.get(`/api/workorder/${workOrderId}`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const refreshPanel = (token) => api.get(`/#!/workorder_refresh`, {}, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -184,6 +191,7 @@ const create = (baseURL = 'http://172.16.10.112:8000/') => {
     getWorkOrders,
     getWorkOrderById,
     getActiveOperators,
+    refreshPanel,
 
     putWooperationlog,
     postWooperationlog,

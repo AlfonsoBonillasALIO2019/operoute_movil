@@ -7,7 +7,7 @@ export function* getWorkOrders(api, action) {
   // make the call to the api
   const response = yield call(api.getWorkOrders, token)
   // alert(JSON.stringify({name:'alfredo'}))
-
+  console.log('Response: ', response);
   if (response.ok) {
     let { data } = response
     data.reverse()
@@ -40,6 +40,19 @@ export function* getQAUsers(api, action) {
     yield put(WorkOrderActions.usersQASuccess(data))
   } else {
     yield put(WorkOrderActions.usersQAFailure())
+  }
+}
+
+export function* refreshPanel(api, action) {
+  const { token } = action
+
+  const response = yield call(api.refreshPanel, token)
+  console.log('Response: ', response);
+  if (response.ok) {
+    let { data } = response
+    yield put(WorkOrderActions.refreshPanelSuccess(data))
+  } else {
+    yield put(WorkOrderActions.refreshPanelFailure())
   }
 }
 

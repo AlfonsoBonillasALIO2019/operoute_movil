@@ -20,6 +20,7 @@ import {
   getWorkOrders,
   getWorkOrderById,
   getActiveOperators,
+  refreshPanel,
 
   postFirstPO,
   postWooperationlog,
@@ -51,6 +52,8 @@ export default function* root() {
 
     takeLatest(WorkOrderTypes.OPERATORS_REQUEST, getActiveOperators, api),
     takeLatest(WorkOrderTypes.USERS_Q_A_REQUEST, getQAUsers, api),
+
+    takeLatest(WorkOrderTypes.REFRESH_PANEL_REQUEST, refreshPanel, api),
 
     takeLatest(WorkOrderTypes.WORK_ORDER_REQUEST, getWorkOrders, api),
     takeLatest(WorkOrderTypes.WORK_ORDER_BY_ID_REQUEST, getWorkOrderById, api),

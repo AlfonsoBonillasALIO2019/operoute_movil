@@ -12,6 +12,10 @@ const { Types, Creators } = createActions({
   usersQASuccess: ['usersQA'],
   usersQAFailure: null,
 
+  refreshPanelRequest: ['token'],
+  refreshPanelSuccess: ['refreshStatus'],
+  refreshPanelFailure: null,
+
   workOrderRequest: ['token'],
   workOrderSuccess: ['orders'],
   workOrderFailure: null,
@@ -58,6 +62,7 @@ export const INITIAL_STATE = Immutable({
   orders: [],
   usersQA: [],
   operators: [],
+  refreshStatus: null,
 
   selectedOrder: null,
 
@@ -248,6 +253,21 @@ export const successUsersQA = (state, action) => {
 export const failureUsersQA = (state) =>
   state.merge({ fetching: false, error: true, usersQA: [] })
 
+// Refresh panel request
+export const requestRefreshPanel = (state, action) => {
+  return state.merge({ fetching: true })
+}
+
+// Refresh panel successful response
+export const successRefreshPanel = (state, action) => {
+  const { refreshStatus } = action
+  return state.merge({ fetching: false, refreshStatus })
+}
+
+// Refresh panel request failed
+export const failureRefreshPanel = (state) =>
+  state.merge({ fetching: false, error: true, refreshStatus: null })  
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -258,6 +278,10 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.USERS_Q_A_REQUEST]: requestUsersQA,
   [Types.USERS_Q_A_SUCCESS]: successUsersQA,
   [Types.USERS_Q_A_FAILURE]: failureUsersQA,
+
+  [Types.REFRESH_PANEL_REQUEST]: requestRefreshPanel,
+  [Types.REFRESH_PANEL_SUCCESS]: successRefreshPanel,
+  [Types.REFRESH_PANEL_FAILURE]: failureRefreshPanel,
 
   [Types.WORK_ORDER_REQUEST]: request,
   [Types.WORK_ORDER_SUCCESS]: success,

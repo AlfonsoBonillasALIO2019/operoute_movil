@@ -6,6 +6,9 @@ import { View, FlatList, TouchableHighlight } from 'react-native'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 import Dialog from "react-native-dialog"
 import styles from './Styles/OperationsStyle'
+import SocketIOClient from 'socket.io-client';
+
+const socket = SocketIOClient('http://10.9.9.139:3050');
 
 class Operations extends Component {
   state = {
@@ -221,10 +224,12 @@ class Operations extends Component {
 
       requestPutReworkWooperationlog(token, data, match.Id)
     }
+    setTimeout(function(){socket.emit('requestWOOperationLogData');}, 3000);
+    //socket.emit('requestWOOperationLogData');
   }
 
   _pause = () => {
-    const { token, requestPutWooperationlog, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+    const { token, requestPutWooperationlog, requestRefreshPanel, requestPutReworkWooperationlog, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const { prompt: { SerialNum, match, isRework, Pause_ReasonCode } } = this.state
     const Pause_Date = moment().format()
 
@@ -240,6 +245,8 @@ class Operations extends Component {
     isRework ? requestPutReworkWooperationlog(token, data, match.Id) : requestPutWooperationlog(token, data, match.Id)
     match && requestReworkWooperationlog(token, match.Id)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+    requestRefreshPanel(token)
+    setTimeout(function(){ socket.emit('requestWOOperationLogData'); }, 3000);
   }
 
   _resume = (match, isRework) => {
@@ -269,6 +276,7 @@ class Operations extends Component {
     }
 
     isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
+    setTimeout(function(){ socket.emit('requestWOOperationLogData'); }, 3000);
   }
 
   _terminate = (IsSuccessful, isRework, match) => {
@@ -339,7 +347,7 @@ class Operations extends Component {
   getMinutesBetweenDates = (startDate, endDate) => (Math.abs(new Date(startDate) - new Date(endDate))) / 60000
 
   postLog = (id, SerialNum, isRework, match = null) => {
-    const { token, requestWooperationlog, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
+    const { token, requestWooperationlog, requestRefreshPanel, requestReworkWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
     const operationLog = this.state.operationsLog[id]
 
     if (!operationLog || !operationLog.OperatorKey || !operationLog.OperatorKey === "0" || operationLog.Status === "0") {
@@ -373,6 +381,8 @@ class Operations extends Component {
     this.setState({ ReworkWooperationlog: [], FirstPOWooperationlog: [] })
     match && requestReworkWooperationlog(token, match.Id)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
+    //requestRefreshPanel(token)
+    socket.emit('requestWOOperationLogData');
   }
 
   renderDurationPrompt = () => {
@@ -595,6 +605,7 @@ const mapStateToProps = (state) => {
 
     operators: state.workOrder.operators,
     usersQA: state.workOrder.usersQA,
+    refreshStatus: state.workOrder.refreshStatus,
 
     token: state.login.token,
     user: state.login.user
@@ -612,6 +623,7 @@ const mapDispatchToProps = (dispatch) => {
     requestPostFirstPO: (token, data) => dispatch(WorkOrderActions.postFirstPORequest(token, data)),
     requestOperators: token => dispatch(WorkOrderActions.operatorsRequest(token)),
     requestUsersQA: token => dispatch(WorkOrderActions.usersQARequest(token)),
+    requestRefreshPanel: token => dispatch(WorkOrderActions.refreshPanelRequest(token)),
   }
 }
 
