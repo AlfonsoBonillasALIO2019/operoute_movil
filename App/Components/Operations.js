@@ -8,7 +8,7 @@ import Dialog from "react-native-dialog"
 import styles from './Styles/OperationsStyle'
 import SocketIOClient from 'socket.io-client';
 
-const socket = SocketIOClient('http://10.9.9.139:3050');
+const socket = SocketIOClient('http://192.168.10.21:3050');
 
 class Operations extends Component {
   state = {
