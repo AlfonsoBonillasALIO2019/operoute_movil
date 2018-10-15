@@ -8,8 +8,8 @@ export default StyleSheet.create({
   },
   logo: {
     marginTop: Metrics.doubleSection,
-    height: Metrics.images.logo,
-    width: Metrics.images.logo,
+    height: Metrics.images.logo_topBar,
+    width: Metrics.images.logo_topBar,
     resizeMode: 'contain'
   },
   centered: {

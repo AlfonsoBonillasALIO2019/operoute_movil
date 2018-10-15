@@ -266,7 +266,7 @@ export const successRefreshPanel = (state, action) => {
 
 // Refresh panel request failed
 export const failureRefreshPanel = (state) =>
-  state.merge({ fetching: false, error: true, refreshStatus: null })  
+  state.merge({ fetching: false, error: true, refreshStatus: null })
 
 /* ------------- Hookup Reducers To Types ------------- */
 
