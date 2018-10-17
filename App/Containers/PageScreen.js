@@ -1,16 +1,15 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, View } from 'react-native'
 import { connect } from 'react-redux'
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
-
-// Styles
-import styles from './Styles/PageScreenStyle'
-
+import { Image } from 'react-native'
+import { Pages } from 'react-native-pages'
+import { Images } from '../Themes'
+import {
+  View, Thumbnail, Container, Header, Title, Content, Footer, Button,
+  Text, Left, Right, Body, Icon, List, ListItem, H3
+} from 'native-base'
+import styles from './Styles/DefaultBaseStyles'
 import OrderScreen from './OrderScreen'
 import SerialNumbers from './SerialNumbers'
-
-import { Pages } from 'react-native-pages'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 
 class PageScreen extends Component {
@@ -27,10 +26,59 @@ class PageScreen extends Component {
     requestSelected(token, workOrderId)
   }
 
+  _renderMockContainer() {
+    const { header, mainBackgroundColor, headerTitle } = styles
+    let thumb = Images.noPart
+
+    return (
+      <Container>
+        <Header style={[header, mainBackgroundColor]}>
+          <Thumbnail square size={35} source={Images.logo_topBar} />
+          <Title style={headerTitle}>Work Order: Loading</Title>
+        </Header>
+        <Content>
+          <View style={{ backgroundColor: '#e2e2e2', width: '100%', height: 400 }}>
+            <Image resizeMode="contain" source={thumb} style={{ height: 300, width: null, flex: 1 }} />
+          </View>
+          <View style={{ paddingLeft: 40, paddingRight: 40, paddingTop: 10 }}>
+            <List>
+              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
+                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Details</H3>
+              </ListItem>
+              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
+                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Work Order</H3>
+                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Purchase Order</H3>
+                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+              </ListItem>
+              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
+                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Part Number</H3>
+                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+              </ListItem>
+              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
+                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Description</H3>
+                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+              </ListItem>
+              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 0 }}>
+                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Route Cards</H3>
+                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+              </ListItem>
+            </List>
+          </View>
+        </Content>
+      </Container>
+    )
+  }
+
   render() {
     const { order } = this.props
+
     if (order === null) {
-      return <Text>Loading...</Text>
+      return (
+        <Pages>
+          {this._renderMockContainer()}
+        </Pages>
+      )
     } else {
       const { Routecards = [], SerialNum = [] } = order
       return (

@@ -38,20 +38,20 @@ export default class OrderScreen extends Component {
       <Container>
         <Header style={[header, mainBackgroundColor]}>
           <Thumbnail square size={35} source={Images.logo_topBar} />
-          <Title style={headerTitle}>WO: {WONum.toUpperCase()}</Title>
+          <Title style={headerTitle}>Work Order: {WONum.toUpperCase()}</Title>
         </Header>
         <Content>
-          <View style={{ backgroundColor: '#dadada', width: '100%', height: 400 }}>
+          <View style={{ backgroundColor: '#e2e2e2', width: '100%', height: 400 }}>
             <Image resizeMode="contain" source={thumb} style={{ height: 300, width: null, flex: 1 }} />
           </View>
           <View style={{ paddingLeft: 40, paddingRight: 40, paddingTop: 10 }}>
             <List>
-            <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
+              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
                 <H3 style={{ width: 150, color: '#4f6987', textAlign: 'right', fontWeight: '500' }}>DETAILS</H3>
               </ListItem>
               <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
                 <H3 style={{ width: 150, color: '#4f6987', textAlign: 'right', marginRight: 10 }}>Work Order</H3>
-                <H3 style={{ flex: 1, color: '#a0a0a0', fontWeight: '300' }}>{WONum.toUpperCase()}</H3>
+                <H3 style={{ flex: 1, color: '#a0a0a0', fontWeight: '300', marginRight: 10 }}>{WONum.toUpperCase()}</H3>
                 <H3 style={{ width: 150, color: '#4f6987', textAlign: 'right', marginRight: 10 }}>Purchase Order</H3>
                 <H3 style={{ flex: 1, color: '#a0a0a0', fontWeight: '300' }}>{PurchaseOrder}</H3>
               </ListItem>

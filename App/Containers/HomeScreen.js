@@ -129,7 +129,7 @@ class HomeScreen extends Component {
         <Header style={mainBackgroundColor} searchBar>
           <Item style={{ borderRadius: 5 }}>
             <Icon name="ios-search" />
-            <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Buscar..." />
+            <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Search..." />
           </Item>
         </Header>
         <Content style={container}>
