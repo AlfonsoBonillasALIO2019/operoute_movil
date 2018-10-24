@@ -1,26 +1,16 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Image } from 'react-native'
-import { Pages } from 'react-native-pages'
+import { View, Thumbnail, Container, Header, Title, Content, List, ListItem, H3 } from 'native-base'
 import { Images } from '../Themes'
-import {
-  View, Thumbnail, Container, Header, Title, Content, Footer, Button,
-  Text, Left, Right, Body, Icon, List, ListItem, H3
-} from 'native-base'
-import styles from './Styles/DefaultBaseStyles'
 import OrderScreen from './OrderScreen'
-import SerialNumbers from './SerialNumbers'
+import styles from './Styles/DefaultBaseStyles'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 
 class PageScreen extends Component {
-  // constructor (props) {
-  //   super(props)
-  //   this.state = {}
-  // }
   componentDidMount() {
     const { requestSelected, token } = this.props
     const {
-      navigate,
       state: { params: { workOrderId } }
     } = this.props.navigation
     requestSelected(token, workOrderId)
@@ -95,7 +85,7 @@ class PageScreen extends Component {
     if (order === null)
       return this._renderMockContainer()
     else {
-      const { Routecards = [], SerialNum = [], WONum } = order
+      const { WONum } = order
       const { header, mainBackgroundColor, headerTitle } = styles
       return (
         <Container>
@@ -103,11 +93,7 @@ class PageScreen extends Component {
             <Thumbnail square size={35} source={Images.logo_topBar} />
             <Title style={headerTitle}>Work Order: {WONum.toUpperCase()}</Title>
           </Header>
-          <OrderScreen style={{ flex: 1 }} {...this.props} />
-          {/* {Routecards.map((card, index) => (
-              <SerialNumbers key={`serial_number_${index}`} style={{ flex: 1 }} card={card} serials={SerialNum} {...this.props} />
-            )
-            )} */}
+          <OrderScreen {...this.props} />
         </Container>
       )
     }

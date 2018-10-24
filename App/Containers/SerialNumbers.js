@@ -1,8 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Container, Content, Text, H2, ListItem } from 'native-base'
-import { View, FlatList, TouchableHighlight } from 'react-native'
+import { Container, Content, Text, H2, ListItem, Thumbnail, Header, Title } from 'native-base'
+import { View, FlatList } from 'react-native'
+import { Images } from '../Themes'
 import styles from './Styles/SerialNumbersStyle'
+import stylesDefault from './Styles/DefaultBaseStyles'
 
 class SerialNumbers extends React.PureComponent {
   pressItem = item => {
@@ -14,12 +16,8 @@ class SerialNumbers extends React.PureComponent {
     const { card, serials } = this.props
     const { Operation = {} } = item
 
-    if (!Operation.Active) console.log({ Operation })
-
     return (
-      <ListItem
-        style={styles.row}
-        onPress={() => this.pressItem({ card, Operation, serials })}>
+      <ListItem style={styles.row} onPress={() => this.pressItem({ card, Operation, serials })}>
         <Text style={styles.serial}>{Operation.Id}</Text>
         <Text style={styles.operation}>{Operation.OperationNum} - {Operation.Name}</Text>
       </ListItem>
@@ -35,31 +33,30 @@ class SerialNumbers extends React.PureComponent {
 
   renderEmpty = () =>
     (
-      <ListItem
-        style={styles.row}
-        onPress={() => { }}>
+      <ListItem style={styles.row} onPress={() => { }}>
         <Text style={[styles.operation, { textAlign: 'center' }]}>There are no operations on this serial number.</Text>
       </ListItem>
     )
-
-  renderSeparator = () => null
 
   keyExtractor = (item, index) => index
 
   oneScreensWorth = 20
 
   render() {
-    console.log("this.props", this.props)
-    let { card: { Operations, RouteCard } } = this.props
+    let { navigation: { state: { params: { card: { Operations, RouteCard }, order: { WONum } } } } } = this.props
     let name = ''
     try {
       name = RouteCard[0].Name
     } catch (err) { }
 
-    console.log({ RouteCard })
+    const { header, mainBackgroundColor, headerTitle } = stylesDefault
 
     return (
       <Container>
+        <Header style={[header, mainBackgroundColor]}>
+          <Thumbnail square size={35} source={Images.logo_topBar} />
+          <Title style={headerTitle}>Work Order: {WONum.toUpperCase()}</Title>
+        </Header>
         <Content>
           <View style={{ backgroundColor: '#e2e2e2', width: '100%', paddingVertical: 35 }}>
             <H2 style={{ color: '#4f6987', textAlign: 'center', fontWeight: '500' }}>{name.toUpperCase()}</H2>
@@ -70,12 +67,12 @@ class SerialNumbers extends React.PureComponent {
               data={Operations}
               ListFooterComponent={null}
               renderItem={this.renderRow}
+              ItemSeparatorComponent={null}
               keyExtractor={this.keyExtractor}
               ListEmptyComponent={this.renderEmpty}
               ListHeaderComponent={this.renderHeader}
               initialNumToRender={this.oneScreensWorth}
               contentContainerStyle={styles.listContent}
-              ItemSeparatorComponent={this.renderSeparator}
             />
           </View>
         </Content>
@@ -84,14 +81,7 @@ class SerialNumbers extends React.PureComponent {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
+const mapStateToProps = (state) => { return { } }
+const mapDispatchToProps = (dispatch) => { return { } }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SerialNumbers)

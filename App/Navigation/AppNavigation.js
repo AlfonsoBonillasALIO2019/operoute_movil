@@ -8,12 +8,7 @@ import LaunchScreenGreen from '../Containers/LaunchScreenGreen'
 import HomeScreen from '../Containers/HomeScreen'
 import OrderScreen from '../Containers/OrderScreen'
 import SerialNumbers from '../Containers/SerialNumbers'
-
 import styles from './Styles/NavigationStyles'
-
-import React from 'react';
-
-import { Text, View } from 'react-native';
 
 // create custom transitioner without the opacity animation, ie. for iOS
 function forVertical (props) {
@@ -35,7 +30,7 @@ function forVertical (props) {
 const TabStack = TabNavigator({
   Order: { screen: OrderScreen },
   SerialNumbers: { screen: SerialNumbers },
-});
+})
 
 const ModalStack = StackNavigator(
   {
@@ -50,7 +45,7 @@ const ModalStack = StackNavigator(
       backgroundColor:"transparent",
     }
   }
-);
+)
 
 // Manifest of possible screens
 const PrimaryNav = StackNavigator({
@@ -59,6 +54,7 @@ const PrimaryNav = StackNavigator({
   Operation: { screen: OperationScreen },
   Home: { screen: HomeScreen },
   Modal: { screen: ModalStack },
+  SerialNumbersPage: { screen: SerialNumbers }
 }, {
   // Default config for all screens
   headerMode: 'none',
