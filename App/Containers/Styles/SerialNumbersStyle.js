@@ -8,14 +8,13 @@ export default StyleSheet.create({
     backgroundColor: Colors.background
   },
   row: {
-    flex: 1,
-    padding:15,
-    marginVertical: Metrics.smallMargin,
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    borderBottomColor: Colors.steel,
-    borderBottomWidth: 1 ,
-    marginHorizontal:20
+    paddingBottom: 20,
+    marginRight: 25,
+    marginLeft: 25,
+    paddingTop: 20,
+    flex: 1,
   },
   boldLabel: {
     flex: 1,
@@ -31,22 +30,22 @@ export default StyleSheet.create({
     color: Colors.snow
   },
   serial: {
-    width:150,
     textAlign: 'center',
-    color: Colors.charcoal,
-    fontSize: 25
+    color: "#a0a0a0",
+    fontSize: 18,
+    width: 150,
   },
   operation: {
-    flex: 1,
     textAlign: 'left',
-    color: Colors.charcoal,
-    fontSize: 25
+    color: "#a0a0a0",
+    fontSize: 18,
+    flex: 1,
   },
   status: {
-    width:150,
+    width: 150,
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    alignItems:'center'
+    alignItems: 'center'
   },
   status_text: {
     color: Colors.charcoal,
@@ -56,14 +55,11 @@ export default StyleSheet.create({
   listContent: {
     marginTop: Metrics.baseMargin
   },
-  title:{
-    color: Colors.facebook
-  },
   circle: {
     width: 25,
     height: 25,
-    borderRadius: 25/2,
+    borderRadius: 25 / 2,
     backgroundColor: 'red',
-    marginRight:10
+    marginRight: 10
   }
 })

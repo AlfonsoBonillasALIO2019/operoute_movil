@@ -32,7 +32,7 @@ class HomeScreen extends Component {
   }
 
   _renderMockFlatList = () => {
-    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewIcon } = styles
+    const { listItem, listItemLeft, listItemRightView, listItemRightViewIcon } = styles
     return (
       <FlatList
         style={{ opacity: 0.6 }}

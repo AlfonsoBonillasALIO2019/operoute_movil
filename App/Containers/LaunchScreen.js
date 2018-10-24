@@ -8,8 +8,10 @@ import { Images } from '../Themes'
 
 class LaunchScreen extends Component {
   state = {
-    username: 'alex@login.com',
-    password: 'simona'
+    // username: 'alex@login.com',
+    // password: 'simona'
+    username: '',
+    password: ''
   }
 
   handleInputChange = (name, text) => {
