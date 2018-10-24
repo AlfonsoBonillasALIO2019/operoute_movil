@@ -30,6 +30,10 @@ class PageScreen extends Component {
     const { header, mainBackgroundColor, headerTitle } = styles
     let thumb = Images.noPart
 
+    let loading = { flex: 1, color: '#dadada', backgroundColor: '#dadada' }
+    let label = { width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }
+    let listItem = { flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 1, borderBottomColor: '#dadada' }
+
     return (
       <Container>
         <Header style={[header, mainBackgroundColor]}>
@@ -40,28 +44,43 @@ class PageScreen extends Component {
           <View style={{ backgroundColor: '#e2e2e2', width: '100%', height: 400 }}>
             <Image resizeMode="contain" source={thumb} style={{ height: 300, width: null, flex: 1 }} />
           </View>
-          <View style={{ paddingLeft: 40, paddingRight: 40, paddingTop: 10 }}>
+          <View style={{ paddingLeft: 25, paddingRight: 25, paddingTop: 10 }}>
             <List>
-              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
-                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Details</H3>
+              <ListItem style={listItem}>
+                <H3 style={label}>Details</H3>
               </ListItem>
-              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
-                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Work Order</H3>
-                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
-                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Purchase Order</H3>
-                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+              <ListItem style={listItem}>
+                <H3 style={label}>Work Order</H3>
+                <H3 style={loading}>Loading</H3>
+                <H3 style={[label, { marginLeft: 10 }]}>Purchase Order</H3>
+                <H3 style={loading}>Loading</H3>
               </ListItem>
-              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
-                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Part Number</H3>
-                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+              <ListItem style={listItem}>
+                <H3 style={label}>Part Number</H3>
+                <H3 style={loading}>Loading</H3>
               </ListItem>
-              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: '#dadada' }}>
-                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Description</H3>
-                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+              <ListItem style={listItem}>
+                <H3 style={label}>Description</H3>
+                <H3 style={loading}>Loading</H3>
               </ListItem>
-              <ListItem style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 0 }}>
-                <H3 style={{ width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }}>Route Cards</H3>
-                <H3 style={{ flex: 1, color: '#dadada', backgroundColor: '#dadada' }}>Loading</H3>
+              <ListItem style={listItem}>
+                <H3 style={label}>Route Cards</H3>
+              </ListItem>
+              <ListItem style={listItem}>
+                <H3 style={label}>Loading</H3>
+                <H3 style={loading}>Loading</H3>
+              </ListItem>
+              <ListItem style={listItem}>
+                <H3 style={label}>Loading</H3>
+                <H3 style={loading}>Loading</H3>
+              </ListItem>
+              <ListItem style={listItem}>
+                <H3 style={label}>Loading</H3>
+                <H3 style={loading}>Loading</H3>
+              </ListItem>
+              <ListItem style={listItem}>
+                <H3 style={label}>Loading</H3>
+                <H3 style={loading}>Loading</H3>
               </ListItem>
             </List>
           </View>
@@ -73,22 +92,23 @@ class PageScreen extends Component {
   render() {
     const { order } = this.props
 
-    if (order === null) {
+    if (order === null)
+      return this._renderMockContainer()
+    else {
+      const { Routecards = [], SerialNum = [], WONum } = order
+      const { header, mainBackgroundColor, headerTitle } = styles
       return (
-        <Pages>
-          {this._renderMockContainer()}
-        </Pages>
-      )
-    } else {
-      const { Routecards = [], SerialNum = [] } = order
-      return (
-        <Pages>
+        <Container>
+          <Header style={[header, mainBackgroundColor]}>
+            <Thumbnail square size={35} source={Images.logo_topBar} />
+            <Title style={headerTitle}>Work Order: {WONum.toUpperCase()}</Title>
+          </Header>
           <OrderScreen style={{ flex: 1 }} {...this.props} />
-          {Routecards.map((card, index) => (
-            <SerialNumbers key={`serial_number_${index}`} style={{ flex: 1 }} card={card} serials={SerialNum} {...this.props} />
-          )
-          )}
-        </Pages>
+          {/* {Routecards.map((card, index) => (
+              <SerialNumbers key={`serial_number_${index}`} style={{ flex: 1 }} card={card} serials={SerialNum} {...this.props} />
+            )
+            )} */}
+        </Container>
       )
     }
   }
