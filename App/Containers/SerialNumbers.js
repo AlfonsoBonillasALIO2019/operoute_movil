@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Container, Content, Text, H2, ListItem, Thumbnail, Header, Title } from 'native-base'
+import { Container, Content, Text, H2, ListItem, Thumbnail, Header, Title, Icon } from 'native-base'
 import { View, FlatList } from 'react-native'
 import { Images } from '../Themes'
 import styles from './Styles/SerialNumbersStyle'
@@ -13,13 +13,14 @@ class SerialNumbers extends React.PureComponent {
   }
 
   renderRow = ({ item }) => {
-    const { card, serials } = this.props
+    const { navigation: { state: { params: { card, serials } } } } = this.props
     const { Operation = {} } = item
 
     return (
       <ListItem style={styles.row} onPress={() => this.pressItem({ card, Operation, serials })}>
         <Text style={styles.serial}>{Operation.Id}</Text>
         <Text style={styles.operation}>{Operation.OperationNum} - {Operation.Name}</Text>
+        <Icon style={{ color: '#dadada' }} name="ios-arrow-forward" />
       </ListItem>
     )
   }
@@ -40,10 +41,9 @@ class SerialNumbers extends React.PureComponent {
 
   keyExtractor = (item, index) => index
 
-  oneScreensWorth = 20
-
   render() {
-    let { navigation: { state: { params: { card: { Operations, RouteCard }, order: { WONum } } } } } = this.props
+    const { navigation: { state: { params: { card: { Operations, RouteCard }, order: { WONum } } } } } = this.props
+    const oneScreensWorth = 20
     let name = ''
     try {
       name = RouteCard[0].Name
@@ -71,7 +71,7 @@ class SerialNumbers extends React.PureComponent {
               keyExtractor={this.keyExtractor}
               ListEmptyComponent={this.renderEmpty}
               ListHeaderComponent={this.renderHeader}
-              initialNumToRender={this.oneScreensWorth}
+              initialNumToRender={oneScreensWorth}
               contentContainerStyle={styles.listContent}
             />
           </View>
@@ -81,7 +81,7 @@ class SerialNumbers extends React.PureComponent {
   }
 }
 
-const mapStateToProps = (state) => { return { } }
-const mapDispatchToProps = (dispatch) => { return { } }
+const mapStateToProps = (state) => { return {} }
+const mapDispatchToProps = (dispatch) => { return {} }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SerialNumbers)

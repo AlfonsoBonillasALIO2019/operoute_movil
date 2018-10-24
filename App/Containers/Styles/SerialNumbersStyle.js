@@ -10,10 +10,10 @@ export default StyleSheet.create({
   row: {
     justifyContent: 'flex-start',
     flexDirection: 'row',
-    paddingBottom: 20,
-    marginRight: 25,
+    paddingBottom: 30,
+    marginRight: 30,
     marginLeft: 25,
-    paddingTop: 20,
+    paddingTop: 30,
     flex: 1,
   },
   boldLabel: {

@@ -67,7 +67,7 @@ export default class OrderScreen extends Component {
               {order.Routecards.map((card, i) => {
                 return card.RouteCard.map((_routeCard, j) => {
                   return (
-                    <ListItem onPress={() => navigate('SerialNumbersPage', { card: { ...card }, serials: { ...SerialNum }, ...this.props, })} style={rCListItem}>
+                    <ListItem onPress={() => navigate('SerialNumbersPage', { card: { ...card }, serials: SerialNum, ...this.props, })} style={rCListItem}>
                       <Text style={purpleLabel}>{i + 1}. </Text>
                       <Text style={grayLabel}>{_routeCard.Name.toUpperCase()}</Text>
                       <Icon style={{ color: '#dadada' }} name="ios-arrow-forward" />
