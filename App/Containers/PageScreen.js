@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Image } from 'react-native'
-import { View, Thumbnail, Container, Header, Title, Content, List, ListItem, H3 } from 'native-base'
+import { View, Thumbnail, Container, Header, Title, Content, List, ListItem, Text } from 'native-base'
 import { Images } from '../Themes'
 import OrderScreen from './OrderScreen'
 import styles from './Styles/DefaultBaseStyles'
@@ -20,8 +20,8 @@ class PageScreen extends Component {
     const { header, mainBackgroundColor, headerTitle } = styles
     let thumb = Images.noPart
 
-    let loading = { flex: 1, color: '#dadada', backgroundColor: '#dadada' }
-    let label = { width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10 }
+    let loading = { flex: 1, color: '#dadada', backgroundColor: '#dadada', height: 12 }
+    let label = { width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10, height: 12 }
     let listItem = { flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 1, borderBottomColor: '#dadada' }
 
     return (
@@ -37,40 +37,40 @@ class PageScreen extends Component {
           <View style={{ paddingLeft: 25, paddingRight: 25, paddingTop: 10 }}>
             <List>
               <ListItem style={listItem}>
-                <H3 style={label}>Details</H3>
+                <Text style={label}>Details</Text>
               </ListItem>
               <ListItem style={listItem}>
-                <H3 style={label}>Work Order</H3>
-                <H3 style={loading}>Loading</H3>
-                <H3 style={[label, { marginLeft: 10 }]}>Purchase Order</H3>
-                <H3 style={loading}>Loading</H3>
+                <Text style={label}>Work Order</Text>
+                <Text style={loading}>Loading</Text>
+                <Text style={[label, { marginLeft: 10 }]}>Purchase Order</Text>
+                <Text style={loading}>Loading</Text>
               </ListItem>
               <ListItem style={listItem}>
-                <H3 style={label}>Part Number</H3>
-                <H3 style={loading}>Loading</H3>
+                <Text style={label}>Part Number</Text>
+                <Text style={loading}>Loading</Text>
               </ListItem>
               <ListItem style={listItem}>
-                <H3 style={label}>Description</H3>
-                <H3 style={loading}>Loading</H3>
+                <Text style={label}>Description</Text>
+                <Text style={loading}>Loading</Text>
               </ListItem>
               <ListItem style={listItem}>
-                <H3 style={label}>Route Cards</H3>
+                <Text style={label}>Route Cards</Text>
               </ListItem>
               <ListItem style={listItem}>
-                <H3 style={label}>Loading</H3>
-                <H3 style={loading}>Loading</H3>
+                <Text style={label}>Loading</Text>
+                <Text style={loading}>Loading</Text>
               </ListItem>
               <ListItem style={listItem}>
-                <H3 style={label}>Loading</H3>
-                <H3 style={loading}>Loading</H3>
+                <Text style={label}>Loading</Text>
+                <Text style={loading}>Loading</Text>
               </ListItem>
               <ListItem style={listItem}>
-                <H3 style={label}>Loading</H3>
-                <H3 style={loading}>Loading</H3>
+                <Text style={label}>Loading</Text>
+                <Text style={loading}>Loading</Text>
               </ListItem>
               <ListItem style={listItem}>
-                <H3 style={label}>Loading</H3>
-                <H3 style={loading}>Loading</H3>
+                <Text style={label}>Loading</Text>
+                <Text style={loading}>Loading</Text>
               </ListItem>
             </List>
           </View>

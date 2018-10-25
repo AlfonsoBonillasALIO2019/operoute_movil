@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native'
-
 import { ApplicationStyles, Metrics, Colors } from '../../Themes'
 
 export default StyleSheet.create({
@@ -8,16 +7,11 @@ export default StyleSheet.create({
   },
   row: {
     marginVertical: Metrics.smallMargin,
-    borderBottomColor: Colors.steel,
-    justifyContent: 'flex-start',
-    alignContent: 'center',
-    borderBottomWidth: 1,
-    marginHorizontal: 20,
+    justifyContent: 'space-around',
     flexDirection: 'row',
     marginRight: 0,
     marginLeft: 0,
     marginTop: 0,
-    padding: 15,
     flex: 1
   },
   boldLabel: {

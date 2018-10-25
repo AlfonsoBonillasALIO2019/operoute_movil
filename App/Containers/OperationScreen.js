@@ -53,7 +53,7 @@ class OperationScreen extends Component {
       paddingBottom: 35,
       justifyContent: 'center',
       backgroundColor: '#FFFFFF',
-      borderBottomColor: '#4F6987',
+      borderBottomWidth: 5
     }
 
     let screen = null
@@ -78,10 +78,10 @@ class OperationScreen extends Component {
             <H3 style={{ color: '#4F6987', textAlign: 'center', fontWeight: '400', marginTop: 10 }}>{Description}</H3>
             <Text style={{ color: '#828282', textAlign: 'center', fontWeight: '400', marginTop: 5 }}>{moment(card.ModifiedDate).format("ll")}</Text>
           </View>
-          <View style={{ justifyContent: 'space-around', flexDirection: 'row' }}>
+          <View style={{ justifyContent: 'space-around', flexDirection: 'row', marginBottom: 5 }}>
             {screens.map((i, k) => (
               <Button
-                style={[optionButton, { borderBottomWidth: i === selected ? 3 : 0 }]}
+                style={[optionButton, { borderBottomColor: i === selected ? '#6986a7' : '#b4c2d3' }]}
                 key={'butons-' + k}
                 onPress={() => this.setState({ selected: i })}>
                 <Text style={{ color: '#828282', fontWeight: '500' }}>{i}</Text>

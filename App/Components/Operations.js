@@ -1,12 +1,13 @@
-import React, { Component, Fragment } from 'react'
-import { connect } from 'react-redux'
+import React, { Component } from 'react'
 import moment from 'moment'
-import { Picker, Button, Text, Badge } from 'native-base'
-import { View, FlatList, TouchableHighlight } from 'react-native'
-import WorkOrderActions from '../Redux/WorkOrderRedux'
+import { connect } from 'react-redux'
 import Dialog from "react-native-dialog"
-import styles from './Styles/OperationsStyle'
 import SocketIOClient from 'socket.io-client'
+import { View, FlatList } from 'react-native'
+import { Picker, Button, Text, ListItem, Icon, Left, Right, Body } from 'native-base'
+import styles from './Styles/OperationsStyle'
+import WorkOrderActions from '../Redux/WorkOrderRedux'
+import stylesListItem from '../Containers/Styles/HomeScreenStyles'
 
 const socket = SocketIOClient('http://192.168.10.21:3050')
 
@@ -25,6 +26,12 @@ class Operations extends Component {
       ReworkId: 0,
       match: null,
       UserKey: '0',
+    },
+
+    actionPrompt: {
+      Visible: false,
+      options: [],
+      logStatusObj: null,
     },
 
     ReworkWooperationlog: [],
@@ -72,6 +79,12 @@ class Operations extends Component {
         UserKey: '0',
       },
 
+      actionPrompt: {
+        Visible: false,
+        options: [],
+        item: null,
+      },
+
       ReworkWooperationlog: [],
       FirstPOWooperationlog: [],
     })
@@ -100,8 +113,8 @@ class Operations extends Component {
 
     statusObj = {
       color: "gray",
-      label: 'Comenzar',
-      options: [{ label: "Comenzar", value: 'Start' }]
+      label: 'Start',
+      options: [{ label: "Start", value: 'Start' }]
     }
 
     match = null
@@ -145,38 +158,38 @@ class Operations extends Component {
   _getLogStatusValues = (log, isRework = false) => {
     const options = this._getLogStatusOptions(log, isRework)
 
-    if (log.Rework) return { label: 'Retrabajar', color: '#EC4626', options }
-    if (log.OperationSuccess) return { label: 'Aprovado', color: '#26B99A', options }
+    if (log.Rework) return { label: 'Rework', color: '#EC4626', options }
+    if (log.OperationSuccess) return { label: 'Approved', color: '#26B99A', options }
     if (log.OperationSuccess === false) return { label: 'NCR', color: '#D9534F', options }
-    if (log.Paused) return { label: 'Pausado', color: '#F0AD4E', options }
-    if (log.Started) return !isRework ? { label: 'Iniciado', color: '#337AB7', options } : { label: 'Retrabajando', color: '#EC4626', options }
+    if (log.Paused) return { label: 'Paused', color: '#F0AD4E', options }
+    if (log.Started) return !isRework ? { label: 'Started', color: '#337AB7', options } : { label: 'Reworking', color: '#EC4626', options }
 
-    return !isRework ? { label: 'Comenzar', color: 'gray', options } : { label: 'Retrabajar', color: '#EC4626', options }
+    return !isRework ? { label: 'Start', color: 'gray', options } : { label: 'Rework', color: '#EC4626', options }
   }
 
   // Gets the available status options array for the current item log status
   _getLogStatusOptions = (log, isRework) => {
     if (log.OperationSuccess)
-      return [{ label: "Fallo", value: 'Fail' }]
+      return [{ label: "Failure", value: 'Fail' }]
 
     if (log.OperationSuccess === false)
-      return [{ label: "Aprovar", value: 'Pass' }]
+      return [{ label: "Approve", value: 'Pass' }]
 
     if (log.Paused)
-      return [{ label: "Resumir", value: 'Resume' }]
+      return [{ label: "Resume", value: 'Resume' }]
 
     if (log.Started) {
       return [
-        { label: "Pausar", value: 'Pause' },
-        { label: "Aprovar", value: 'Pass' },
-        { label: "Fallo", value: 'Fail' }
+        { label: "Pause", value: 'Pause' },
+        { label: "Approve", value: 'Pass' },
+        { label: "Failure", value: 'Fail' }
       ]
     }
 
     if (isRework)
-      return [{ label: "Reiniciar", value: 'Start' }]
+      return [{ label: "Restart", value: 'Start' }]
 
-    return [{ label: "Comenzar", value: 'Start' }]
+    return [{ label: "Start", value: 'Start' }]
   }
 
   _pickerOnChange = (value, item, property) => {
@@ -225,6 +238,7 @@ class Operations extends Component {
       requestPutReworkWooperationlog(token, data, match.Id)
     }
 
+    this.setState({ actionPrompt: { ...this.state.actionPrompt, Visible: false, } })
     socket.emit('requestWOOperationLogData')
   }
 
@@ -277,6 +291,13 @@ class Operations extends Component {
 
     isRework ? requestPutReworkWooperationlog(token, data, Id) : requestPutWooperationlog(token, data, Id)
 
+    this.setState({
+      actionPrompt: {
+        Visible: false,
+        options: [],
+        logStatusObj: null,
+      }
+    })
     socket.emit('requestWOOperationLogData')
   }
 
@@ -291,6 +312,11 @@ class Operations extends Component {
 
     if (duration < 1) {
       this.setState({
+        actionPrompt: {
+          Visible: false,
+          options: [],
+          logStatusObj: null,
+        },
         prompt: {
           Visible: 'duration',
           IsSuccessful,
@@ -306,6 +332,11 @@ class Operations extends Component {
 
     if (passOffReqd && this.state.FirstPOWooperationlog.length === 0 && UserKey === "0" && IsSuccessful) {
       this.setState({
+        actionPrompt: {
+          Visible: false,
+          options: [],
+          logStatusObj: null,
+        },
         prompt: {
           Visible: 'firstPO',
           IsSuccessful,
@@ -354,7 +385,7 @@ class Operations extends Component {
     const operationLog = this.state.operationsLog[id]
 
     if (!operationLog || !operationLog.OperatorKey || !operationLog.OperatorKey === "0" || operationLog.Status === "0") {
-      alert("Favor de seleccionar Operador y Estado")
+      alert("Please select Operator and Status.")
       return false
     }
 
@@ -364,7 +395,7 @@ class Operations extends Component {
         break
       }
       case "Pause": {
-        this.setState({ prompt: { Visible: 'pause', SerialNum, match, isRework } })
+        this.setState({ actionPrompt: { ...this.state.actionPrompt, Visible: false }, prompt: { Visible: 'pause', SerialNum, match, isRework } })
         break
       }
       case "Resume": {
@@ -402,18 +433,18 @@ class Operations extends Component {
 
     return (
       <Dialog.Container visible={Visible === 'duration'}>
-        <Dialog.Title>Duración</Dialog.Title>
-        <Dialog.Description>
-          Favor de introducir duración exacta
+        <Dialog.Title style={{ borderBottomColor: '#dadada', borderBottomWidth: 1, paddingBottom: 20, marginBottom: 10, color: '#828282' }}>Duration</Dialog.Title>
+        <Dialog.Description style={{ color: '#828282' }}>
+          Please introduce the exact duration of this operation.
         </Dialog.Description>
         <Dialog.Input value={Duration} onChangeText={(text) => {
           prompt.Duration = Number(text)
           this.setState({ prompt })
         }} />
-        <Dialog.Button label="Cancelar" onPress={() => this._cleanState()} />
-        <Dialog.Button label="Confirmar" onPress={() => {
+        <Dialog.Button label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button label="Confirm" onPress={() => {
           if (!Duration || Duration < 1) {
-            alert("Favor de introducir una duración válida.")
+            alert("Please introduce a valid duration.")
             return false
           }
 
@@ -444,9 +475,9 @@ class Operations extends Component {
 
     return (
       <Dialog.Container visible={Visible === 'firstPO'}>
-        <Dialog.Title>First Pass Off</Dialog.Title>
-        <Dialog.Description>
-          Favor de asignar un ingeniero de calidad para la inspección de esta parte.
+        <Dialog.Title style={{ borderBottomColor: '#dadada', borderBottomWidth: 1, paddingBottom: 20, marginBottom: 10, color: '#828282' }}>First Pass Off</Dialog.Title>
+        <Dialog.Description style={{ color: '#828282' }}>
+          Please assign a QA engineer to inspect this part.
         </Dialog.Description>
         <Picker
           selectedValue={UserKey}
@@ -457,17 +488,17 @@ class Operations extends Component {
           }}>
           {usersQA &&
             [
-              <Picker.Item label={"- Ingeniero de Calidad -"} value='0' key={'qa_user_picker_default'} />,
+              <Picker.Item label={"- QA Engineer -"} value='0' key={'qa_user_picker_default'} />,
               usersQA.map((user, index) => (
                 <Picker.Item label={`${user.FirstName} ${user.LastName}`} value={user.Id} key={user.Email} />
               ))
             ]
           }
         </Picker>
-        <Dialog.Button label="Cancelar" onPress={() => this._cleanState()} />
-        <Dialog.Button label="Confirmar" onPress={() => {
+        <Dialog.Button label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button label="Confirm" onPress={() => {
           if (UserKey === '0' || !UserKey) {
-            alert("Favor de seleccionar un ingeniero de calidad.")
+            alert("Please select a QA Engineer.")
             return false
           }
 
@@ -490,18 +521,17 @@ class Operations extends Component {
     let { prompt, prompt: { Pause_ReasonCode, Visible } } = this.state
     return (
       <Dialog.Container visible={Visible === 'pause'}>
-        <Dialog.Title>Motivo</Dialog.Title>
-        <Dialog.Description>
-          Favor de introducir el motivo de pausa.
-        </Dialog.Description>
+        <Dialog.Title style={{ borderBottomColor: '#dadada', borderBottomWidth: 1, paddingBottom: 20, marginBottom: 10, color: '#828282' }}>
+          Please introduce a pause reason
+        </Dialog.Title>
         <Dialog.Input value={Pause_ReasonCode} onChangeText={(e) => {
           prompt.Pause_ReasonCode = e
           this.setState({ prompt })
         }} />
-        <Dialog.Button label="Cancelar" onPress={() => this._cleanState()} />
-        <Dialog.Button label="Confirmar" onPress={() => {
+        <Dialog.Button label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button label="Confirm" onPress={() => {
           if (!Pause_ReasonCode || Pause_ReasonCode === '') {
-            alert("Favor de introducir un motivo de pausa válido.")
+            alert("Please introduce a valid pause reason.")
             return false
           }
 
@@ -512,64 +542,99 @@ class Operations extends Component {
     )
   }
 
-  _renderItem = ({ item }) => {
-    const { operators, fetchingLogs } = this.props
+  renderActionPrompt = () => {
+    let {
+      actionPrompt,
+      actionPrompt: {
+        Visible,
+        item,
+        logStatusObj
+      },
+    } = this.state
+
+    if (!Visible) return false
+
+    const { operators } = this.props
     const operation = this.state.operationsLog[item.Id]
-    const { statusObj, match, isRework } = this._getLogStatusObject(item)
+    const { statusObj, match, isRework } = logStatusObj
 
     const pickerProps = {
-      mode: "dropdown",
       placeholderStyle: { color: "#bfc6ea" },
       placeholderIconColor: "#007aff",
-      style: { height: 35, color: '#36454f' },
+      style: { maxHeight: 60, height: 60, color: '#36454f' },
     }
 
+    return (
+      <Dialog.Container visible={Visible}>
+        <Dialog.Title style={{ borderBottomColor: '#dadada', borderBottomWidth: 1, paddingBottom: 20, marginBottom: 10, color: '#828282' }}>Modify operation <Text style={{ color: '#4f6987' }}>{item.PartPO.SerialNum}</Text> status</Dialog.Title>
+        <Dialog.Description style={{ color: '#828282' }}>
+          Select operator and new status.
+        </Dialog.Description>
+        <Picker
+          {...pickerProps}
+          placeholder="Operator"
+          selectedValue={operation ? operation.OperatorKey : ''}
+          onValueChange={(e) => this._pickerOnChange(e, item.Id, 'OperatorKey')}
+        >
+          {operators &&
+            [
+              <Picker.Item label={"- Operator -"} value='0' key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
+              operators.map((operator, index) => (
+                <Picker.Item label={operator.Name} value={operator.Id} key={`${item.PartPO.SerialNum}_${operator.Id}`} />
+              ))
+            ]
+          }
+        </Picker>
+        <Picker
+          {...pickerProps}
+          placeholder="Status"
+          selectedValue={operation ? operation.Status : ''}
+          onValueChange={(e) => this._pickerOnChange(e, item.Id, 'Status')}
+        >
+          {
+            [
+              <Picker.Item label={"- Status -"} value='0' key={`${item.PartPO.SerialNum}_status_dropdown`} />,
+              statusObj.options.map((option, index) => (
+                <Picker.Item label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
+              ))
+            ]
+          }
+        </Picker>
+        <Dialog.Button label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button label="Confirm" onPress={() => this.postLog(item.Id, item.PartPO.SerialNum, isRework, match)} />
+      </Dialog.Container>
+    )
+  }
+
+  _renderItem = ({ item }) => {
+    const { fetchingLogs } = this.props
+    const logStatusObj = this._getLogStatusObject(item)
+    const { statusObj } = logStatusObj
     const itemStatusColor = !fetchingLogs ? statusObj.color : 'gray'
-    const itemStatusLabel = !fetchingLogs ? statusObj.label : 'Cargando'
+    const itemStatusLabel = !fetchingLogs ? statusObj.label : 'Loading'
+
+    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewLabel, listItemRightViewDate, listItemRightViewIcon } = stylesListItem
 
     return (
-      <TouchableHighlight>
-        <View style={styles.row}>
-          <Badge style={[styles.badge, { backgroundColor: itemStatusColor }]}>
-            <Text style={styles.text16}>{itemStatusLabel}</Text>
-          </Badge>
-          <Text style={styles.serial}>{item.PartPO.PartId}</Text>
-          <Text style={styles.operation}>{item.PartPO.SerialNum}</Text>
-          <Picker
-            {...pickerProps}
-            placeholder="Operador"
-            selectedValue={operation ? operation.OperatorKey : ''}
-            onValueChange={(e) => this._pickerOnChange(e, item.Id, 'OperatorKey')}
-          >
-            {operators &&
-              [
-                <Picker.Item label={"- Operador -"} value='0' key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
-                operators.map((operator, index) => (
-                  <Picker.Item label={operator.Name} value={operator.Id} key={`${item.PartPO.SerialNum}_${operator.Id}`} />
-                ))
-              ]
-            }
-          </Picker>
-          <Picker
-            {...pickerProps}
-            placeholder="Estado"
-            selectedValue={operation ? operation.Status : ''}
-            onValueChange={(e) => this._pickerOnChange(e, item.Id, 'Status')}
-          >
-            {
-              [
-                <Picker.Item label={"- Estado -"} value='0' key={`${item.PartPO.SerialNum}_status_dropdown`} />,
-                statusObj.options.map((option, index) => (
-                  <Picker.Item label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
-                ))
-              ]
-            }
-          </Picker>
-          <Button success rounded small onPress={() => this.postLog(item.Id, item.PartPO.SerialNum, isRework, match)}>
-            <Text>OK</Text>
-          </Button>
-        </View>
-      </TouchableHighlight>
+      <ListItem style={[listItem, { borderColor: itemStatusColor }]}>
+        <Left style={listItemLeft}>
+          <Body>
+            <Text style={[listItemLeftTextMain, { marginBottom: 0 }]}>{item.PartPO.SerialNum}</Text>
+          </Body>
+        </Left>
+        <Right>
+          <View style={listItemRightView}>
+            <Text style={listItemRightViewLabel}>Current status:</Text>
+            <Text style={[listItemRightViewDate, { color: itemStatusColor, fontWeight: '500', marginLeft: 5, marginRight: 15 }]}>{itemStatusLabel}</Text>
+            <Button
+              rounded
+              onPress={() => this.setState({ actionPrompt: { Visible: true, item, logStatusObj } })}
+              style={{ borderColor: '#eeeeee', borderWidth: 1, elevation: 0, backgroundColor: '#FFFFFF', height: 40, width: 40, borderRadius: 20, justifyContent: 'center' }}>
+              <Icon style={{ color: '#dadada' }} name="md-more" />
+            </Button>
+          </View>
+        </Right>
+      </ListItem>
     )
   }
 
@@ -581,6 +646,7 @@ class Operations extends Component {
         {this.renderDurationPrompt()}
         {this.renderPauseCausePrompt()}
         {this.renderFirstPOPrompt()}
+        {this.renderActionPrompt()}
         <FlatList
           data={operations}
           extraData={this.state}
