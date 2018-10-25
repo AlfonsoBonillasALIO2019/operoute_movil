@@ -13,11 +13,15 @@ class SerialNumbers extends React.PureComponent {
   }
 
   renderRow = ({ item }) => {
-    const { navigation: { state: { params: { card, serials } } } } = this.props
+    const { navigation: { state: { params: { card, serials, card: { RouteCard }, order: { WONum } } } } } = this.props
     const { Operation = {} } = item
+    let name = ''
+    try {
+      name = RouteCard[0].Name
+    } catch (err) { }
 
     return (
-      <ListItem style={styles.row} onPress={() => this.pressItem({ card, Operation, serials })}>
+      <ListItem style={styles.row} onPress={() => this.pressItem({ card, Operation, serials, routeCardName: name, workOrderNumber: WONum})}>
         <Text style={styles.serial}>{Operation.Id}</Text>
         <Text style={styles.operation}>{Operation.OperationNum} - {Operation.Name}</Text>
         <Icon style={{ color: '#dadada' }} name="ios-arrow-forward" />

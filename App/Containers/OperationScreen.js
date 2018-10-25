@@ -1,22 +1,13 @@
 import React, { Component } from 'react'
-import { ScrollView, Image, View } from 'react-native'
+import { View } from 'react-native'
 import { Images } from '../Themes'
 import {
-  Container, Header, Title, Content, Footer, FooterTab,
-  Button, Left, Right, Body, Icon, Text,
-  Card, CardItem,
-  Form, Item, Input,
-  List, ListItem, Thumbnail, H1, Segment
-} from 'native-base';
-
+  Container, Header, Title, Content, Button, Text, H2, H3,
+  List, ListItem, Thumbnail
+} from 'native-base'
 import { connect } from 'react-redux'
-import WorkOrderActions from '../Redux/WorkOrderRedux'
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
-
-// Styles
+import stylesDefault from './Styles/DefaultBaseStyles'
 import styles from './Styles/OperationScreenStyle'
-
 import Instructions from '../Components/Instructions'
 import Tooling from '../Components/Tooling'
 import Inputs from '../Components/Inputs'
@@ -40,8 +31,10 @@ class OperationScreen extends Component {
 
     const {
       navigate,
-      state: { params: { card, Operation, serials } }
+      state: { params: { card, Operation, serials, routeCardName, workOrderNumber } }
     } = this.props.navigation
+
+    console.log("this.props", this.props)
 
     let Description
 
@@ -49,11 +42,11 @@ class OperationScreen extends Component {
       Description = card.RouteCard[0].PartInfo.Description
     } catch (err) { }
 
-    // alert(JSON.stringify(Operation))
     const workInstructions = card.WorkInstructions.filter(wi => wi.OperationKey === Operation.Id)
     const toolFixtures = card.ToolFixtures.filter(tf => tf.OperationTFC.OperationKey === Operation.Id)
     const inputs = card.Inputs.filter(inp => inp.OperationKey === Operation.Id)
 
+    const { header, mainBackgroundColor, headerTitle } = stylesDefault
 
     let screen = null
     if (selected === 'INSTRUCTIONS') {
@@ -67,20 +60,15 @@ class OperationScreen extends Component {
     }
     return (
       <Container>
-        <Header>
-          <Left>
-            <Thumbnail square size={50} source={Images.logo_topBar} />
-          </Left>
-          <Body>
-            <Title>{Operation.Name}</Title>
-          </Body>
-          <Right />
+        <Header style={[header, mainBackgroundColor]}>
+          <Thumbnail square size={35} source={Images.logo_topBar} />
+          <Title style={headerTitle}>Work Order: {workOrderNumber.toUpperCase()} / Route Card: {routeCardName.toUpperCase()}</Title>
         </Header>
         <Content>
-          <View style={styles.serialView}>
-            <Text style={styles.serialLabel}>Detalle de la Operación </Text>
-            <Text style={styles.serial}>{Description}</Text>
-            <Text style={styles.date}>{moment(card.ModifiedDate).format("ll")}</Text>
+          <View style={{ backgroundColor: '#e2e2e2', width: '100%', paddingVertical: 35 }}>
+            <H2 style={{ color: '#4f6987', textAlign: 'center', fontWeight: '500' }}>{Operation.Name}</H2>
+            <H3 style={{ color: '#4f6987', textAlign: 'center', fontWeight: '400', marginTop: 10 }}>{Description}</H3>
+            <Text style={{ color: '#828282', textAlign: 'center', fontWeight: '400', marginTop: 5 }}>{moment(card.ModifiedDate).format("ll")}</Text>
           </View>
           <View style={{ justifyContent: 'space-around', flexDirection: 'row', margin: 10 }}>
             {screens.map((i, k) => (
