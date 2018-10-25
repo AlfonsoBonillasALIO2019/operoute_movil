@@ -441,8 +441,8 @@ class Operations extends Component {
           prompt.Duration = Number(text)
           this.setState({ prompt })
         }} />
-        <Dialog.Button label="Cancel" onPress={() => this._cleanState()} />
-        <Dialog.Button label="Confirm" onPress={() => {
+        <Dialog.Button style={{ color: '#828282' }} label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button style={{ color: '#4f6987' }} label="Confirm" onPress={() => {
           if (!Duration || Duration < 1) {
             alert("Please introduce a valid duration.")
             return false
@@ -495,8 +495,8 @@ class Operations extends Component {
             ]
           }
         </Picker>
-        <Dialog.Button label="Cancel" onPress={() => this._cleanState()} />
-        <Dialog.Button label="Confirm" onPress={() => {
+        <Dialog.Button style={{ color: '#828282' }} label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button style={{ color: '#4f6987' }} label="Confirm" onPress={() => {
           if (UserKey === '0' || !UserKey) {
             alert("Please select a QA Engineer.")
             return false
@@ -528,8 +528,8 @@ class Operations extends Component {
           prompt.Pause_ReasonCode = e
           this.setState({ prompt })
         }} />
-        <Dialog.Button label="Cancel" onPress={() => this._cleanState()} />
-        <Dialog.Button label="Confirm" onPress={() => {
+        <Dialog.Button style={{ color: '#828282' }} label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button style={{ color: '#4f6987' }} label="Confirm" onPress={() => {
           if (!Pause_ReasonCode || Pause_ReasonCode === '') {
             alert("Please introduce a valid pause reason.")
             return false
@@ -544,7 +544,6 @@ class Operations extends Component {
 
   renderActionPrompt = () => {
     let {
-      actionPrompt,
       actionPrompt: {
         Visible,
         item,
@@ -578,9 +577,9 @@ class Operations extends Component {
         >
           {operators &&
             [
-              <Picker.Item label={"- Operator -"} value='0' key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
+              <Picker.Item style={{ color: '#828282' }} label={"- Operator -"} value='0' key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
               operators.map((operator, index) => (
-                <Picker.Item label={operator.Name} value={operator.Id} key={`${item.PartPO.SerialNum}_${operator.Id}`} />
+                <Picker.Item style={{ color: '#828282' }} label={operator.Name} value={operator.Id} key={`${item.PartPO.SerialNum}_${operator.Id}`} />
               ))
             ]
           }
@@ -593,15 +592,15 @@ class Operations extends Component {
         >
           {
             [
-              <Picker.Item label={"- Status -"} value='0' key={`${item.PartPO.SerialNum}_status_dropdown`} />,
+              <Picker.Item style={{ color: '#828282' }} label={"- Status -"} value='0' key={`${item.PartPO.SerialNum}_status_dropdown`} />,
               statusObj.options.map((option, index) => (
-                <Picker.Item label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
+                <Picker.Item style={{ color: '#828282' }} label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
               ))
             ]
           }
         </Picker>
-        <Dialog.Button label="Cancel" onPress={() => this._cleanState()} />
-        <Dialog.Button label="Confirm" onPress={() => this.postLog(item.Id, item.PartPO.SerialNum, isRework, match)} />
+        <Dialog.Button style={{ color: '#828282' }} label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button style={{ color: '#4f6987', fontWeight: '500' }} label="Confirm" onPress={() => this.postLog(item.Id, item.PartPO.SerialNum, isRework, match)} />
       </Dialog.Container>
     )
   }

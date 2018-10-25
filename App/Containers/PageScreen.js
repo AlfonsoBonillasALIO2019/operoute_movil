@@ -20,9 +20,9 @@ class PageScreen extends Component {
     const { header, mainBackgroundColor, headerTitle } = styles
     let thumb = Images.noPart
 
-    let loading = { flex: 1, color: '#dadada', backgroundColor: '#dadada', height: 12 }
-    let label = { width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10, height: 12 }
-    let listItem = { flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 1, borderBottomColor: '#dadada' }
+    let loading = { opacity: 0.6, flex: 1, color: '#dadada', backgroundColor: '#dadada', fontSize: 18 }
+    let label = { opacity: 0.6, width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10, fontSize: 18 }
+    let listItem = { opacity: 0.6, flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 1, borderBottomColor: '#dadada' }
 
     return (
       <Container>
