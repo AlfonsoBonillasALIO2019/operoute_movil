@@ -12,7 +12,6 @@ import Instructions from '../Components/Instructions'
 import Tooling from '../Components/Tooling'
 import Inputs from '../Components/Inputs'
 import Operations from '../Components/Operations'
-
 import moment from 'moment'
 
 class OperationScreen extends Component {
@@ -34,8 +33,6 @@ class OperationScreen extends Component {
       state: { params: { card, Operation, serials, routeCardName, workOrderNumber } }
     } = this.props.navigation
 
-    console.log("this.props", this.props)
-
     let Description
 
     try {
@@ -47,6 +44,17 @@ class OperationScreen extends Component {
     const inputs = card.Inputs.filter(inp => inp.OperationKey === Operation.Id)
 
     const { header, mainBackgroundColor, headerTitle } = stylesDefault
+
+    const optionButton = {
+      flex: 1,
+      elevation: 0,
+      paddingTop: 35,
+      borderRadius: 0,
+      paddingBottom: 35,
+      justifyContent: 'center',
+      backgroundColor: '#FFFFFF',
+      borderBottomColor: '#4F6987',
+    }
 
     let screen = null
     if (selected === 'INSTRUCTIONS') {
@@ -65,31 +73,23 @@ class OperationScreen extends Component {
           <Title style={headerTitle}>Work Order: {workOrderNumber.toUpperCase()} / Route Card: {routeCardName.toUpperCase()}</Title>
         </Header>
         <Content>
-          <View style={{ backgroundColor: '#e2e2e2', width: '100%', paddingVertical: 35 }}>
-            <H2 style={{ color: '#4f6987', textAlign: 'center', fontWeight: '500' }}>{Operation.Name}</H2>
-            <H3 style={{ color: '#4f6987', textAlign: 'center', fontWeight: '400', marginTop: 10 }}>{Description}</H3>
+          <View style={{ backgroundColor: '#E2E2E2', width: '100%', paddingVertical: 35 }}>
+            <H2 style={{ color: '#4F6987', textAlign: 'center', fontWeight: '500' }}>{Operation.Name}</H2>
+            <H3 style={{ color: '#4F6987', textAlign: 'center', fontWeight: '400', marginTop: 10 }}>{Description}</H3>
             <Text style={{ color: '#828282', textAlign: 'center', fontWeight: '400', marginTop: 5 }}>{moment(card.ModifiedDate).format("ll")}</Text>
           </View>
-          <View style={{ justifyContent: 'space-around', flexDirection: 'row', margin: 10 }}>
+          <View style={{ justifyContent: 'space-around', flexDirection: 'row' }}>
             {screens.map((i, k) => (
-              <Button rounded key={'butons-' + k}
-                success={i === selected} light={i !== selected}
+              <Button
+                style={[optionButton, { borderBottomWidth: i === selected ? 3 : 0 }]}
+                key={'butons-' + k}
                 onPress={() => this.setState({ selected: i })}>
-                <Text>{i}</Text>
+                <Text style={{ color: '#828282', fontWeight: '500' }}>{i}</Text>
               </Button>
             ))}
           </View>
           {screen}
         </Content>
-        {/* <Footer style={{backgroundColor: 'transparent', flexDirection: 'row',margin:10,height:120}}>
-          <Button iconLeft rounded success style={styles.footButton}>
-            <Icon name="ios-play" />
-            <Text>Start</Text>
-          </Button>
-          <Button rounded danger style={[styles.footButton,{flex:1}]}>
-            <Text>Finish</Text>
-          </Button>
-        </Footer> */}
       </Container>
     )
   }
