@@ -21,7 +21,7 @@ class SerialNumbers extends React.PureComponent {
     } catch (err) { }
 
     return (
-      <ListItem style={styles.row} onPress={() => this.pressItem({ card, Operation, serials, routeCardName: name, workOrderNumber: WONum})}>
+      <ListItem style={styles.row} onPress={() => this.pressItem({ card, Operation, serials, routeCardName: name, workOrderNumber: WONum })}>
         <Text style={styles.serial}>{Operation.Id}</Text>
         <Text style={styles.operation}>{Operation.OperationNum} - {Operation.Name}</Text>
         <Icon style={{ color: '#dadada' }} name="ios-arrow-forward" />
@@ -53,7 +53,7 @@ class SerialNumbers extends React.PureComponent {
       name = RouteCard[0].Name
     } catch (err) { }
 
-    const { header, mainBackgroundColor, headerTitle } = stylesDefault
+    const { header, subHeader, subHeader_title, subHeader_text, mainBackgroundColor, headerTitle } = stylesDefault
 
     return (
       <Container>
@@ -62,9 +62,9 @@ class SerialNumbers extends React.PureComponent {
           <Title style={headerTitle}>Work Order: {WONum.toUpperCase()}</Title>
         </Header>
         <Content>
-          <View style={{ backgroundColor: '#e2e2e2', width: '100%', paddingVertical: 35 }}>
-            <H2 style={{ color: '#4f6987', textAlign: 'center', fontWeight: '500' }}>{name.toUpperCase()}</H2>
-            <Text style={{ color: '#4f6987', textAlign: 'center', fontWeight: '400' }}>Route Card</Text>
+          <View style={subHeader}>
+            <H2 style={subHeader_title}>{name.toUpperCase()}</H2>
+            <Text style={subHeader_text}>Route Card</Text>
           </View>
           <View>
             <FlatList

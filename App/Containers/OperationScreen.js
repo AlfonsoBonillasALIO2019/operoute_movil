@@ -1,18 +1,14 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
-import { Images } from '../Themes'
-import {
-  Container, Header, Title, Content, Button, Text, H2, H3,
-  List, ListItem, Thumbnail
-} from 'native-base'
-import { connect } from 'react-redux'
-import stylesDefault from './Styles/DefaultBaseStyles'
-import styles from './Styles/OperationScreenStyle'
-import Instructions from '../Components/Instructions'
-import Tooling from '../Components/Tooling'
-import Inputs from '../Components/Inputs'
-import Operations from '../Components/Operations'
 import moment from 'moment'
+import { View } from 'react-native'
+import { connect } from 'react-redux'
+import { Container, Header, Title, Content, Button, Text, H2, H3, Thumbnail } from 'native-base'
+import { Images } from '../Themes'
+import Inputs from '../Components/Inputs'
+import Tooling from '../Components/Tooling'
+import Operations from '../Components/Operations'
+import Instructions from '../Components/Instructions'
+import stylesDefault from './Styles/DefaultBaseStyles'
 
 class OperationScreen extends Component {
   state = {
@@ -26,14 +22,13 @@ class OperationScreen extends Component {
   }
 
   render() {
-    let { selected, screens } = this.state
-
     const {
-      navigate,
       state: { params: { card, Operation, serials, routeCardName, workOrderNumber } }
     } = this.props.navigation
 
+    let { selected, screens } = this.state
     let Description
+    let currentPage = null
 
     try {
       Description = card.RouteCard[0].PartInfo.Description
@@ -42,9 +37,7 @@ class OperationScreen extends Component {
     const workInstructions = card.WorkInstructions.filter(wi => wi.OperationKey === Operation.Id)
     const toolFixtures = card.ToolFixtures.filter(tf => tf.OperationTFC.OperationKey === Operation.Id)
     const inputs = card.Inputs.filter(inp => inp.OperationKey === Operation.Id)
-
-    const { header, mainBackgroundColor, headerTitle } = stylesDefault
-
+    const { header, mainBackgroundColor, headerTitle, subHeader, subHeader_title, subHeader_subtitle, subHeader_text } = stylesDefault
     const optionButton = {
       flex: 1,
       elevation: 0,
@@ -56,16 +49,32 @@ class OperationScreen extends Component {
       borderBottomWidth: 5
     }
 
-    let screen = null
-    if (selected === 'INSTRUCTIONS') {
-      screen = <Instructions workInstructions={workInstructions} />
-    } else if (selected === 'INPUTS') {
-      screen = <Inputs inputs={inputs} />
-    } else if (selected === 'TOOLING') {
-      screen = <Tooling toolFixtures={toolFixtures} />
-    } else if (selected === 'OPERATIONS') {
-      screen = <Operations operations={serials} passOffReqd={Operation.PassOffReqd} search={{ WOKey: card.WOKey, RCTKey: card.Operations[0].RCTKey, OperationKey: Operation.Id }} />
+    switch (selected) {
+      case 'INSTRUCTIONS': {
+        currentPage = <Instructions workInstructions={workInstructions} />
+        break
+      }
+      case 'INPUTS': {
+        currentPage = <Inputs inputs={inputs} />
+        break
+      }
+      case 'TOOLING': {
+        currentPage = <Tooling toolFixtures={toolFixtures} />
+        break
+      }
+      default: {
+        currentPage = <Operations operations={serials} passOffReqd={Operation.PassOffReqd} search={{ WOKey: card.WOKey, RCTKey: card.Operations[0].RCTKey, OperationKey: Operation.Id }} />
+        break
+      }
     }
+
+    const counters = [
+      serials.length,
+      workInstructions.length,
+      inputs.length,
+      toolFixtures.length,
+    ]
+
     return (
       <Container>
         <Header style={[header, mainBackgroundColor]}>
@@ -73,22 +82,24 @@ class OperationScreen extends Component {
           <Title style={headerTitle}>Work Order: {workOrderNumber.toUpperCase()} / Route Card: {routeCardName.toUpperCase()}</Title>
         </Header>
         <Content>
-          <View style={{ backgroundColor: '#E2E2E2', width: '100%', paddingVertical: 35 }}>
-            <H2 style={{ color: '#4F6987', textAlign: 'center', fontWeight: '500' }}>{Operation.Name}</H2>
-            <H3 style={{ color: '#4F6987', textAlign: 'center', fontWeight: '400', marginTop: 10 }}>{Description}</H3>
-            <Text style={{ color: '#828282', textAlign: 'center', fontWeight: '400', marginTop: 5 }}>{moment(card.ModifiedDate).format("ll")}</Text>
+          <View style={subHeader}>
+            <H2 style={subHeader_title}>{Operation.Name}</H2>
+            <H3 style={subHeader_subtitle}>{Description}</H3>
+            <Text style={subHeader_text}>{moment(card.ModifiedDate).format("ll")}</Text>
           </View>
           <View style={{ justifyContent: 'space-around', flexDirection: 'row', marginBottom: 5 }}>
-            {screens.map((i, k) => (
-              <Button
-                style={[optionButton, { borderBottomColor: i === selected ? '#6986a7' : '#b4c2d3' }]}
-                key={'butons-' + k}
-                onPress={() => this.setState({ selected: i })}>
-                <Text style={{ color: '#828282', fontWeight: '500' }}>{i}</Text>
-              </Button>
-            ))}
+            {screens.map((i, k) => {
+              return (
+                <Button
+                  style={[optionButton, { borderBottomColor: i === selected ? '#6986a7' : '#b4c2d3' }]}
+                  key={'butons-' + k}
+                  onPress={() => this.setState({ selected: i })}>
+                  <Text style={{ color: '#828282', fontWeight: '500' }}>{i} ({counters[k]})</Text>
+                </Button>
+              )
+            })}
           </View>
-          {screen}
+          {currentPage}
         </Content>
       </Container>
     )
