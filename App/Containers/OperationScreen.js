@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import moment from 'moment'
 import { View } from 'react-native'
 import { connect } from 'react-redux'
-import { Container, Header, Title, Content, Button, Text, H2, H3, Thumbnail } from 'native-base'
+import { Container, Header, Title, Content, Button, Text, H2, H3, Icon } from 'native-base'
 import { Images } from '../Themes'
 import Inputs from '../Components/Inputs'
 import Tooling from '../Components/Tooling'
@@ -23,7 +23,7 @@ class OperationScreen extends Component {
 
   render() {
     const {
-      state: { params: { card, Operation, serials, routeCardName, workOrderNumber } }
+      goBack, state: { params: { card, Operation, serials, routeCardName, workOrderNumber } }
     } = this.props.navigation
 
     let { selected, screens } = this.state
@@ -37,7 +37,7 @@ class OperationScreen extends Component {
     const workInstructions = card.WorkInstructions.filter(wi => wi.OperationKey === Operation.Id)
     const toolFixtures = card.ToolFixtures.filter(tf => tf.OperationTFC.OperationKey === Operation.Id)
     const inputs = card.Inputs.filter(inp => inp.OperationKey === Operation.Id)
-    const { header, mainBackgroundColor, headerTitle, subHeader, subHeader_title, subHeader_subtitle, subHeader_text } = stylesDefault
+    const { header, mainBackgroundColor, headerTitle, subHeader, subHeader_title, subHeader_subtitle, subHeader_text, navBackButton } = stylesDefault
     const optionButton = {
       flex: 1,
       elevation: 0,
@@ -78,12 +78,13 @@ class OperationScreen extends Component {
     return (
       <Container>
         <Header style={[header, mainBackgroundColor]}>
-          <Thumbnail square size={35} source={Images.logo_topBar} />
+        <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
+          {/* <Thumbnail square size={35} source={Images.logo_topBar} /> */}
           <Title style={headerTitle}>Work Order: {workOrderNumber.toUpperCase()} / Route Card: {routeCardName.toUpperCase()}</Title>
         </Header>
         <Content>
           <View style={subHeader}>
-            <H2 style={subHeader_title}>{Operation.Name}</H2>
+            <H2 style={subHeader_title}>{Operation.OperationNum} - {Operation.Name}</H2>
             <H3 style={subHeader_subtitle}>{Description}</H3>
             <Text style={subHeader_text}>{moment(card.ModifiedDate).format("ll")}</Text>
           </View>

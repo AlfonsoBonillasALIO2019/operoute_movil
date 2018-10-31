@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Image } from 'react-native'
-import { View, Thumbnail, Container, Header, Title, Content, List, ListItem, Text } from 'native-base'
+import { View, Container, Header, Title, Content, List, ListItem, Text, Icon } from 'native-base'
 import { Images } from '../Themes'
 import OrderScreen from './OrderScreen'
 import styles from './Styles/DefaultBaseStyles'
+import stylesOrderScreen from './Styles/OrderScreenStyle'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 
 class PageScreen extends Component {
@@ -17,60 +18,58 @@ class PageScreen extends Component {
   }
 
   _renderMockContainer() {
-    const { header, mainBackgroundColor, headerTitle } = styles
+    const { header, mainBackgroundColor, headerTitle, navBackButton, view_main, view_main_thumb } = styles
+    const { mock_label_value, mock_label_title, mock_listItem } = stylesOrderScreen
+    const { navigation: { goBack } } = this.props
     let thumb = Images.noPart
-
-    let loading = { opacity: 0.6, flex: 1, color: '#dadada', backgroundColor: '#dadada', fontSize: 18 }
-    let label = { opacity: 0.6, width: 150, color: '#b5c3d3', backgroundColor: '#b5c3d3', textAlign: 'right', marginRight: 10, fontSize: 18 }
-    let listItem = { opacity: 0.6, flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginLeft: 0, paddingRight: 30, paddingTop: 30, paddingBottom: 30, borderBottomWidth: 1, borderBottomColor: '#dadada' }
 
     return (
       <Container>
         <Header style={[header, mainBackgroundColor]}>
-          <Thumbnail square size={35} source={Images.logo_topBar} />
+          <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
           <Title style={headerTitle}>Work Order: Loading</Title>
         </Header>
         <Content>
-          <View style={{ backgroundColor: '#e2e2e2', width: '100%', height: 400 }}>
-            <Image resizeMode="contain" source={thumb} style={{ height: 300, width: null, flex: 1 }} />
+          <View style={view_main}>
+            <Image resizeMode="contain" source={thumb} style={view_main_thumb} />
           </View>
           <View style={{ paddingLeft: 25, paddingRight: 25, paddingTop: 10 }}>
             <List>
-              <ListItem style={listItem}>
-                <Text style={label}>Details</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Details</Text>
               </ListItem>
-              <ListItem style={listItem}>
-                <Text style={label}>Work Order</Text>
-                <Text style={loading}>Loading</Text>
-                <Text style={[label, { marginLeft: 10 }]}>Purchase Order</Text>
-                <Text style={loading}>Loading</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Work Order</Text>
+                <Text style={mock_label_value}>Loading</Text>
+                <Text style={[mock_label_title, { marginLeft: 10 }]}>Purchase Order</Text>
+                <Text style={mock_label_value}>Loading</Text>
               </ListItem>
-              <ListItem style={listItem}>
-                <Text style={label}>Part Number</Text>
-                <Text style={loading}>Loading</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Part Number</Text>
+                <Text style={mock_label_value}>Loading</Text>
               </ListItem>
-              <ListItem style={listItem}>
-                <Text style={label}>Description</Text>
-                <Text style={loading}>Loading</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Description</Text>
+                <Text style={mock_label_value}>Loading</Text>
               </ListItem>
-              <ListItem style={listItem}>
-                <Text style={label}>Route Cards</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Route Cards</Text>
               </ListItem>
-              <ListItem style={listItem}>
-                <Text style={label}>Loading</Text>
-                <Text style={loading}>Loading</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Loading</Text>
+                <Text style={mock_label_value}>Loading</Text>
               </ListItem>
-              <ListItem style={listItem}>
-                <Text style={label}>Loading</Text>
-                <Text style={loading}>Loading</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Loading</Text>
+                <Text style={mock_label_value}>Loading</Text>
               </ListItem>
-              <ListItem style={listItem}>
-                <Text style={label}>Loading</Text>
-                <Text style={loading}>Loading</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Loading</Text>
+                <Text style={mock_label_value}>Loading</Text>
               </ListItem>
-              <ListItem style={listItem}>
-                <Text style={label}>Loading</Text>
-                <Text style={loading}>Loading</Text>
+              <ListItem style={mock_listItem}>
+                <Text style={mock_label_title}>Loading</Text>
+                <Text style={mock_label_value}>Loading</Text>
               </ListItem>
             </List>
           </View>
@@ -80,17 +79,17 @@ class PageScreen extends Component {
   }
 
   render() {
-    const { order } = this.props
+    const { order, navigation: { goBack } } = this.props
 
     if (order === null)
       return this._renderMockContainer()
     else {
       const { WONum } = order
-      const { header, mainBackgroundColor, headerTitle } = styles
+      const { header, mainBackgroundColor, headerTitle, navBackButton } = styles
       return (
         <Container>
           <Header style={[header, mainBackgroundColor]}>
-            <Thumbnail square size={35} source={Images.logo_topBar} />
+            <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
             <Title style={headerTitle}>Work Order: {WONum.toUpperCase()}</Title>
           </Header>
           <OrderScreen {...this.props} />

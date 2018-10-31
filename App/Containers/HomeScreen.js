@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import { FlatList } from 'react-native'
-import { View, Container, Header, Title, Content, Left, Right, Body, Icon, Text, Item, Input, ListItem, Thumbnail, H3 } from 'native-base'
+import { View, Container, Header, Title, Content, Left, Right, Body, Icon, Text, Item, Input, ListItem, Thumbnail } from 'native-base'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
+import stylesDefault from './Styles/DefaultBaseStyles'
 import styles from './Styles/HomeScreenStyles'
 import { Images } from '../Themes'
 
@@ -20,19 +21,22 @@ class HomeScreen extends Component {
 
   filterOrders = (orders) => {
     const text = this.state.searchText.toLowerCase().trim()
-
     let result = orders.filter(order => {
-      for (let prop in order) {
-        if (JSON.stringify(order[prop]).toString().toLowerCase().indexOf(text) > -1)
-          return true
-      }
+      if (order.RouteCard.length > 0 && order.RouteCard[0].PartInfo.Number.toString().toLowerCase().indexOf(text) > -1)
+        return true
     })
-
     return result
   }
 
+  _renderEmpty = () =>
+    (
+      <ListItem style={stylesDefault.noResultsRow} onPress={() => { }}>
+        <Text style={[stylesDefault.noResultsText]}>There are no work orders.</Text>
+      </ListItem>
+    )
+
   _renderMockFlatList = () => {
-    const { listItem, listItemLeft, listItemRightView, listItemRightViewIcon } = styles
+    const { listItem, listItemLeft, listItemRightView, listItemRightViewIcon, listItemMockText } = styles
     return (
       <FlatList
         style={{ opacity: 0.6 }}
@@ -43,9 +47,9 @@ class HomeScreen extends Component {
               <Left style={listItemLeft}>
                 <Thumbnail square large source={Images.noPart} />
                 <Body>
-                  <Text style={{ height: 10, width: 100, backgroundColor: '#dadada', marginBottom: 5 }} />
-                  <Text style={{ height: 10, width: 200, backgroundColor: '#dadada', marginBottom: 5 }} />
-                  <Text style={{ height: 10, width: 70, backgroundColor: '#dadada' }} />
+                  <Text style={[listItemMockText, { width: 100 }]} />
+                  <Text style={[listItemMockText, { width: 200 }]} />
+                  <Text style={[listItemMockText, { marginBottom: 0, width: 70 }]} />
                 </Body>
               </Left>
               <Right>
@@ -58,15 +62,6 @@ class HomeScreen extends Component {
         }}
       />
     )
-  }
-
-  _renderFlatList = () => {
-    const { orders } = this.props
-    return (
-      <FlatList
-        data={!this.state.searchText ? orders : this.filterOrders(orders)}
-        renderItem={this._renderWorkOrder}
-      />)
   }
 
   _renderWorkOrder = ({ item }) => {
@@ -114,6 +109,16 @@ class HomeScreen extends Component {
         </Right>
       </ListItem>
     )
+  }
+
+  _renderFlatList = () => {
+    const { orders } = this.props
+    return (
+      <FlatList
+        data={!this.state.searchText ? orders : this.filterOrders(orders)}
+        renderItem={this._renderWorkOrder}
+        ListEmptyComponent={this._renderEmpty}
+      />)
   }
 
   render() {

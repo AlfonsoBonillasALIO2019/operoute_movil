@@ -8,6 +8,7 @@ import { Picker, Button, Text, ListItem, Icon, Left, Right, Body } from 'native-
 import styles from './Styles/OperationsStyle'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 import stylesListItem from '../Containers/Styles/HomeScreenStyles'
+import stylesDefault from '../Containers/Styles/DefaultBaseStyles'
 
 const socket = SocketIOClient('http://192.168.10.21:3050')
 
@@ -431,18 +432,20 @@ class Operations extends Component {
       },
     } = this.state
 
+    const { btn_confirm, color_gray, dialog_title } = stylesDefault
+
     return (
       <Dialog.Container visible={Visible === 'duration'}>
-        <Dialog.Title style={{ borderBottomColor: '#dadada', borderBottomWidth: 1, paddingBottom: 20, marginBottom: 10, color: '#828282' }}>Duration</Dialog.Title>
-        <Dialog.Description style={{ color: '#828282' }}>
+        <Dialog.Title style={[color_gray, dialog_title]}>Duration</Dialog.Title>
+        <Dialog.Description style={color_gray}>
           Please introduce the exact duration of this operation.
         </Dialog.Description>
         <Dialog.Input value={Duration} onChangeText={(text) => {
           prompt.Duration = Number(text)
           this.setState({ prompt })
         }} />
-        <Dialog.Button style={{ color: '#828282' }} label="Cancel" onPress={() => this._cleanState()} />
-        <Dialog.Button style={{ color: '#4f6987' }} label="Confirm" onPress={() => {
+        <Dialog.Button style={color_gray} label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button style={btn_confirm} label="Confirm" onPress={() => {
           if (!Duration || Duration < 1) {
             alert("Please introduce a valid duration.")
             return false
@@ -472,11 +475,12 @@ class Operations extends Component {
     } = this.state
 
     const { usersQA } = this.props
+    const { btn_confirm, color_gray, dialog_title } = stylesDefault
 
     return (
       <Dialog.Container visible={Visible === 'firstPO'}>
-        <Dialog.Title style={{ borderBottomColor: '#dadada', borderBottomWidth: 1, paddingBottom: 20, marginBottom: 10, color: '#828282' }}>First Pass Off</Dialog.Title>
-        <Dialog.Description style={{ color: '#828282' }}>
+        <Dialog.Title style={[color_gray, dialog_title]}>First Pass Off</Dialog.Title>
+        <Dialog.Description style={color_gray}>
           Please assign a QA engineer to inspect this part.
         </Dialog.Description>
         <Picker
@@ -495,8 +499,8 @@ class Operations extends Component {
             ]
           }
         </Picker>
-        <Dialog.Button style={{ color: '#828282' }} label="Cancel" onPress={() => this._cleanState()} />
-        <Dialog.Button style={{ color: '#4f6987' }} label="Confirm" onPress={() => {
+        <Dialog.Button style={color_gray} label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button style={btn_confirm} label="Confirm" onPress={() => {
           if (UserKey === '0' || !UserKey) {
             alert("Please select a QA Engineer.")
             return false
@@ -519,17 +523,18 @@ class Operations extends Component {
 
   renderPauseCausePrompt = () => {
     let { prompt, prompt: { Pause_ReasonCode, Visible } } = this.state
+    const { btn_confirm, color_gray, dialog_title } = stylesDefault
     return (
       <Dialog.Container visible={Visible === 'pause'}>
-        <Dialog.Title style={{ borderBottomColor: '#dadada', borderBottomWidth: 1, paddingBottom: 20, marginBottom: 10, color: '#828282' }}>
+        <Dialog.Title style={[color_gray, dialog_title]}>
           Please introduce a pause reason
         </Dialog.Title>
         <Dialog.Input value={Pause_ReasonCode} onChangeText={(e) => {
           prompt.Pause_ReasonCode = e
           this.setState({ prompt })
         }} />
-        <Dialog.Button style={{ color: '#828282' }} label="Cancel" onPress={() => this._cleanState()} />
-        <Dialog.Button style={{ color: '#4f6987' }} label="Confirm" onPress={() => {
+        <Dialog.Button style={color_gray} label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button style={btn_confirm} label="Confirm" onPress={() => {
           if (!Pause_ReasonCode || Pause_ReasonCode === '') {
             alert("Please introduce a valid pause reason.")
             return false
@@ -563,10 +568,12 @@ class Operations extends Component {
       style: { maxHeight: 60, height: 60, color: '#36454f' },
     }
 
+    const { btn_confirm, color_gray, dialog_title, color_blue } = stylesDefault
+
     return (
       <Dialog.Container visible={Visible}>
-        <Dialog.Title style={{ borderBottomColor: '#dadada', borderBottomWidth: 1, paddingBottom: 20, marginBottom: 10, color: '#828282' }}>Modify operation <Text style={{ color: '#4f6987' }}>{item.PartPO.SerialNum}</Text> status</Dialog.Title>
-        <Dialog.Description style={{ color: '#828282' }}>
+        <Dialog.Title style={[color_gray, dialog_title]}>Modify operation <Text style={color_blue}>{item.PartPO.SerialNum}</Text> status</Dialog.Title>
+        <Dialog.Description style={color_gray}>
           Select operator and new status.
         </Dialog.Description>
         <Picker
@@ -577,9 +584,9 @@ class Operations extends Component {
         >
           {operators &&
             [
-              <Picker.Item style={{ color: '#828282' }} label={"- Operator -"} value='0' key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
+              <Picker.Item style={color_gray} label={"- Operator -"} value='0' key={`${item.PartPO.SerialNum}_operador_dropdown`} />,
               operators.map((operator, index) => (
-                <Picker.Item style={{ color: '#828282' }} label={operator.Name} value={operator.Id} key={`${item.PartPO.SerialNum}_${operator.Id}`} />
+                <Picker.Item style={color_gray} label={operator.Name} value={operator.Id} key={`${item.PartPO.SerialNum}_${operator.Id}`} />
               ))
             ]
           }
@@ -592,15 +599,15 @@ class Operations extends Component {
         >
           {
             [
-              <Picker.Item style={{ color: '#828282' }} label={"- Status -"} value='0' key={`${item.PartPO.SerialNum}_status_dropdown`} />,
+              <Picker.Item style={color_gray} label={"- Status -"} value='0' key={`${item.PartPO.SerialNum}_status_dropdown`} />,
               statusObj.options.map((option, index) => (
-                <Picker.Item style={{ color: '#828282' }} label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
+                <Picker.Item style={color_gray} label={option.label} value={option.value} key={`${item.PartPO.SerialNum}_${option.value}`} />
               ))
             ]
           }
         </Picker>
-        <Dialog.Button style={{ color: '#828282' }} label="Cancel" onPress={() => this._cleanState()} />
-        <Dialog.Button style={{ color: '#4f6987', fontWeight: '500' }} label="Confirm" onPress={() => this.postLog(item.Id, item.PartPO.SerialNum, isRework, match)} />
+        <Dialog.Button style={color_gray} label="Cancel" onPress={() => this._cleanState()} />
+        <Dialog.Button style={btn_confirm} label="Confirm" onPress={() => this.postLog(item.Id, item.PartPO.SerialNum, isRework, match)} />
       </Dialog.Container>
     )
   }
@@ -612,7 +619,8 @@ class Operations extends Component {
     const itemStatusColor = !fetchingLogs ? statusObj.color : 'gray'
     const itemStatusLabel = !fetchingLogs ? statusObj.label : 'Loading'
 
-    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewLabel, listItemRightViewDate, listItemRightViewIcon } = stylesListItem
+    const { listItemButtonMore, listItem, listItemLeft, listItemLeftTextMain, listItemRightView, listItemRightViewLabel, listItemRightViewDate } = stylesListItem
+    const { color_light_gray } = stylesDefault
 
     return (
       <ListItem style={[listItem, { borderColor: itemStatusColor }]}>
@@ -628,8 +636,8 @@ class Operations extends Component {
             <Button
               rounded
               onPress={() => this.setState({ actionPrompt: { Visible: true, item, logStatusObj } })}
-              style={{ borderColor: '#eeeeee', borderWidth: 1, elevation: 0, backgroundColor: '#FFFFFF', height: 40, width: 40, borderRadius: 20, justifyContent: 'center' }}>
-              <Icon style={{ color: '#dadada' }} name="md-more" />
+              style={listItemButtonMore}>
+              <Icon style={color_light_gray} name="md-more" />
             </Button>
           </View>
         </Right>
