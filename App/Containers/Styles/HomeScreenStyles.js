@@ -62,5 +62,20 @@ export default StyleSheet.create({
   listItemRightViewIcon: {
     color: '#dadada',
     marginLeft: 20
+  },
+  listItemButtonMore: {
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    borderColor: '#eeeeee',
+    borderRadius: 20,
+    borderWidth: 1,
+    elevation: 0,
+    height: 40,
+    width: 40,
+  },
+  listItemMockText: {
+    backgroundColor: '#dadada',
+    marginBottom: 5,
+    height: 10,
   }
 })
