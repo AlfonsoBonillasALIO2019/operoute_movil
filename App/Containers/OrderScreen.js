@@ -30,12 +30,12 @@ export default class OrderScreen extends Component {
       partNumber = Description = order.Routecards[0].RouteCard[0].PartInfo.Number
     } catch (err) { }
 
-    const { label, rCListItem, label, label_gray } = stylesOrderScreen
+    const { label, rCListItem, label_gray } = stylesOrderScreen
     const { color_light_gray, view_main, view_main_thumb } = stylesDefault
 
-    const listItem = { ...rCListItem, borderBottomWidth: 1, borderBottomColor: '#dadada' }
-    const label_name = { ...label, marginRight: 10 }
-    const label_title = { ...label, fontWeight: '500' }
+    const listItem = [rCListItem, { borderBottomWidth: 1, borderBottomColor: '#dadada' }]
+    const label_name = [label, { marginRight: 10 }]
+    const label_title = [label, { fontWeight: '500' }]
 
     return (
       <Container>
