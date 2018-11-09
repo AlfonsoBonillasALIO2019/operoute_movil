@@ -1,13 +1,12 @@
 import { StackNavigator, TabNavigator } from 'react-navigation'
-import PageScreen from '../Containers/PageScreen'
+import WorkOrderPage from '../Containers/WorkOrderPage'
 import ControllerScreen from '../Containers/ControllerScreen'
 import FaceCameraScreen from '../Containers/FaceCameraScreen'
-import OperationScreen from '../Containers/OperationScreen'
+import OperationPage from '../Containers/OperationPage'
 import LaunchScreen from '../Containers/LaunchScreen'
 import LaunchScreenGreen from '../Containers/LaunchScreenGreen'
-import HomeScreen from '../Containers/HomeScreen'
-import OrderScreen from '../Containers/OrderScreen'
-import SerialNumbers from '../Containers/SerialNumbers'
+import WorkOrdersPage from '../Containers/WorkOrdersPage'
+import RouteCardPage from '../Containers/RouteCardPage'
 import styles from './Styles/NavigationStyles'
 
 // create custom transitioner without the opacity animation, ie. for iOS
@@ -27,34 +26,15 @@ function forVertical (props) {
     transform: [{ translateX }, { translateY }]
   }
 }
-const TabStack = TabNavigator({
-  Order: { screen: OrderScreen },
-  SerialNumbers: { screen: SerialNumbers },
-})
-
-const ModalStack = StackNavigator(
-  {
-    PageScreen: { screen: PageScreen },
-  },
-  {
-    mode: 'modal',
-    headerMode: 'none',
-  	initialRouteName: 'PageScreen',
-    transitionConfig: () => ({ screenInterpolator: forVertical }),
-    cardStyle: {
-      backgroundColor:"transparent",
-    }
-  }
-)
 
 // Manifest of possible screens
 const PrimaryNav = StackNavigator({
   ControllerScreen: { screen: ControllerScreen },
   FaceCameraScreen: { screen: FaceCameraScreen },
-  Operation: { screen: OperationScreen },
-  Home: { screen: HomeScreen },
-  Modal: { screen: ModalStack },
-  SerialNumbersPage: { screen: SerialNumbers }
+  OperationPage: { screen: OperationPage },
+  RouteCardPage: { screen: RouteCardPage },
+  WorkOrderPage: { screen: WorkOrderPage },
+  Home: { screen: WorkOrdersPage }
 }, {
   // Default config for all screens
   headerMode: 'none',

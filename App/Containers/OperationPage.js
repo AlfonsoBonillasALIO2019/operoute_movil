@@ -3,14 +3,13 @@ import moment from 'moment'
 import { View } from 'react-native'
 import { connect } from 'react-redux'
 import { Container, Header, Title, Content, Button, Text, H2, H3, Icon } from 'native-base'
-import { Images } from '../Themes'
 import Inputs from '../Components/Inputs'
 import Tooling from '../Components/Tooling'
 import Operations from '../Components/Operations'
 import Instructions from '../Components/Instructions'
 import stylesDefault from './Styles/DefaultBaseStyles'
 
-class OperationScreen extends Component {
+class OperationPage extends Component {
   state = {
     selected: 'OPERATIONS',
     screens: [
@@ -117,4 +116,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(OperationScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(OperationPage)

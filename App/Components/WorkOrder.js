@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
 import { Image } from 'react-native'
-import { Images } from '../Themes'
-import stylesOrderScreen from './Styles/OrderScreenStyle'
-import stylesDefault from './Styles/DefaultBaseStyles'
+import React, { Component } from 'react'
 import { View, Container, Content, List, ListItem, Text, Icon } from 'native-base'
+import stylesDefault from '../Containers/Styles/DefaultBaseStyles'
+import stylesOrder from '../Containers/Styles/WorkOrderStyles'
+import { Images } from '../Themes'
 
-export default class OrderScreen extends Component {
+export default class WorkOrder extends Component {
   render() {
     const { navigate } = this.props.navigation
     const { order, order: { SerialNum = [] } } = this.props
@@ -30,7 +30,7 @@ export default class OrderScreen extends Component {
       partNumber = Description = order.Routecards[0].RouteCard[0].PartInfo.Number
     } catch (err) { }
 
-    const { label, rCListItem, label_gray } = stylesOrderScreen
+    const { label, rCListItem, label_gray } = stylesOrder
     const { color_light_gray, view_main, view_main_thumb } = stylesDefault
 
     const listItem = [rCListItem, { borderBottomWidth: 1, borderBottomColor: '#dadada' }]
@@ -68,7 +68,7 @@ export default class OrderScreen extends Component {
               {order.Routecards.map((card, i) => {
                 return card.RouteCard.map((_routeCard, j) => {
                   return (
-                    <ListItem onPress={() => navigate('SerialNumbersPage', { card: { ...card }, serials: SerialNum, ...this.props, })} style={rCListItem}>
+                    <ListItem onPress={() => navigate('RouteCardPage', { card: { ...card }, serials: SerialNum, ...this.props, })} style={rCListItem}>
                       <Text style={label_name}>{i + 1}. </Text>
                       <Text style={label_gray}>{_routeCard.Name.toUpperCase()}</Text>
                       <Icon style={color_light_gray} name="ios-arrow-forward" />

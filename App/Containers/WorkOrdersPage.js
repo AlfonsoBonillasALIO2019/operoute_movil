@@ -5,10 +5,10 @@ import { FlatList } from 'react-native'
 import { View, Container, Header, Title, Content, Left, Right, Body, Icon, Text, Item, Input, ListItem, Thumbnail } from 'native-base'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 import stylesDefault from './Styles/DefaultBaseStyles'
-import styles from './Styles/HomeScreenStyles'
+import stylesWorkOrders from './Styles/WorkOrdersStyles'
 import { Images } from '../Themes'
 
-class HomeScreen extends Component {
+class WorkOrdersPage extends Component {
   state = {
     searchText: '',
     mockData: [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -36,7 +36,7 @@ class HomeScreen extends Component {
     )
 
   _renderMockFlatList = () => {
-    const { listItem, listItemLeft, listItemRightView, listItemRightViewIcon, listItemMockText } = styles
+    const { listItem, listItemLeft, listItemRightView, listItemRightViewIcon, listItemMockText } = stylesWorkOrders
     return (
       <FlatList
         style={{ opacity: 0.6 }}
@@ -88,10 +88,10 @@ class HomeScreen extends Component {
         borderColor = '#fe9200'
     }
 
-    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewLabel, listItemRightViewDate, listItemRightViewIcon } = styles
+    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewLabel, listItemRightViewDate, listItemRightViewIcon } = stylesWorkOrders
 
     return (
-      <ListItem onPress={() => navigate('Modal', { workOrderId: item.Id })}
+      <ListItem onPress={() => navigate('WorkOrderPage', { workOrderId: item.Id })}
         style={[listItem, { borderColor }]}>
         <Left style={listItemLeft}>
           <Thumbnail square large source={thumb} />
@@ -122,8 +122,8 @@ class HomeScreen extends Component {
   }
 
   render() {
-    const { orders, user: { FirstName } = {} } = this.props
-    const { header, mainBackgroundColor, headerTitle, container } = styles
+    const { header, mainBackgroundColor, headerTitle, container } = stylesWorkOrders
+    const { orders } = this.props
 
     return (
       <Container>
@@ -132,15 +132,12 @@ class HomeScreen extends Component {
           <Title style={headerTitle}>Work Orders</Title>
         </Header>
         <Header style={mainBackgroundColor} searchBar>
-          <Item style={{ borderRadius: 5 }}>
-            <Icon name="ios-search" />
-            <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Search..." />
+          <Item style={{ borderRadius: 3, paddingLeft: 10, paddingRight: 10, paddingTop: 0, paddingBottom: 0 }}>
+            <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Type Serial Number" />
+            <Icon name="ios-search" onPress={() => console.log("CLICKED SEARCH")} />
           </Item>
         </Header>
         <Content style={container}>
-          {/* <H3 style={{ color: '#4f6987', marginLeft: 10, marginTop: 30, marginBottom: 25, fontWeight: "400" }}>
-            Welcome {FirstName}
-          </H3> */}
           {orders.length === 0 ? this._renderMockFlatList() : this._renderFlatList()}
         </Content>
       </Container>
@@ -162,4 +159,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(WorkOrdersPage)

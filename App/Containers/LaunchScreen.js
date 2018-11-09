@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Image, View } from 'react-native'
-import { Button, Text, Label, Form, Item, Input, H3 } from 'native-base'
+import { Button, Label, Form, Item, Input, H3 } from 'native-base'
 import LoginActions from '../Redux/LoginRedux'
 import styles from './Styles/LoginScreenStyle'
 import { Images } from '../Themes'

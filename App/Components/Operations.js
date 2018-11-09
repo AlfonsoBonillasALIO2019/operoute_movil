@@ -7,7 +7,7 @@ import { View, FlatList } from 'react-native'
 import { Picker, Button, Text, ListItem, Icon, Left, Right, Body } from 'native-base'
 import styles from './Styles/OperationsStyle'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
-import stylesListItem from '../Containers/Styles/HomeScreenStyles'
+import stylesWorkOrders from '../Containers/Styles/WorkOrdersStyles'
 import stylesDefault from '../Containers/Styles/DefaultBaseStyles'
 
 const socket = SocketIOClient('http://192.168.10.21:3050')
@@ -619,7 +619,7 @@ class Operations extends Component {
     const itemStatusColor = !fetchingLogs ? statusObj.color : 'gray'
     const itemStatusLabel = !fetchingLogs ? statusObj.label : 'Loading'
 
-    const { listItemButtonMore, listItem, listItemLeft, listItemLeftTextMain, listItemRightView, listItemRightViewLabel, listItemRightViewDate } = stylesListItem
+    const { listItemButtonMore, listItem, listItemLeft, listItemLeftTextMain, listItemRightView, listItemRightViewLabel, listItemRightViewDate } = stylesWorkOrders
     const { color_light_gray } = stylesDefault
 
     return (

@@ -2,28 +2,23 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Container, Content, Text, H2, ListItem, Header, Title, Icon } from 'native-base'
 import { View, FlatList } from 'react-native'
-import styles from './Styles/SerialNumbersStyle'
+import stylesRouteCard from './Styles/RouteCardStyles'
 import stylesDefault from './Styles/DefaultBaseStyles'
 
-class SerialNumbers extends React.PureComponent {
-  pressItem = item => {
-    const { navigate } = this.props.navigation
-    navigate('Operation', item)
-  }
-
+class RouteCardPage extends React.PureComponent {
   renderRow = ({ item }) => {
-    const { navigation: { state: { params: { card, serials, card: { RouteCard }, order: { WONum } } } } } = this.props
+    const { navigation: { navigate, state: { params: { card, serials, card: { RouteCard }, order: { WONum } } } } } = this.props
     const { Operation = {} } = item
     let name = ''
     try {
       name = RouteCard[0].Name
     } catch (err) { }
 
-    const { row, serial, operation } = styles
+    const { row, serial, operation } = stylesRouteCard
     const { color_light_gray } = stylesDefault
 
     return (
-      <ListItem style={row} onPress={() => this.pressItem({ card, Operation, serials, routeCardName: name, workOrderNumber: WONum })}>
+      <ListItem style={row} onPress={() => navigate('OperationPage', { card, Operation, serials, routeCardName: name, workOrderNumber: WONum })}>
         <Text style={serial}>{Operation.Id}</Text>
         <Text style={operation}>{Operation.OperationNum} - {Operation.Name}</Text>
         <Icon style={color_light_gray} name="ios-arrow-forward" />
@@ -32,7 +27,7 @@ class SerialNumbers extends React.PureComponent {
   }
 
   renderHeader = () => {
-    const { row, serial, operation } = styles
+    const { row, serial, operation } = stylesRouteCard
     return (
       <View style={[row, { borderBottomWidth: 1, borderBottomColor: '#dadada' }]}>
         <Text style={[serial, { color: '#4f6987', fontWeight: '500' }]}>SERIAL</Text>
@@ -43,8 +38,8 @@ class SerialNumbers extends React.PureComponent {
 
   renderEmpty = () =>
     (
-      <ListItem style={styles.row} onPress={() => { }}>
-        <Text style={[styles.operation, { textAlign: 'center' }]}>There are no operations on this serial number.</Text>
+      <ListItem style={stylesRouteCard.row} onPress={() => { }}>
+        <Text style={[stylesRouteCard.operation, { textAlign: 'center' }]}>There are no operations on this serial number.</Text>
       </ListItem>
     )
 
@@ -82,7 +77,7 @@ class SerialNumbers extends React.PureComponent {
               ListEmptyComponent={this.renderEmpty}
               ListHeaderComponent={this.renderHeader}
               initialNumToRender={oneScreensWorth}
-              contentContainerStyle={styles.listContent}
+              contentContainerStyle={stylesRouteCard.listContent}
             />
           </View>
         </Content>
@@ -94,4 +89,4 @@ class SerialNumbers extends React.PureComponent {
 const mapStateToProps = (state) => { return {} }
 const mapDispatchToProps = (dispatch) => { return {} }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SerialNumbers)
+export default connect(mapStateToProps, mapDispatchToProps)(RouteCardPage)

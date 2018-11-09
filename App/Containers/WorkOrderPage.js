@@ -3,12 +3,12 @@ import { connect } from 'react-redux'
 import { Image } from 'react-native'
 import { View, Container, Header, Title, Content, List, ListItem, Text, Icon } from 'native-base'
 import { Images } from '../Themes'
-import OrderScreen from './OrderScreen'
-import styles from './Styles/DefaultBaseStyles'
-import stylesOrderScreen from './Styles/OrderScreenStyle'
+import WorkOrder from '../Components/WorkOrder'
+import stylesOrder from './Styles/WorkOrderStyles'
+import stylesDefault from './Styles/DefaultBaseStyles'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 
-class PageScreen extends Component {
+class WorkOrderPage extends Component {
   componentDidMount() {
     const { requestSelected, token } = this.props
     const {
@@ -18,8 +18,8 @@ class PageScreen extends Component {
   }
 
   _renderMockContainer() {
-    const { header, mainBackgroundColor, headerTitle, navBackButton, view_main, view_main_thumb } = styles
-    const { mock_label_value, mock_label_title, mock_listItem } = stylesOrderScreen
+    const { header, mainBackgroundColor, headerTitle, navBackButton, view_main, view_main_thumb } = stylesDefault
+    const { mock_label_value, mock_label_title, mock_listItem } = stylesOrder
     const { navigation: { goBack } } = this.props
     let thumb = Images.noPart
 
@@ -85,14 +85,14 @@ class PageScreen extends Component {
       return this._renderMockContainer()
     else {
       const { WONum } = order
-      const { header, mainBackgroundColor, headerTitle, navBackButton } = styles
+      const { header, mainBackgroundColor, headerTitle, navBackButton } = stylesDefault
       return (
         <Container>
           <Header style={[header, mainBackgroundColor]}>
             <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
             <Title style={headerTitle}>Work Order: {WONum.toUpperCase()}</Title>
           </Header>
-          <OrderScreen {...this.props} />
+          <WorkOrder {...this.props} />
         </Container>
       )
     }
@@ -112,4 +112,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PageScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(WorkOrderPage)
