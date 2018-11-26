@@ -5,23 +5,20 @@ import { connect } from 'react-redux'
 import StartupActions from '../Redux/StartupRedux'
 import ReduxPersist from '../Config/ReduxPersist'
 import ControllerScreen from './ControllerScreen'
-
-// Styles
 import styles from './Styles/RootContainerStyles'
 
 class RootContainer extends Component {
-  componentDidMount () {
-    // if redux persist is not active fire startup action
+  componentDidMount() {
     if (!ReduxPersist.active) {
       this.props.startup()
     }
   }
 
-  render () {
+  render() {
     return (
       <View style={styles.applicationView}>
-        <StatusBar barStyle='light-content' />
-        <ControllerScreen/>
+        <StatusBar backgroundColor="#4F6987" barStyle="light-content" />
+        <ControllerScreen />
       </View>
     )
   }

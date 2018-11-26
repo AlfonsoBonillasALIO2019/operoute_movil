@@ -1,8 +1,11 @@
 // a library to wrap and simplify api calls
 import apisauce from 'apisauce'
+import { actionChannel } from '../../node_modules/redux-saga/effects';
 
 // our "constructor"
-const create = (baseURL = 'http://172.20.10.4/') => {
+const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing Server
+  // const create = (baseURL = 'http://172.16.10.112:8000') => { // <-- HOST
+  // const create = (baseURL = 'http://192.168.70.73:8000') => { // <-- OTM Local Server
   // ------
   // STEP 1
   // ------
@@ -34,25 +37,145 @@ const create = (baseURL = 'http://172.20.10.4/') => {
   // Since we can't hide from that, we embrace it by getting out of the
   // way at this level.
   //
-  const login   = (username, password) => api.post('/signInJson', {
-                          "username": username,
-                          "password": password
-                        }, {headers: {'Content-Type': 'application/json'}})
+  const login = (username, password) => api.post('/signInJson', {
+    "username": username,
+    "password": password
+  }, { headers: { 'Content-Type': 'application/json' } })
+
   const getWorkOrders = token => api.get('/api/workorder', {}, {
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                          }
-                        })
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const getWorkOrdersBySerial = (token, serialNumber) => api.get(`/api/workorder/WorkOrderBySerial?serial=${serialNumber}`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
   const getWorkOrderById = (token, workOrderId) => api.get(`/api/workorder/${workOrderId}`, {}, {
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                          }
-                        })
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const refreshPanel = (token) => api.get(`/#!/workorder_refresh`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const putWooperationlog = (token, data, Id) => api.put('/api/wooperationlog', {
+    'Id': Id,
+    'data': { ...data },
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  const postWooperationlog = (token, data) => api.post('/api/wooperationlog', {
+    'data': { ...data },
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  const postFirstPO = (token, data) => api.post('/api/firstpassoff', {
+    'data': { ...data },
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  const putReworkWooperationlog = (token, data, Id) => api.put('/api/reworkserials', {
+    'Id': Id,
+    'data': { ...data },
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  const searchWooperationlog = (token, filter) => api.post('/api/wooperationlog/search', {
+    'sort': `Id desc`,
+    'pageNum': `1`,
+    'pageSize': `100`,
+    'filter': {
+      ...filter,
+      'Active': true
+    }
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  const searchFirstPOWooperationlog = (token, filter) => api.post('/api/firstpassoff/search', {
+    'sort': `Id desc`,
+    'pageNum': `1`,
+    'pageSize': `10`,
+    'filter': {
+      ...filter,
+    }
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  const searchReworkWooperationlog = (token, WOOLogId) => api.post('/api/reworkserials/search', {
+    'sort': `Id desc`,
+    'pageNum': `1`,
+    'pageSize': `1`,
+    'filter': {
+      'WOOLogId': `${WOOLogId}`,
+    }
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+  const getActiveOperators = (token) => api.get(`/api/operators/Active/true`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const getQAUsers = (token) => api.post(`/api/user/search`, {
+    'sort': `Id desc`,
+    'pageNum': 1,
+    'pageSize': 100,
+    'filter': {
+      'RoleId': 5,
+      'Active': true,
+    }
+  }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
   const getRoot = () => api.get('')
   const getRate = () => api.get('rate_limit')
-  const getUser = (username) => api.get('search/users', {q: username})
+  const getUser = (username) => api.get('search/users', { q: username })
 
   // ------
   // STEP 3
@@ -69,11 +192,27 @@ const create = (baseURL = 'http://172.20.10.4/') => {
   return {
     // a list of the API functions from step 2
     login,
+
     getRoot,
     getRate,
     getUser,
+    getQAUsers,
     getWorkOrders,
-    getWorkOrderById
+    getWorkOrderById,
+    getActiveOperators,
+    getWorkOrdersBySerial,
+
+    refreshPanel,
+
+    putWooperationlog,
+    postWooperationlog,
+    searchWooperationlog,
+
+    putReworkWooperationlog,
+    searchReworkWooperationlog,
+
+    postFirstPO,
+    searchFirstPOWooperationlog
   }
 }
 

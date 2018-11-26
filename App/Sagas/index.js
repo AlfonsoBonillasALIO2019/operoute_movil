@@ -14,7 +14,26 @@ import { WorkOrderTypes } from '../Redux/WorkOrderRedux'
 import { startup } from './StartupSagas'
 import { getUserAvatar } from './GithubSagas'
 import { login } from './LoginSagas'
-import { getWorkOrders, getWorkOrderById, searchWooperationlog } from './WorkOrderSagas'
+import {
+  getQAUsers,
+
+  getWorkOrders,
+  getWorkOrderById,
+  getActiveOperators,
+  getWorkOrdersBySerial,
+
+  refreshPanel,
+
+  postFirstPO,
+  postWooperationlog,
+
+  putWooperationlog,
+  putReworkWooperationlog,
+
+  searchWooperationlog,
+  searchReworkWooperationlog,
+  searchFirstPOWooperationlog
+} from './WorkOrderSagas'
 
 /* ------------- API ------------- */
 
@@ -24,7 +43,7 @@ const api = DebugConfig.useFixtures ? FixtureAPI : API.create()
 
 /* ------------- Connect Types To Sagas ------------- */
 
-export default function * root () {
+export default function* root() {
   yield all([
     // some sagas only receive an action
     takeLatest(StartupTypes.STARTUP, startup),
@@ -32,9 +51,24 @@ export default function * root () {
     // some sagas receive extra parameters in addition to an action
     takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api),
     takeLatest(LoginTypes.LOGIN_REQUEST, login, api),
+
+    takeLatest(WorkOrderTypes.OPERATORS_REQUEST, getActiveOperators, api),
+    takeLatest(WorkOrderTypes.USERS_Q_A_REQUEST, getQAUsers, api),
+
+    takeLatest(WorkOrderTypes.REFRESH_PANEL_REQUEST, refreshPanel, api),
+
     takeLatest(WorkOrderTypes.WORK_ORDER_REQUEST, getWorkOrders, api),
     takeLatest(WorkOrderTypes.WORK_ORDER_BY_ID_REQUEST, getWorkOrderById, api),
+    takeLatest(WorkOrderTypes.WORK_ORDER_BY_SERIAL_REQUEST, getWorkOrdersBySerial, api),
+
+    takeLatest(WorkOrderTypes.PUT_WOOPERATIONLOG_REQUEST, putWooperationlog, api),
+    takeLatest(WorkOrderTypes.POST_WOOPERATIONLOG_REQUEST, postWooperationlog, api),
     takeLatest(WorkOrderTypes.SEARCH_WOOPERATIONLOG_REQUEST, searchWooperationlog, api),
 
+    takeLatest(WorkOrderTypes.PUT_REWORK_WOOPERATIONLOG_REQUEST, putReworkWooperationlog, api),
+    takeLatest(WorkOrderTypes.SEARCH_REWORK_WOOPERATIONLOG_REQUEST, searchReworkWooperationlog, api),
+
+    takeLatest(WorkOrderTypes.POST_FIRST_P_O_REQUEST, postFirstPO, api),
+    takeLatest(WorkOrderTypes.SEARCH_FIRST_P_O_WOOPERATIONLOG_REQUEST, searchFirstPOWooperationlog, api),
   ])
 }

@@ -1,29 +1,22 @@
 import React, { Component } from 'react'
-import { ScrollView, Image, View } from 'react-native'
-import { Images } from '../Themes'
-import { Container, Header, Title, Content, Footer, FooterTab, 
-  Button, Left, Right, Body, Icon, Text, 
-  Card, CardItem,
-  Form, Item, Input } from 'native-base';
-
 import { connect } from 'react-redux'
+import { Image, View } from 'react-native'
+import { Button, Label, Form, Item, Input, H3 } from 'native-base'
 import LoginActions from '../Redux/LoginRedux'
-// Styles
-import styles from './Styles/LaunchScreenStyles'
+import styles from './Styles/LoginScreenStyle'
+import { Images } from '../Themes'
 
 class LaunchScreen extends Component {
-  state={
-    username:'alex@login.com',
-    password:'simona'
+  state = {
+    // username: 'alex@login.com',
+    // password: 'simona'
+    username: '',
+    password: ''
   }
 
-  handleInputChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-
+  handleInputChange = (name, text) => {
     this.setState({
-      [name]: value
+      [name]: text
     });
   }
 
@@ -35,28 +28,30 @@ class LaunchScreen extends Component {
 
   render() {
     const { username, password } = this.state
+    const { container, flexedColumn, logo, innerBox, username: usernameInput, password: passwordInput, button, buttonText } = styles
+
     return (
-      <View style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            <Image source={Images.launch} />
-            <View style={{width: 600}}>
-              <Form>
-                <Item success>
-                  <Input name='username' value={username} onChange={this.handleInputChange} placeholder="Username" />
-                </Item>
-                <Item last>
-                  <Input name='password' value={password} onChange={this.handleInputChange} placeholder="Password" />
-                </Item>
-                <Button rounded block success
-                  onPress={this.handleLogin}>
-                  <Text>Log in</Text>
+      <View style={[container, flexedColumn]}>
+        <Image resizeMode="contain" source={Images.logo_transparent} style={logo} />
+        <View style={innerBox}>
+          <Form>
+            <View style={flexedColumn}>
+              <Item floatingLabel={true} style={usernameInput}>
+                <Label>Username</Label>
+                <Input name='username' value={username} onChangeText={(text) => this.handleInputChange('username', text)} />
+              </Item>
+              <Item floatingLabel={true} style={passwordInput}>
+                <Label>Password</Label>
+                <Input textContentType='password' secureTextEntry={true} name='password' value={password} onChangeText={(text) => this.handleInputChange('password', text)} />
+              </Item>
+              <View>
+                <Button style={[button, flexedColumn]} rounded success onPress={this.handleLogin}>
+                  <H3 style={buttonText}>Log In</H3>
                 </Button>
-              </Form> 
+              </View>
             </View>
+          </Form>
+        </View>
       </View>
     );
   }
@@ -69,8 +64,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    login:(username,password)=>{
-      dispatch(LoginActions.loginRequest(username,password))
+    login: (username, password) => {
+      dispatch(LoginActions.loginRequest(username, password))
     }
   }
 }
