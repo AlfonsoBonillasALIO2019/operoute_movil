@@ -10,7 +10,7 @@ export default class WorkOrder extends Component {
     const { navigate } = this.props.navigation
     const { order, order: { SerialNum = [] } } = this.props
 
-    let WONum, PurchaseOrder, Description, partNumber
+    let WONum = "N/A", PurchaseOrder = "N/A", Description = "N/A", partNumber = "N/A"
     let thumb = Images.noPart
 
     try {
@@ -19,16 +19,19 @@ export default class WorkOrder extends Component {
     try {
       PurchaseOrder = order.PurchaseOrder.Number
     } catch (err) { }
-    try {
-      Description = order.Routecards[0].RouteCard[0].PartInfo.Description
-    } catch (err) { }
 
-    if (order.Routecards[0].RouteCard && order.Routecards[0].RouteCard[0] && order.Routecards[0].RouteCard[0].Id >= 2 && order.Routecards[0].RouteCard[0].Id <= 10)
-      thumb = Images.part[order.Routecards[0].RouteCard[0].Id]
+    if (order.Routecards.length > 0 && order.Routecards[0].RouteCard) {
+      try {
+        Description = order.Routecards[0].RouteCard[0].PartInfo.Description
+      } catch (err) { }
 
-    try {
-      partNumber = Description = order.Routecards[0].RouteCard[0].PartInfo.Number
-    } catch (err) { }
+      if (order.Routecards[0].RouteCard && order.Routecards[0].RouteCard[0] && order.Routecards[0].RouteCard[0].Id >= 2 && order.Routecards[0].RouteCard[0].Id <= 10)
+        thumb = Images.part[order.Routecards[0].RouteCard[0].Id]
+
+      try {
+        partNumber = Description = order.Routecards[0].RouteCard[0].PartInfo.Number
+      } catch (err) { }
+    }
 
     const { label, rCListItem, label_gray } = stylesOrder
     const { color_light_gray, view_main, view_main_thumb } = stylesDefault

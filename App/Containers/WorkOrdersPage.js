@@ -203,6 +203,7 @@ class WorkOrdersPage extends Component {
                 }} />
                 :
                 <Icon name="ios-search" onPress={() => {
+                  if (searchSerialNumber.length == 0) return false
                   workOrdersBySerialRequest(token, searchSerialNumber)
                   this.setState({ searched: true })
                 }} />
