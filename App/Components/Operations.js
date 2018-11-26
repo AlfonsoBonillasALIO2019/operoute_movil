@@ -54,7 +54,7 @@ class Operations extends Component {
   }
 
   componentDidMount = () => {
-    const { requestUsersQA, requestOperators, token, requestWooperationlog, requestFirstPOWooperationlog, search: { WOKey, RCTKey, OperationKey }, passOffReqd } = this.props
+    const { requestUsersQA, requestOperators, token, requestWooperationlog, requestFirstPOWooperationlog, search: { WOKey, RCTKey, OperationKey } } = this.props
 
     requestUsersQA(token)
     requestOperators(token)

@@ -3,8 +3,7 @@ import WorkOrderPage from '../Containers/WorkOrderPage'
 import ControllerScreen from '../Containers/ControllerScreen'
 import FaceCameraScreen from '../Containers/FaceCameraScreen'
 import OperationPage from '../Containers/OperationPage'
-import LaunchScreen from '../Containers/LaunchScreen'
-import LaunchScreenGreen from '../Containers/LaunchScreenGreen'
+import OperationQuickAccessPage from '../Containers/OperationQuickAccessPage'
 import WorkOrdersPage from '../Containers/WorkOrdersPage'
 import RouteCardPage from '../Containers/RouteCardPage'
 import styles from './Styles/NavigationStyles'
@@ -32,6 +31,7 @@ const PrimaryNav = StackNavigator({
   ControllerScreen: { screen: ControllerScreen },
   FaceCameraScreen: { screen: FaceCameraScreen },
   OperationPage: { screen: OperationPage },
+  OperationQuickAccessPage: { screen: OperationQuickAccessPage },
   RouteCardPage: { screen: RouteCardPage },
   WorkOrderPage: { screen: WorkOrderPage },
   Home: { screen: WorkOrdersPage }

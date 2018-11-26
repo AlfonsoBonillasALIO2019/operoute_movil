@@ -10,17 +10,18 @@ import { Images } from '../Themes'
 
 class WorkOrdersPage extends Component {
   state = {
-    searchText: '',
+    searched: false,
+    searchSerialNumber: '',
     mockData: [1, 2, 3, 4, 5, 6, 7, 8, 9]
   }
 
   componentDidMount() {
-    const { request, token } = this.props
-    request(token)
+    const { workOrdersRequest, token } = this.props
+    workOrdersRequest(token)
   }
 
   filterOrders = (orders) => {
-    const text = this.state.searchText.toLowerCase().trim()
+    const text = this.state.searchSerialNumber.toLowerCase().trim()
     let result = orders.filter(order => {
       if (order.RouteCard.length > 0 && order.RouteCard[0].PartInfo.Number.toString().toLowerCase().indexOf(text) > -1)
         return true
@@ -111,19 +112,76 @@ class WorkOrdersPage extends Component {
     )
   }
 
+  _renderWorkOrderQuickAccess = ({ item }) => {
+    const { navigate } = this.props.navigation
+    let Description = ''
+    let thumb = Images.noPart
+    let borderColor = "#dadada"
+
+    try {
+      Description = item.WorkInstructions[0].Name
+    } catch (err) { }
+
+    if (item.RouteCard && item.RouteCard[0] && item.RouteCard[0].Id >= 2 && item.RouteCard[0].Id <= 10) {
+      const { Id } = item.RouteCard[0]
+      thumb = Images.part[Id]
+
+      if (Id >= 0 && Id <= 4)
+        borderColor = '#eb5da4'
+
+      if (Id >= 5 && Id <= 7)
+        borderColor = '#6061aa'
+
+      if (Id >= 8 && Id <= 10)
+        borderColor = '#fe9200'
+    }
+
+    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView, listItemRightViewLabel, listItemRightViewDate, listItemRightViewIcon } = stylesWorkOrders
+
+    return (
+      <ListItem onPress={() => navigate('OperationQuickAccessPage',
+        {
+          card: item,
+          Operation: item.Operations[0],
+          serials: item.SerialNum,
+          routeCardName: item.RouteCard[0].Name,
+          workOrderNumber: item.WONum,
+        })}
+        style={[listItem, { borderColor }]}>
+        <Left style={listItemLeft}>
+          <Thumbnail square large source={thumb} />
+          <Body>
+            <Text style={listItemLeftTextMain}>{item.WONum.toUpperCase()}</Text>
+            <Text style={listItemLeftTextSecondary}>{Description}</Text>
+          </Body>
+        </Left>
+        <Right>
+          <View style={listItemRightView}>
+            <Text style={listItemRightViewLabel}>Req. Date: </Text>
+            <Text style={listItemRightViewDate}>{moment(item.ModifiedDate).format("ll")}</Text>
+            <Icon style={listItemRightViewIcon} name="ios-arrow-forward" />
+          </View>
+        </Right>
+      </ListItem>
+    )
+  }
+
   _renderFlatList = () => {
-    const { orders } = this.props
+    const { orders, ordersBySerial } = this.props
+    const data = ordersBySerial.length > 0 && this.state.searched === true ? ordersBySerial : orders
+    const renderItem = ordersBySerial.length > 0 && this.state.searched === true ? this._renderWorkOrderQuickAccess : this._renderWorkOrder
     return (
       <FlatList
-        data={!this.state.searchText ? orders : this.filterOrders(orders)}
-        renderItem={this._renderWorkOrder}
+        data={data}
+        renderItem={renderItem}
         ListEmptyComponent={this._renderEmpty}
       />)
   }
 
   render() {
     const { header, mainBackgroundColor, headerTitle, container } = stylesWorkOrders
-    const { orders } = this.props
+    const { orders, workOrdersBySerialRequest, token, ordersBySerial } = this.props
+    const { searchSerialNumber, searched } = this.state
 
     return (
       <Container>
@@ -132,9 +190,23 @@ class WorkOrdersPage extends Component {
           <Title style={headerTitle}>Work Orders</Title>
         </Header>
         <Header style={mainBackgroundColor} searchBar>
-          <Item style={{ borderRadius: 3, paddingLeft: 10, paddingRight: 10, paddingTop: 0, paddingBottom: 0 }}>
-            <Input onChangeText={(text) => this.setState({ searchText: text })} placeholder="Type Serial Number" />
-            <Icon name="ios-search" onPress={() => console.log("CLICKED SEARCH")} />
+          <Item style={{ borderRadius: 3, paddingLeft: 10, paddingRight: 10 }}>
+            <Input
+              placeholder="Type Serial Number"
+              value={searchSerialNumber}
+              onChangeText={(text) => this.setState({ searchSerialNumber: text })}
+            />
+            {
+              searched === true ?
+                <Icon name="md-close" onPress={() => {
+                  this.setState({ searchSerialNumber: '', searched: false })
+                }} />
+                :
+                <Icon name="ios-search" onPress={() => {
+                  workOrdersBySerialRequest(token, searchSerialNumber)
+                  this.setState({ searched: true })
+                }} />
+            }
           </Item>
         </Header>
         <Content style={container}>
@@ -147,6 +219,7 @@ class WorkOrdersPage extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    ordersBySerial: state.workOrder.ordersBySerial,
     orders: state.workOrder.orders,
     token: state.login.token,
     user: state.login.user
@@ -155,7 +228,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    request: token => dispatch(WorkOrderActions.workOrderRequest(token))
+    workOrdersRequest: token => dispatch(WorkOrderActions.workOrderRequest(token)),
+    workOrdersBySerialRequest: (token, serialNumber) => dispatch(WorkOrderActions.workOrderBySerialRequest(token, serialNumber))
   }
 }
 
