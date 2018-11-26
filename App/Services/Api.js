@@ -48,6 +48,13 @@ const create = (baseURL = 'http://172.16.10.112:8000') => {
     }
   })
 
+  const getWorkOrdersBySerial = (token, serialNumber) => api.get(`/api/workorder/WorkOrderBySerial?serial=${serialNumber}`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
   const getWorkOrderById = (token, workOrderId) => api.get(`/api/workorder/${workOrderId}`, {}, {
     headers: {
       'Content-Type': 'application/json',
@@ -192,6 +199,8 @@ const create = (baseURL = 'http://172.16.10.112:8000') => {
     getWorkOrders,
     getWorkOrderById,
     getActiveOperators,
+    getWorkOrdersBySerial,
+
     refreshPanel,
 
     putWooperationlog,

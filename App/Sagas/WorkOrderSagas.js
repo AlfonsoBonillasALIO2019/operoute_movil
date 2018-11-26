@@ -3,13 +3,28 @@ import WorkOrderActions from '../Redux/WorkOrderRedux'
 
 export function* getWorkOrders(api, action) {
   const { token } = action
+  console.log("getWorkOrders")
   const response = yield call(api.getWorkOrders, token)
+  console.log({ response })
   if (response.ok) {
     let { data } = response
     data.reverse()
     yield put(WorkOrderActions.workOrderSuccess(data))
   } else {
     yield put(WorkOrderActions.workOrderFailure())
+  }
+}
+
+export function* getWorkOrdersBySerial(api, action) {
+  const { token, serialNumber } = action
+  const response = yield call(api.getWorkOrdersBySerial, token, serialNumber)
+  console.log({ response })
+  if (response.ok) {
+    let { data } = response
+    data.reverse()
+    yield put(WorkOrderActions.workOrderBySerialSuccess(data))
+  } else {
+    yield put(WorkOrderActions.workOrderBySerialFailure())
   }
 }
 

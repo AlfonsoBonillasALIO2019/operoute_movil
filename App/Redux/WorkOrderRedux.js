@@ -20,6 +20,10 @@ const { Types, Creators } = createActions({
   workOrderSuccess: ['orders'],
   workOrderFailure: null,
 
+  workOrderBySerialRequest: ['token', 'serialNumber'],
+  workOrderBySerialSuccess: ['ordersBySerial'],
+  workOrderBySerialFailure: null,
+
   workOrderByIdRequest: ['token', 'workOrderId'],
   workOrderByIdSuccess: ['order'],
   workOrderByIdFailure: null,
@@ -62,8 +66,9 @@ export const INITIAL_STATE = Immutable({
   orders: [],
   usersQA: [],
   operators: [],
-  refreshStatus: null,
+  ordersBySerial: [],
 
+  refreshStatus: null,
   selectedOrder: null,
 
   Wooperationlog: null,
@@ -83,94 +88,84 @@ export const INITIAL_STATE = Immutable({
 
 /* ------------- Selectors ------------- */
 
-// export const GithubSelectors = {
-//   selectAvatar: state => state.github.avatar
-// }
-
 /* ------------- Reducers ------------- */
 
-// request the avatar for a user
 export const request = (state, action) => {
   return state.merge({ fetching: true, user: null })
 }
 
-// successful avatar lookup
 export const success = (state, action) => {
   const { orders } = action
   return state.merge({ fetching: false, error: null, orders })
 }
 
-// failed to get the avatar
 export const failure = (state) =>
   state.merge({ fetching: false, error: true, orders: [] })
 
+export const requestGetWorkOrdersBySerial = (state, action) => {
+  return state.merge({ fetching: true, user: null })
+}
 
-// request the avatar for a user
+export const successGetWorkOrdersBySerial = (state, action) => {
+  const { ordersBySerial } = action
+  return state.merge({ fetching: false, error: null, ordersBySerial })
+}
+
+export const failureGetWorkOrdersBySerial = (state) =>
+  state.merge({ fetching: false, error: true, ordersBySerial: [] })
+
 export const requestSelected = (state, action) => {
   return state.merge({ fetchingSelected: true, selectedOrder: null })
 }
 
-// successful avatar lookup
 export const successSelected = (state, action) => {
   const { order } = action
   return state.merge({ fetchingSelected: false, errorSelected: null, selectedOrder: order })
 }
 
-// failed to get the avatar
 export const failureSelected = (state) =>
   state.merge({ fetchingSelected: false, errorSelected: true, selectedOrder: null })
 
-// request wooperationlog data
 export const requestWooperationlog = (state, action) => {
   return state.merge({ fetchingLogs: true, Wooperationlog: null })
 }
 
-// successful wooperationlog data
 export const successWooperationlog = (state, action) => {
   const { Wooperationlog } = action
   return state.merge({ fetchingLogs: false, error: null, Wooperationlog })
 }
 
-// failed to post the wooperationlog data
 export const failureWooperationlog = (state) =>
   state.merge({ fetchingLogs: false, error: true, Wooperationlog: null })
 
-// request rework wooperationlog data
 export const requestReworkWooperationlog = (state, action) => {
   return state.merge({ fetchingLogs: true, ReworkWooperationlog: null })
 }
 
-// successful rework wooperationlog data
 export const successReworkWooperationlog = (state, action) => {
   const { ReworkWooperationlog } = action
   return state.merge({ fetchingLogs: false, error: null, ReworkWooperationlog })
 }
 
-// failed to post the rework wooperationlog data
 export const failureReworkWooperationlog = (state) =>
   state.merge({ fetchingLogs: false, error: true, ReworkWooperationlog: null })
 
-// request first pass off wooperationlog data
 export const requestFirstPOWooperationlog = (state, action) => {
   return state.merge({ fetching: true, FirstPOWooperationlog: null })
 }
 
-// successful first pass off wooperationlog data
 export const successFirstPOWooperationlog = (state, action) => {
   const { FirstPOWooperationlog } = action
   return state.merge({ fetching: false, error: null, FirstPOWooperationlog })
 }
 
-// failed to post the first pass off wooperationlog data
 export const failureFirstPOWooperationlog = (state) =>
   state.merge({ fetching: false, error: true, FirstPOWooperationlog: null })
 
-// request post first pass off
 export const requestPostFirstPO = (state, action) => {
   return state.merge({ fetching: true, FirstPOResponse: null })
 }
 
-// successful post first pass off
 export const successPostFirstPO = (state, action) => {
   const { FirstPOResponse } = action
   return state.merge({ fetching: false, error: null, FirstPOResponse })
@@ -286,6 +281,10 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.WORK_ORDER_REQUEST]: request,
   [Types.WORK_ORDER_SUCCESS]: success,
   [Types.WORK_ORDER_FAILURE]: failure,
+
+  [Types.WORK_ORDER_BY_SERIAL_REQUEST]: requestGetWorkOrdersBySerial,
+  [Types.WORK_ORDER_BY_SERIAL_SUCCESS]: successGetWorkOrdersBySerial,
+  [Types.WORK_ORDER_BY_SERIAL_FAILURE]: failureGetWorkOrdersBySerial,
 
   [Types.WORK_ORDER_BY_ID_REQUEST]: requestSelected,
   [Types.WORK_ORDER_BY_ID_SUCCESS]: successSelected,
