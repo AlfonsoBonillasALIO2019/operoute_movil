@@ -13,6 +13,7 @@ export default class Instructions extends Component {
     const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView } = stylesWorkOrders
     const { color_light_gray } = stylesDefault
     const { WorkInstruction: { DocKey, Name, Description } } = item
+    const { navigate } = this.props.navigation
 
     return (
       <ListItem style={[listItem, { borderLeftWidth: 0 }]}>
@@ -26,6 +27,9 @@ export default class Instructions extends Component {
           <Right>
             <View style={listItemRightView}>
               <Button
+                onPress={() => {
+                  navigate('DocumentPage', { docKey: DocKey }, ...this.props)
+                }}
                 style={{
                   backgroundColor: '#FFFFFF',
                   justifyContent: 'center',
@@ -34,7 +38,7 @@ export default class Instructions extends Component {
                   elevation: 0,
                   height: 40,
                 }}
-                onPress={() => { }}>
+              >
                 <Text style={color_light_gray}>OPEN</Text>
                 <Icon style={[color_light_gray, { marginLeft: 0 }]} name="md-document" />
               </Button>

@@ -5,6 +5,7 @@ import FaceCameraScreen from '../Containers/FaceCameraScreen'
 import OperationPage from '../Containers/OperationPage'
 import OperationQuickAccessPage from '../Containers/OperationQuickAccessPage'
 import WorkOrdersPage from '../Containers/WorkOrdersPage'
+import DocumentPage from '../Containers/DocumentPage'
 import RouteCardPage from '../Containers/RouteCardPage'
 import styles from './Styles/NavigationStyles'
 
@@ -34,6 +35,7 @@ const PrimaryNav = StackNavigator({
   OperationQuickAccessPage: { screen: OperationQuickAccessPage },
   RouteCardPage: { screen: RouteCardPage },
   WorkOrderPage: { screen: WorkOrderPage },
+  DocumentPage: { screen: DocumentPage },
   Home: { screen: WorkOrdersPage }
 }, {
   // Default config for all screens
