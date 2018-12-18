@@ -49,7 +49,7 @@ const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing S
     }
   })
 
-  const getWorkOrdersBySerial = (token, serialNumber) => api.get(`/api/workorder/WorkOrderBySerial?serial=${serialNumber}`, {}, {
+  const getWorkOrdersBySerial = (token, serialNumber) => api.get(`/api/workorder/WorkOrderBySerial/${serialNumber}`, {}, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -57,6 +57,13 @@ const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing S
   })
 
   const getWorkOrderById = (token, workOrderId) => api.get(`/api/workorder/${workOrderId}`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const getDocumentById = (token, docKey) => api.get(`/api/document/${docKey}`, {}, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -201,6 +208,8 @@ const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing S
     getWorkOrderById,
     getActiveOperators,
     getWorkOrdersBySerial,
+
+    getDocumentById,
 
     refreshPanel,
 

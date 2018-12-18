@@ -28,6 +28,10 @@ const { Types, Creators } = createActions({
   workOrderByIdSuccess: ['order'],
   workOrderByIdFailure: null,
 
+  documentByIdRequest: ['token', 'docKey'],
+  documentByIdSuccess: ['document'],
+  documentByIdFailure: null,
+
   postFirstPORequest: ['token', 'data'],
   postFirstPOSuccess: ['FirstPOResponse'],
   postFirstPOFailure: null,
@@ -68,6 +72,7 @@ export const INITIAL_STATE = Immutable({
   operators: [],
   ordersBySerial: [],
 
+  document: null,
   refreshStatus: null,
   selectedOrder: null,
 
@@ -263,6 +268,18 @@ export const successRefreshPanel = (state, action) => {
 export const failureRefreshPanel = (state) =>
   state.merge({ fetching: false, error: true, refreshStatus: null })
 
+  export const requestDocumentById = (state, action) => {
+    return state.merge({ fetchingDocument: true, document: null })
+  }
+
+  export const successDocumentById = (state, action) => {
+    const { document } = action
+    return state.merge({ fetchingDocument: false, errorDocument: null, document })
+  }
+
+  export const failureDocumentById = (state) =>
+    state.merge({ fetchingDocument: false, errorDocument: true, document: null })
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -289,6 +306,10 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.WORK_ORDER_BY_ID_REQUEST]: requestSelected,
   [Types.WORK_ORDER_BY_ID_SUCCESS]: successSelected,
   [Types.WORK_ORDER_BY_ID_FAILURE]: failureSelected,
+
+  [Types.DOCUMENT_BY_ID_REQUEST]: requestDocumentById,
+  [Types.DOCUMENT_BY_ID_SUCCESS]: successDocumentById,
+  [Types.DOCUMENT_BY_ID_FAILURE]: failureDocumentById,
 
   [Types.POST_FIRST_P_O_REQUEST]: requestPostFirstPO,
   [Types.POST_FIRST_P_O_SUCCESS]: successPostFirstPO,
