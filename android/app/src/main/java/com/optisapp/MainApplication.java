@@ -2,6 +2,7 @@ package com.optisapp;
 
 import android.app.Application;
 
+import com.rumax.reactnative.pdfviewer.PDFViewPackage;
 import com.facebook.react.ReactApplication;
 import org.reactnative.camera.RNCameraPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
@@ -30,7 +31,8 @@ public class MainApplication extends Application implements ReactApplication {
             new RNCameraPackage(),
             new ReactNativeConfigPackage(),
             new ReactNativeI18n(),
-            new VectorIconsPackage()
+            new VectorIconsPackage(),
+            new PDFViewPackage()
       );
     }
 

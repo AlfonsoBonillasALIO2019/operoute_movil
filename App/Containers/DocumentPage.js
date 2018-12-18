@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Image } from 'react-native'
+import PDFView from 'react-native-view-pdf/lib/index'
 import { View, Container, Header, Title, Content, List, ListItem, Text, Icon } from 'native-base'
 import { Images } from '../Themes'
 import WorkOrder from '../Components/WorkOrder'
@@ -41,6 +42,19 @@ class DocumentPage extends Component {
             <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
             <Title style={headerTitle}>{document.Name}</Title>
           </Header>
+          <Content>
+            {document && document.DocumentType == "application/pdf" &&
+              <View style={{ flex: 1 }}>
+                <PDFView
+                  style={{ flex: 1, height: 1000 }}
+                  resource={document.Docfile.split(',')[1]}
+                  resourceType={'base64'}
+                  onLoad={() => console.log(`PDF rendered from`)}
+                  onError={(error) => console.log('Cannot render PDF', error)}
+                />
+              </View>
+            }
+          </Content>
         </Container>
       )
     }
