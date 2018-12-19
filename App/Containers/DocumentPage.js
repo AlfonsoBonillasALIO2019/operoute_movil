@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Image } from 'react-native'
 import PDFView from 'react-native-view-pdf/lib/index'
-import { View, Container, Header, Title, Content, List, ListItem, Text, Icon } from 'native-base'
-import { Images } from '../Themes'
-import WorkOrder from '../Components/WorkOrder'
-import stylesOrder from './Styles/WorkOrderStyles'
+import { View, Container, Header, Title, Content, Icon, H2, H3, Text } from 'native-base'
 import stylesDefault from './Styles/DefaultBaseStyles'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 
@@ -20,19 +16,21 @@ class DocumentPage extends Component {
   }
 
   render() {
-    const { header, mainBackgroundColor, headerTitle, navBackButton } = stylesDefault
+    const { header, mainBackgroundColor, headerTitle, navBackButton, subHeader, subHeader_title, subHeader_subtitle, subHeader_text } = stylesDefault
     const { goBack } = this.props.navigation
-    const { document } = this.props
+    const { document, fetchingDocument } = this.props
 
-    console.log("document --> ", document)
-
-    if (document === null)
+    if (document === null || fetchingDocument)
       return (
         <Container>
           <Header style={[header, mainBackgroundColor]}>
             <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
-            <Title style={headerTitle}>Document: Loading</Title>
+            <Title style={headerTitle}>Document</Title>
           </Header>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <H2 style={[subHeader_title, { marginBottom: 10 }]}>LOADING</H2>
+            <H3 style={subHeader_subtitle}>Please wait...</H3>
+          </View>
         </Container>
       )
     else {
@@ -42,19 +40,23 @@ class DocumentPage extends Component {
             <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
             <Title style={headerTitle}>{document.Name}</Title>
           </Header>
-          <Content>
-            {document && document.DocumentType == "application/pdf" &&
-              <View style={{ flex: 1 }}>
-                <PDFView
-                  style={{ flex: 1, height: 1000 }}
-                  resource={document.Docfile.split(',')[1]}
-                  resourceType={'base64'}
-                  onLoad={() => console.log(`PDF rendered from`)}
-                  onError={(error) => console.log('Cannot render PDF', error)}
-                />
-              </View>
-            }
-          </Content>
+          {document && document.DocumentType === "application/pdf" &&
+            <View style={{ height: 900 }}>
+              <PDFView
+                style={{ flex: 5 }}
+                resource={document.Docfile.split(',')[1]}
+                resourceType={'base64'}
+                onLoad={() => console.log(`PDF rendered from`)}
+                onError={(error) => console.log('Cannot render PDF', error)}
+              />
+            </View>}
+          {document && document.DocumentType !== "application/pdf" &&
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <H2 style={[subHeader_title, { marginBottom: 10 }]}>OOPS!</H2>
+              <Text style={subHeader_text}>Something went wrong when trying to open the file.</Text>
+              <Text style={[subHeader_text, { marginBottom: 10 }]}>Is not possible to open a file of type:</Text>
+              <H3 style={subHeader_subtitle}>{document.DocumentType}</H3>
+            </View>}
         </Container>
       )
     }
@@ -64,6 +66,7 @@ class DocumentPage extends Component {
 const mapStateToProps = (state) => {
   return {
     document: state.workOrder.document,
+    fetchingDocument: state.workOrder.fetchingDocument,
     token: state.login.token
   }
 }
