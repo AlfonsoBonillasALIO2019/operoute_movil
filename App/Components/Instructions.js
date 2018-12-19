@@ -11,8 +11,8 @@ export default class Instructions extends Component {
 
   _renderItem = ({ item }) => {
     const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView } = stylesWorkOrders
-    const { color_light_gray } = stylesDefault
     const { WorkInstruction: { DocKey, Name, Description } } = item
+    const { color_light_gray } = stylesDefault
     const { navigate } = this.props.navigation
 
     return (

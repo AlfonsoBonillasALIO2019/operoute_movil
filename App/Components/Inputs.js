@@ -1,46 +1,57 @@
 import React, { Component } from 'react'
-// import PropTypes from 'prop-types';
-import { View } from 'react-native'
-import styles from './Styles/InputsStyle'
+import { View, FlatList } from 'react-native'
+import { Text, ListItem, Left, Right, Body, Item, Input, Button, Icon } from 'native-base'
+import stylesWorkOrders from '../Containers/Styles/WorkOrdersStyles'
+import stylesDefault from '../Containers/Styles/DefaultBaseStyles'
+import styles from './Styles/OperationsStyle'
 
-import { Container, Header, Title, Content, Footer, FooterTab, 
-  Button, Left, Right, Body, Icon, Text, 
-  Card, CardItem,
-  Form, Item, Input,
-  List, ListItem, Thumbnail, H1, Segment } from 'native-base';
+export default class Tooling extends Component {
 
-export default class Inputs extends Component {
-  // // Prop type warnings
-  // static propTypes = {
-  //   someProperty: PropTypes.object,
-  //   someSetting: PropTypes.bool.isRequired,
-  // }
-  //
-  // // Defaults for props
-  // static defaultProps = {
-  //   someSetting: false
-  // }
+  _keyExtractor = (item) => item.Inputs.Id
 
-  render () {
+  _renderItem = ({ item }) => {
+    const { listItem, listItemLeft, listItemLeftTextMain, listItemRightView } = stylesWorkOrders
+    const { color_light_gray } = stylesDefault
+    const { Inputs: { Name } } = item
+
+    return (
+      <ListItem style={[listItem, { borderLeftWidth: 0 }]}>
+        <Left style={listItemLeft}>
+          <Body>
+            <Text style={listItemLeftTextMain}>{Name}</Text>
+            <Item>
+              <Input />
+            </Item>
+          </Body>
+        </Left>
+        <Right>
+          <View style={listItemRightView}>
+            <Button style={{
+              backgroundColor: '#FFFFFF',
+              justifyContent: 'center',
+              borderColor: '#eeeeee',
+              borderWidth: 1,
+              elevation: 0,
+            }}>
+              <Icon style={color_light_gray} name="md-send" />
+            </Button>
+          </View>
+        </Right>
+      </ListItem>
+    )
+  }
+
+  render() {
     const { inputs } = this.props
     return (
-      <Card>
-        {inputs.map((inp,index)=>(
-          <CardItem bordered>
-            <Body>
-              <Text>{inp.Inputs.Name}</Text>
-              <Item rounded>
-                <Input/>
-              </Item>
-            </Body>
-            <Right>
-              <Button rounded success>
-                <Icon name="md-send" />
-              </Button>
-            </Right>
-          </CardItem>
-        ))}
-      </Card>
+      <View style={styles.container}>
+        <FlatList
+          data={inputs}
+          extraData={[]}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
+      </View>
     )
   }
 }
