@@ -49,7 +49,7 @@ const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing S
     }
   })
 
-  const getWorkOrdersBySerial = (token, serialNumber) => api.get(`/api/workorder/WorkOrderBySerial/${serialNumber}`, {}, {
+  const getWorkOrdersBySerial = (token, serialNumber) => api.get(`/api/workorder/WorkOrderBySerial?serial=${serialNumber}`, {}, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
