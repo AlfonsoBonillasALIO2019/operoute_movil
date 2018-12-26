@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Image, Dimensions } from 'react-native'
 import PDFView from 'react-native-view-pdf/lib/index'
-import { View, Container, Header, Title, Content, Icon, H2, H3, Text } from 'native-base'
+import { View, Container, Header, Title, Icon, H2, H3, Text } from 'native-base'
 import stylesDefault from './Styles/DefaultBaseStyles'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 
@@ -41,7 +42,7 @@ class DocumentPage extends Component {
             <Title style={headerTitle}>{document.Name}</Title>
           </Header>
           {document && document.DocumentType === "application/pdf" &&
-            <View style={{ height: 900 }}>
+            <View style={{ height: Dimensions.get('window').height, width: Dimensions.get('window').width }}>
               <PDFView
                 style={{ flex: 5 }}
                 resource={document.Docfile.split(',')[1]}
@@ -49,14 +50,22 @@ class DocumentPage extends Component {
                 onLoad={() => console.log(`PDF rendered from`)}
                 onError={(error) => console.log('Cannot render PDF', error)}
               />
-            </View>}
-          {document && document.DocumentType !== "application/pdf" &&
+            </View>
+          }
+          {document && document.DocumentType.includes("image") &&
+            <Image
+              style={{ flex: 1, height: undefined, width: undefined }}
+              resizeMode="contain"
+              source={{ uri: `${document.Docfile}` }} />
+          }
+          {document && document.DocumentType !== "application/pdf" && !document.DocumentType.includes("image") &&
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <H2 style={[subHeader_title, { marginBottom: 10 }]}>OOPS!</H2>
               <Text style={subHeader_text}>Something went wrong when trying to open the file.</Text>
               <Text style={[subHeader_text, { marginBottom: 10 }]}>Is not possible to open a file of type:</Text>
               <H3 style={subHeader_subtitle}>{document.DocumentType}</H3>
-            </View>}
+            </View>
+          }
         </Container>
       )
     }
