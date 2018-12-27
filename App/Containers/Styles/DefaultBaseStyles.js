@@ -34,8 +34,9 @@ export default StyleSheet.create({
   },
   navBackButton: {
     color: '#ffffff',
-    marginRight: 10,
-    marginLeft: 15
+    marginRight: 0,
+    marginLeft: 0,
+    padding: 20
   },
   noResultsRow: {
     justifyContent: 'flex-start',
