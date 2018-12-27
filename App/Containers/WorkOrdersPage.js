@@ -2,14 +2,16 @@ import React, { Component } from 'react'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import { FlatList } from 'react-native'
-import { View, Container, Header, Title, Content, Left, Right, Body, Icon, Text, Item, Input, ListItem, Thumbnail } from 'native-base'
+import { Root, View, Container, Header, Title, Content, Left, Right, Body, Icon, Text, Item, Input, ListItem, Thumbnail, ActionSheet, Button } from 'native-base'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
+import LoginActions from '../Redux/LoginRedux'
 import stylesDefault from './Styles/DefaultBaseStyles'
 import stylesWorkOrders from './Styles/WorkOrdersStyles'
 import { Images } from '../Themes'
 
 class WorkOrdersPage extends Component {
   state = {
+    clicked: "",
     searched: false,
     searchSerialNumber: '',
     mockData: [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -18,6 +20,8 @@ class WorkOrdersPage extends Component {
   componentDidMount() {
     const { workOrdersRequest, token } = this.props
     workOrdersRequest(token)
+
+    ActionSheet.actionsheetInstance = null
   }
 
   filterOrders = (orders) => {
@@ -178,16 +182,49 @@ class WorkOrdersPage extends Component {
       />)
   }
 
+  _renderLogOff = () => {
+    const { navBackButton } = stylesDefault
+    var BUTTONS = ["Log off", "CANCEL"]
+
+    return (
+      <Right>
+        <Root>
+          <Icon
+            name='ios-log-out-outline'
+            style={[navBackButton, { alignSelf: 'flex-end' }]}
+            onPress={() =>
+              ActionSheet.show(
+                {
+                  options: BUTTONS,
+                  cancelButtonIndex: 1,
+                  title: "Are you sure want to log out?"
+                },
+                buttonIndex => {
+                  this.setState({ clicked: BUTTONS[buttonIndex] });
+                }
+              )}
+          />
+        </Root>
+      </Right>
+    )
+  }
+
   render() {
     const { header, mainBackgroundColor, headerTitle, container } = stylesWorkOrders
-    const { orders, workOrdersBySerialRequest, token, ordersBySerial } = this.props
+    const { orders, workOrdersBySerialRequest, token } = this.props
     const { searchSerialNumber, searched } = this.state
+
+    if (this.state.clicked == "Log off") {
+      const { logout } = this.props
+      logout()
+    }
 
     return (
       <Container>
         <Header style={[header, mainBackgroundColor]}>
           <Thumbnail square size={35} source={Images.logo_topBar} />
           <Title style={headerTitle}>Work Orders</Title>
+          {this._renderLogOff()}
         </Header>
         <Header style={mainBackgroundColor} searchBar>
           <Item style={{ borderRadius: 3, paddingLeft: 10, paddingRight: 10 }}>
@@ -230,7 +267,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     workOrdersRequest: token => dispatch(WorkOrderActions.workOrderRequest(token)),
-    workOrdersBySerialRequest: (token, serialNumber) => dispatch(WorkOrderActions.workOrderBySerialRequest(token, serialNumber))
+    workOrdersBySerialRequest: (token, serialNumber) => dispatch(WorkOrderActions.workOrderBySerialRequest(token, serialNumber)),
+    logout: () => {
+      dispatch(LoginActions.logoutRequest())
+    }
   }
 }
 
