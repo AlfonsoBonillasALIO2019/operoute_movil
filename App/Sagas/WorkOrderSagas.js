@@ -172,3 +172,14 @@ export function* getWorkOrderById(api, action) {
     yield put(WorkOrderActions.workOrderByIdFailure())
   }
 }
+
+export function* getDocumentById(api, action) {
+  const { token, docKey } = action
+  const response = yield call(api.getDocumentById, token, docKey)
+
+  if (response.ok) {
+    yield put(WorkOrderActions.documentByIdSuccess(response.data))
+  } else {
+    yield put(WorkOrderActions.documentByIdFailure())
+  }
+}

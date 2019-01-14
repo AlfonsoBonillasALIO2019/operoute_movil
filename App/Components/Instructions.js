@@ -1,42 +1,65 @@
 import React, { Component } from 'react'
-// import PropTypes from 'prop-types';
-import { View } from 'react-native'
-import styles from './Styles/InstructionsStyle'
-import { Container, Header, Title, Content, Footer, FooterTab, 
-  Button, Left, Right, Body, Icon, Text, 
-  Card, CardItem,
-  Form, Item, Input,
-  List, ListItem, Thumbnail, H1, Segment } from 'native-base';
-
+import { View, FlatList } from 'react-native'
+import { Button, Text, ListItem, Icon, Left, Right, Body } from 'native-base'
+import stylesWorkOrders from '../Containers/Styles/WorkOrdersStyles'
+import stylesDefault from '../Containers/Styles/DefaultBaseStyles'
+import styles from './Styles/OperationsStyle'
 
 export default class Instructions extends Component {
-  // // Prop type warnings
-  // static propTypes = {
-  //   someProperty: PropTypes.object,
-  //   someSetting: PropTypes.bool.isRequired,
-  // }
-  //
-  // // Defaults for props
-  // static defaultProps = {
-  //   someSetting: false
-  // }
 
-  render () {
+  _keyExtractor = (item) => item.WorkInstruction.Id
+
+  _renderItem = ({ item }) => {
+    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView } = stylesWorkOrders
+    const { WorkInstruction: { DocKey, Name, Description } } = item
+    const { color_light_gray } = stylesDefault
+    const { navigate } = this.props.navigation
+
+    return (
+      <ListItem style={[listItem, { borderLeftWidth: 0 }]}>
+        <Left style={listItemLeft}>
+          <Body>
+            <Text style={listItemLeftTextMain}>{Name}</Text>
+            <Text style={listItemLeftTextSecondary}>{Description}</Text>
+          </Body>
+        </Left>
+        {DocKey &&
+          <Right>
+            <View style={listItemRightView}>
+              <Button
+                onPress={() => {
+                  navigate('DocumentPage', { docKey: DocKey }, ...this.props)
+                }}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  justifyContent: 'center',
+                  borderColor: '#eeeeee',
+                  borderWidth: 1,
+                  elevation: 0,
+                  height: 40,
+                }}
+              >
+                <Text style={color_light_gray}>OPEN</Text>
+                <Icon style={[color_light_gray, { marginLeft: 0 }]} name="md-document" />
+              </Button>
+            </View>
+          </Right>
+        }
+      </ListItem>
+    )
+  }
+
+  render() {
     const { workInstructions } = this.props
     return (
-      <Card>
-        {workInstructions.map((wi,i)=>(
-          <CardItem bordered>
-            <Body>
-              <Text>{wi.WorkInstruction.Name}</Text>
-              <Text>{wi.WorkInstruction.Description}</Text>
-            </Body>
-            {/*<Right>
-                          <Icon name="md-document" />
-                        </Right>*/}
-          </CardItem>
-        ))}
-      </Card>
+      <View style={styles.container}>
+        <FlatList
+          data={workInstructions}
+          extraData={[]}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
+      </View>
     )
   }
 }

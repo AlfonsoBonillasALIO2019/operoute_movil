@@ -43,6 +43,7 @@
     "react-native-i18n": "^1.0.0",
     "react-native-pages": "^0.7.0",
     "react-native-vector-icons": "^4.3.0",
+    "react-native-view-pdf": "^0.6.3",
     "react-navigation": "^1.5.11",
     "react-navigation-redux-helpers": "^1.0.4",
     "react-redux": "^5.0.6",

@@ -1,45 +1,40 @@
 import React, { Component } from 'react'
-// import PropTypes from 'prop-types';
 import { View, FlatList } from 'react-native'
-import styles from './Styles/ToolingStyle'
-
-import { Container, Header, Title, Content, Footer, FooterTab, 
-  Button, Left, Right, Body, Icon, Text, 
-  Card, CardItem,
-  Form, Item, Input,
-  List, ListItem, Thumbnail, H1, Segment } from 'native-base';
-
+import { Text, ListItem, Left, Body } from 'native-base'
+import stylesWorkOrders from '../Containers/Styles/WorkOrdersStyles'
+import styles from './Styles/OperationsStyle'
 
 export default class Tooling extends Component {
-  // // Prop type warnings
-  // static propTypes = {
-  //   someProperty: PropTypes.object,
-  //   someSetting: PropTypes.bool.isRequired,
-  // }
-  //
-  // // Defaults for props
-  // static defaultProps = {
-  //   someSetting: false
-  // }
 
-  render () {
+  _keyExtractor = (item) => item.ToolFixture.Id
+
+  _renderItem = ({ item }) => {
+    const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView } = stylesWorkOrders
+    const { ToolFixture: { TFNum, Description } } = item
+
     return (
-      <Card>
+      <ListItem style={[listItem, { borderLeftWidth: 0 }]}>
+        <Left style={listItemLeft}>
+          <Body>
+            <Text style={listItemLeftTextMain}>{Description}</Text>
+            <Text style={listItemLeftTextSecondary}>{TFNum}</Text>
+          </Body>
+        </Left>
+      </ListItem>
+    )
+  }
+
+  render() {
+    const { toolFixtures } = this.props
+    return (
+      <View style={styles.container}>
         <FlatList
-          data={this.props.toolFixtures}
-          numColumns={2}
-          horizontal={false}
-          renderItem={({item}) => (
-            
-            <CardItem bordered style={styles.row}>
-              <Body>
-                <Text>{item.ToolFixture.Description}</Text>
-                <Text note>{item.ToolFixture.TFNum}</Text>
-              </Body>
-            </CardItem>
-          )}
+          data={toolFixtures}
+          extraData={[]}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
         />
-      </Card>
+      </View>
     )
   }
 }

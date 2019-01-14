@@ -3,7 +3,8 @@ import apisauce from 'apisauce'
 import { actionChannel } from '../../node_modules/redux-saga/effects';
 
 // our "constructor"
-const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing Server
+const create = (baseURL = 'http://192.168.10.22:8000') => { // <-- OTM Testing Server
+  // const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing Server
   // const create = (baseURL = 'http://172.16.10.112:8000') => { // <-- HOST
   // const create = (baseURL = 'http://192.168.70.73:8000') => { // <-- OTM Local Server
   // ------
@@ -57,6 +58,13 @@ const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing S
   })
 
   const getWorkOrderById = (token, workOrderId) => api.get(`/api/workorder/${workOrderId}`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const getDocumentById = (token, docKey) => api.get(`/api/document/${docKey}`, {}, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -201,6 +209,8 @@ const create = (baseURL = 'http://192.168.10.21:8000') => { // <-- OTM Testing S
     getWorkOrderById,
     getActiveOperators,
     getWorkOrdersBySerial,
+
+    getDocumentById,
 
     refreshPanel,
 

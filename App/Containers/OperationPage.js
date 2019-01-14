@@ -22,7 +22,8 @@ class OperationPage extends Component {
 
   render() {
     const {
-      goBack, state: { params: { card, Operation, serials, routeCardName, workOrderNumber } }
+      goBack, state: { params: { card, Operation, serials, routeCardName, workOrderNumber } },
+      navigate,
     } = this.props.navigation
 
     let { selected, screens } = this.state
@@ -50,7 +51,7 @@ class OperationPage extends Component {
 
     switch (selected) {
       case 'INSTRUCTIONS': {
-        currentPage = <Instructions workInstructions={workInstructions} />
+        currentPage = <Instructions workInstructions={workInstructions} navigation={{ ...this.props.navigation }} />
         break
       }
       case 'INPUTS': {
@@ -77,7 +78,7 @@ class OperationPage extends Component {
     return (
       <Container>
         <Header style={[header, mainBackgroundColor]}>
-        <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
+          <Icon onPress={() => goBack(null)} style={navBackButton} name='ios-arrow-back' />
           {/* <Thumbnail square size={35} source={Images.logo_topBar} /> */}
           <Title style={headerTitle}>Work Order: {workOrderNumber.toUpperCase()} / Route Card: {routeCardName.toUpperCase()}</Title>
         </Header>
@@ -106,14 +107,8 @@ class OperationPage extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
+const mapStateToProps = (state) => { return { } }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
+const mapDispatchToProps = (dispatch) => { return { } }
 
 export default connect(mapStateToProps, mapDispatchToProps)(OperationPage)
