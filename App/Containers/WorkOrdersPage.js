@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import { FlatList } from 'react-native'
-import { Root, View, Container, Header, Title, Content, Left, Right, Body, Icon, Text, Item, Input, ListItem, Thumbnail, ActionSheet } from 'native-base'
+import { Root, View, Container, Header, Title, Content, Left, Right, Body, Icon, Text, Item, H3, Input, ListItem, Thumbnail, ActionSheet } from 'native-base'
 import WorkOrderActions from '../Redux/WorkOrderRedux'
 import LoginActions from '../Redux/LoginRedux'
 import stylesDefault from './Styles/DefaultBaseStyles'
@@ -211,7 +211,8 @@ class WorkOrdersPage extends Component {
 
   render() {
     const { header, mainBackgroundColor, headerTitle, container } = stylesWorkOrders
-    const { orders, workOrdersBySerialRequest, token } = this.props
+    const { subHeader_title } = stylesDefault
+    const { orders, workOrdersBySerialRequest, token, user } = this.props
     const { searchSerialNumber, searched } = this.state
 
     if (this.state.clicked == "Log off") {
@@ -248,6 +249,9 @@ class WorkOrdersPage extends Component {
           </Item>
         </Header>
         <Content style={container}>
+          <View style={{ width: '100%', paddingVertical: 15, paddingRight: 10 }}>
+            <H3 style={[subHeader_title, { textAlign: "right" }]}>Welcome, {user.FirstName}!</H3>
+          </View>
           {orders.length === 0 ? this._renderMockFlatList() : this._renderFlatList()}
         </Content>
       </Container>
