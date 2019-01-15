@@ -14,12 +14,11 @@ class RouteCardPage extends React.PureComponent {
       name = RouteCard[0].Name
     } catch (err) { }
 
-    const { row, serial, operation } = stylesRouteCard
+    const { row, operation } = stylesRouteCard
     const { color_light_gray } = stylesDefault
 
     return (
       <ListItem style={row} onPress={() => navigate('OperationPage', { card, Operation, serials, routeCardName: name, workOrderNumber: WONum })}>
-        <Text style={serial}>{Operation.Id}</Text>
         <Text style={operation}>{Operation.OperationNum} - {Operation.Name}</Text>
         <Icon style={color_light_gray} name="ios-arrow-forward" />
       </ListItem >
@@ -27,13 +26,7 @@ class RouteCardPage extends React.PureComponent {
   }
 
   renderHeader = () => {
-    const { row, serial, operation } = stylesRouteCard
-    return (
-      <View style={[row, { borderBottomWidth: 1, borderBottomColor: '#dadada' }]}>
-        <Text style={[serial, { color: '#4f6987', fontWeight: '500' }]}>SERIAL</Text>
-        <Text style={[operation, { color: '#4f6987', fontWeight: '500' }]}>OPERATION</Text>
-      </View>
-    )
+    return null
   }
 
   renderEmpty = () =>
