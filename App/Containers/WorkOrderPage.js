@@ -93,7 +93,7 @@ class WorkOrderPage extends Component {
       <Right>
         <Root>
           <Icon
-            name='ios-log-out-outline'
+            name='md-log-out'
             style={[navBackButton, { alignSelf: 'flex-end' }]}
             onPress={() =>
               ActionSheet.show(
