@@ -1,6 +1,5 @@
 // a library to wrap and simplify api calls
 import apisauce from 'apisauce'
-import { actionChannel } from '../../node_modules/redux-saga/effects';
 
 // our "constructor"
 const create = (baseURL = 'http://192.168.10.22:8000') => { // <-- OTM Prod Server
@@ -65,13 +64,6 @@ const create = (baseURL = 'http://192.168.10.22:8000') => { // <-- OTM Prod Serv
   })
 
   const getDocumentById = (token, docKey) => api.get(`/api/document/${docKey}`, {}, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
-  })
-
-  const refreshPanel = (token) => api.get(`/#!/workorder_refresh`, {}, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -211,8 +203,6 @@ const create = (baseURL = 'http://192.168.10.22:8000') => { // <-- OTM Prod Serv
     getWorkOrdersBySerial,
 
     getDocumentById,
-
-    refreshPanel,
 
     putWooperationlog,
     postWooperationlog,

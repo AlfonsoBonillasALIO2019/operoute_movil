@@ -46,6 +46,7 @@ class WorkOrdersPage extends Component {
       <FlatList
         style={{ opacity: 0.6 }}
         data={this.state.mockData}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => {
           return (
             <ListItem onPress={() => { }} style={[listItem, { borderColor: '#dadada' }]}>
@@ -179,6 +180,7 @@ class WorkOrdersPage extends Component {
         data={data}
         renderItem={renderItem}
         ListEmptyComponent={this._renderEmpty}
+        keyExtractor={(item, index) => index.toString()}
       />)
   }
 
@@ -190,7 +192,7 @@ class WorkOrdersPage extends Component {
       <Right>
         <Root>
           <Icon
-            name='ios-log-out-outline'
+            name='md-log-out'
             style={[navBackButton, { alignSelf: 'flex-end' }]}
             onPress={() =>
               ActionSheet.show(

@@ -7,7 +7,7 @@ import styles from './Styles/OperationsStyle'
 
 export default class Instructions extends Component {
 
-  _keyExtractor = (item) => item.WorkInstruction.Id
+  _keyExtractor = (item) => item.WorkInstruction.Id.toString()
 
   _renderItem = ({ item }) => {
     const { listItem, listItemLeft, listItemLeftTextMain, listItemLeftTextSecondary, listItemRightView } = stylesWorkOrders

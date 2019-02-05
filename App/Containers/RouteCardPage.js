@@ -36,7 +36,7 @@ class RouteCardPage extends React.PureComponent {
       </ListItem>
     )
 
-  keyExtractor = (item, index) => index
+  keyExtractor = (item, index) => index.toString()
 
   render() {
     const { navigation: { goBack, state: { params: { card: { Operations, RouteCard }, order: { WONum } } } } } = this.props

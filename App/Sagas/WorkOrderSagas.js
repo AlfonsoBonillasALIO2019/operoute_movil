@@ -51,18 +51,6 @@ export function* getQAUsers(api, action) {
   }
 }
 
-export function* refreshPanel(api, action) {
-  const { token } = action
-  const response = yield call(api.refreshPanel, token)
-
-  if (response.ok) {
-    let { data } = response
-    yield put(WorkOrderActions.refreshPanelSuccess(data))
-  } else {
-    yield put(WorkOrderActions.refreshPanelFailure())
-  }
-}
-
 export function* searchWooperationlog(api, action) {
   const { WOKey, RCTKey, OperationKey, token } = action
   const response = yield call(api.searchWooperationlog, token,
