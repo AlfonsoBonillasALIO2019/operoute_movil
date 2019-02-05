@@ -7,7 +7,7 @@ import styles from './Styles/OperationsStyle'
 
 export default class Tooling extends Component {
 
-  _keyExtractor = (item) => item.Inputs.Id
+  _keyExtractor = (item) => item.Inputs.Id.toString()
 
   _renderItem = ({ item }) => {
     const { listItem, listItemLeft, listItemLeftTextMain, listItemRightView } = stylesWorkOrders

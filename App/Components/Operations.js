@@ -10,13 +10,12 @@ import WorkOrderActions from '../Redux/WorkOrderRedux'
 import stylesWorkOrders from '../Containers/Styles/WorkOrdersStyles'
 import stylesDefault from '../Containers/Styles/DefaultBaseStyles'
 
-const socket = SocketIOClient('http://192.168.10.21:3050')
+const socket = SocketIOClient('http://192.168.10.22:3050/')
 
 class Operations extends Component {
   state = {
     operations: [],
     operationsLog: [],
-
     prompt: {
       SerialNum: '',
       Visible: '',
@@ -28,13 +27,11 @@ class Operations extends Component {
       match: null,
       UserKey: '0',
     },
-
     actionPrompt: {
       Visible: false,
       options: [],
       logStatusObj: null,
     },
-
     ReworkWooperationlog: [],
     FirstPOWooperationlog: [],
   }
@@ -91,7 +88,7 @@ class Operations extends Component {
     })
   }
 
-  _keyExtractor = (item, index) => item.id
+  _keyExtractor = (item, index) => item.PartPO.SerialNum.toString()
 
   opClick = serialId => {
     const { operations = [] } = this.state
@@ -416,7 +413,6 @@ class Operations extends Component {
     this.setState({ ReworkWooperationlog: [], FirstPOWooperationlog: [] })
     match && requestReworkWooperationlog(token, match.Id)
     requestWooperationlog(token, WOKey, RCTKey, OperationKey)
-    //requestRefreshPanel(token)
     socket.emit('requestWOOperationLogData')
   }
 
@@ -440,10 +436,13 @@ class Operations extends Component {
         <Dialog.Description style={color_gray}>
           Please introduce the exact duration of this operation.
         </Dialog.Description>
-        <Dialog.Input value={Duration} onChangeText={(text) => {
-          prompt.Duration = Number(text)
-          this.setState({ prompt })
-        }} />
+        <Dialog.Input
+          value={Duration}
+          onChangeText={(text) => {
+            prompt.Duration = Number(text)
+            this.setState({ prompt })
+          }}
+        />
         <Dialog.Button style={color_gray} label="Cancel" onPress={() => this._cleanState()} />
         <Dialog.Button style={btn_confirm} label="Confirm" onPress={() => {
           if (!Duration || Duration < 1) {
@@ -618,7 +617,6 @@ class Operations extends Component {
     const { statusObj } = logStatusObj
     const itemStatusColor = !fetchingLogs ? statusObj.color : 'gray'
     const itemStatusLabel = !fetchingLogs ? statusObj.label : 'Loading'
-
     const { listItemButtonMore, listItem, listItemLeft, listItemLeftTextMain, listItemRightView, listItemRightViewLabel, listItemRightViewDate } = stylesWorkOrders
     const { color_light_gray } = stylesDefault
 
